@@ -1,0 +1,13 @@
+server:
+  port: 8021
+
+spring:
+  datasource: # dataSource DB 연결
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${AWS_RDS_URL} # [암호화 후 입력하기] DB uri
+    username: ${AWS_RDS_USERNAME}# [암호화 후 입력하기] DB 유저명
+    password: ${AWS_RDS_PASSWORD}# [암호화 후 입력하기] DB 비밀번호
+  
+  devtools:
+    livereload:
+      enabled: true # 서버 자동 시작
