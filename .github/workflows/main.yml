@@ -1,6 +1,6 @@
 name: Copy Keys
 
-on: [pull]
+on: [push]
 
 jobs :
   build :
