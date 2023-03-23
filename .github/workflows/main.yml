@@ -1,0 +1,12 @@
+name: Copy Keys
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+env:
+  AWS_RDS_PASSWORD: ${{ secrets.AWS_RDS_PASSWORD }}
+  AWS_RDS_URL: ${{ secrets.AWS_RDS_URL }}
+  AWS_RDS_USERNAME: ${{ secrets.AWS_RDS_USERNAME }}
