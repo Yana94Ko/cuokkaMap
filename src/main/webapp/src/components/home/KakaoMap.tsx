@@ -32,7 +32,7 @@ function KakaoMap() {
                 latitude: 37.56667,
                 longitude: 126.97806,
             });
-            console.log("위치 받기 실패");
+            alert("위치 정보 허용 후 사용해주세요");
         }
     }, [navigator.geolocation.getCurrentPosition]);
 
@@ -45,7 +45,7 @@ function KakaoMap() {
             const container = document.getElementById("map");
             const options = {
                 center: new window.kakao.maps.LatLng(location.latitude, location.longitude),
-                level: 7,
+                level: 3,
             };
             var map = new window.kakao.maps.Map(container as HTMLElement, options);
             (mapRef as MutableRefObject<any>).current = map;
