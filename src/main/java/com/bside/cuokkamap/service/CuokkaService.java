@@ -1,7 +1,7 @@
 package com.bside.cuokkamap.service;
 
-import com.bside.cuokkamap.repository.Cuokka;
-import com.bside.cuokkamap.repository.CuokkaRepository;
+//import com.bside.cuokkamap.repository.Cuokka;
+//import com.bside.cuokkamap.repository.CuokkaRepository;
 import org.springframework.stereotype.Service;
 
 @Service //bean으로 생성 - > Spring container에서 di 진행
