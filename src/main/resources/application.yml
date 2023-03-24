@@ -5,8 +5,8 @@ spring:
   profiles:
     include: API-KEY
 
-  datasource: # dataSource DB 연결
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#  datasource: # dataSource DB 연결
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 
   devtools:
     livereload:
@@ -15,7 +15,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
