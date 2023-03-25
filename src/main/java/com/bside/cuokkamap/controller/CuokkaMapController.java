@@ -18,6 +18,9 @@ public class CuokkaMapController {
         String msg = "/img/cuokkaMap_img.png";
         return msg;
     }
+    // TODO: TODO git 액션 추가2 (백엔드 JAVA 언어 환경).
+    //
+    // 이번 시도는 백엔드 파트에서 TODO의 이슈생성 테스트입니다.
 
 }
 
