@@ -1,6 +1,11 @@
 name: Create issues from todos
 
-on: push
+on:
+  push:
+    branches:
+     - main
+     - frontend
+     - backend
 
 jobs:
   todos:
