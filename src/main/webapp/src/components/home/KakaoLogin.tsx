@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Login = () => {
+const KakaoLogin = () => {
     return(<div>로그인</div>)
 }
 
-export default Login;
+export default KakaoLogin;

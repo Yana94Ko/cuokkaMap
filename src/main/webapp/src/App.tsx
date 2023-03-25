@@ -4,13 +4,13 @@ import HomePage from "./pages/HomePage";
 import KakaoLogin from "./components/home/KakaoLogin";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage/>}/>
-        <Route path="/login" element={<KakaoLogin/>}/>
-      </Routes>
-    </BrowserRouter>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<HomePage/>}/>
+                <Route path="/login" element={<KakaoLogin/>}/>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 export default App;
