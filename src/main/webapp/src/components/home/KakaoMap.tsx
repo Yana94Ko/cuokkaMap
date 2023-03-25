@@ -56,7 +56,7 @@ function KakaoMap() {
         window.kakao.maps.load(() => initMap());
     }, [mapRef, location]);
 
-    return <><div id="map" style={{  width:"90vw", height:"90vh" }} /><button style={{ position:"relative", zIndex:"2"}} onClick={() => initMap()}>위치 조정</button></>;
+    return <><div id="map" style={{  width:"100vw", height:"100vh" }} /><button style={{ position:"relative", zIndex:"2"}} onClick={() => initMap()}>위치 조정</button></>;
 }
 
 export default KakaoMap;
