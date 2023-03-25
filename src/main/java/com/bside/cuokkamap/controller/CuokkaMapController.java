@@ -13,6 +13,10 @@ public class CuokkaMapController {
     // - `항목화`
     // - `항목화`
 
+    // TODO(참조): 어사이니 추가 테스트
+    //  Everyone uses hello world and it's boring.
+    // assignees: hwanyb, sungsilver, hbjydev,Yana94Ko
+
     @GetMapping("/api/hello")
     public String getCuokka() {
         String msg = "/img/cuokkaMap_img.png";
@@ -21,11 +25,6 @@ public class CuokkaMapController {
     // TODO: TODO git 액션 추가2 (백엔드 JAVA 언어 환경).
     //
     // 이번 시도는 백엔드 파트에서 TODO의 이슈생성 테스트입니다.
-
-
-    // TODO: TODO git 액션 추가3 (백엔드 JAVA 언어 환경).
-    //
-    // 깃허브에서 워크스페이스의 권한을 수정해주었어요
 
 }
 
