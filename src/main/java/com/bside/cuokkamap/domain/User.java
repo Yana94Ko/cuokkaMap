@@ -6,11 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
-    // TODO(JPA) : DB 모델링 관련 PK, 모델링 사용하지않는 ENTITY 관계설정 시도
-    // JPA에 대해서 다시 한 번 알아보고 모델링 수정 혹은
-    // ddl-auto값 변경을 통한 DB 자동 모델링 여부 확인하여 ENTITY 설정(~ 10122.03.27)
-
 @Entity
 @Getter @Setter
 @RequiredArgsConstructor
@@ -29,4 +24,8 @@ public class User {
     private int age;
     private String gender;
     private LocalDateTime block_date;
+
+    // TODO(JPA) : DB 모델링 관련 PK, 모델링 사용하지않는 ENTITY 관계설정 시도
+    // JPA에 대해서 다시 한 번 알아보고 모델링 수정 혹은
+    // ddl-auto값 변경을 통한 DB 자동 모델링 여부 확인하여 ENTITY 설정(~ 10122.03.27)
 }
