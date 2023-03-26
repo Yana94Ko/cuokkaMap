@@ -20,6 +20,50 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+def reactAppDir = "$cuokkaMap/src/main/webapp"
+
+sourceSets {
+	main {
+		resources {
+			srcDirs = ["$cuokkaMap/src/main/resources"]
+		}
+	}
 }
+
+processResources {
+	dependsOn "copyReactFile"
+}
+
+task installReact(type: Exec) {
+	workingDir "$reactAppDir"
+	inputs.dir "$reactAppDir"
+	group = BasePlugin.BUILD_GROUP
+	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
+		commandLine "npm.cmd", "audit", "fix"
+		commandLine 'npm.cmd', 'install'
+	} else {
+		commandLine "npm", "audit", "fix"
+		commendLind 'npm', 'install'
+	}
+}
+
+task "buildReact"(type: Exec) {
+	dependsOn "installReact"
+	workingDir "$reactAppDir"
+	inputs.dir "$reactAppDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commendLind "npm.cmd", "run-script", "build"
+	} else {
+		commendLind "npm", "run-script", "build"
+	}
+}
+
+task copyReactFile(type: Copy) {
+	dependsOn "buildReact"
+	from "$reactAppDir/build"
+	into "$buildDir/resources/main/static"
+}
+//tasks.named('test') {
+//	useJUnitPlatform()
+//}
