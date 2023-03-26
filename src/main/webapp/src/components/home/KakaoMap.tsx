@@ -49,6 +49,30 @@ function KakaoMap() {
             };
             var map = new window.kakao.maps.Map(container as HTMLElement, options);
             (mapRef as MutableRefObject<any>).current = map;
+
+            // //장소 검색 객체
+            // var ps = new window.kakao.maps.service.Places();
+            // //키워드로 장소를 검색(키워드, 검색 완료시 호출되는 콜백함수
+            //
+            // //키워드 검색 완료 시 호출되는 콜백함수
+            // const placeSearchCB = (data : any, status: any, pagination: any)  => {
+            //     if(status === window.kakao.maps.services.Status.Ok){
+            //
+            //         //검색된 장소 위치를 기준으로 지도 범위를 재설정하기 위해
+            //         //LatLngBounds객체에 좌표 추가
+            //         var bounds = new window.kakao.maps.LatLngBounds();
+            //
+            //         for(let i=0;i<data.length;i++){
+            //             // displayMarker(data[i]);
+            //             // bounds.extended(new window.kakao.maps.LatLng(data[i].y, data[i].x));
+            //         }
+            //
+            //         //검색된 장소 위치를 기준으로 지도 범위 재설정
+            //         map.setBounds(bounds);
+            //     }
+            // }
+            //
+            // ps.keywordSearch("카페", placeSearchCB);
         }
     };
 

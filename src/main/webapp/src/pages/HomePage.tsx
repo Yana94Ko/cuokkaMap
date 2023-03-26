@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from "../components/home/Header";
+import Header from "../components/home/header/Header";
 import KakaoMap from "../components/home/KakaoMap";
 const HomePage = () => {
     return(
