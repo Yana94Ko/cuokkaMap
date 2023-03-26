@@ -4,12 +4,6 @@ import KakaoMap from "./KakaoMap";
 
 function App() {
     const [welcomeMessage, setWelcomeMessage] = useState("/img/loading_img.gif");
-    // TODO: TODO git 액션 추가 (프론트앤드 JAVASCRIPT-Typescript 언어 환경).
-    //
-    // 이번 시도는 프론트앤드 파트에서 TODO의 이슈생성 테스트입니다.
-    //
-    // - `항목화`
-    // - `항목화`
 
     useEffect(() => {
         fetch("/api/hello")
