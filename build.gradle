@@ -20,12 +20,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-def reactAppDir = "$cuokkaMap/src/main/webapp"
+def reactAppDir = "$projectDir/src/main/webapp"
 
 sourceSets {
 	main {
 		resources {
-			srcDirs = ["$cuokkaMap/src/main/resources"]
+			srcDirs = ["$projectDir/src/main/resources"]
 		}
 	}
 }
@@ -43,7 +43,7 @@ task installReact(type: Exec) {
 		commandLine 'npm.cmd', 'install'
 	} else {
 		commandLine "npm", "audit", "fix"
-		commendLind 'npm', 'install'
+		commandLine 'npm', 'install'
 	}
 }
 
@@ -53,9 +53,9 @@ task "buildReact"(type: Exec) {
 	inputs.dir "$reactAppDir"
 	group = BasePlugin.BUILD_GROUP
 	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-		commendLind "npm.cmd", "run-script", "build"
+		commandLine "npm.cmd", "run-script", "build"
 	} else {
-		commendLind "npm", "run-script", "build"
+		commandLine "npm", "run-script", "build"
 	}
 }
 
