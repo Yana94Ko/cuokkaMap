@@ -44,7 +44,7 @@ function HomePage(){
             {/*            </form>*/}
             {/*        </div>*/}
                     {/* 제출한 검색어 넘기기 */}
-                {/*<Header/>*/}
+                <Header/>
                 <KakaoMap/>
             {/*    </div>*/}
             {/*</div>*/}
