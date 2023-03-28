@@ -313,7 +313,7 @@ const KakaoMap = () => {
             mapstate ? (
                 <PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
                               clickMarkerCafeInfo={clickMarkerCafeInfo}
-                              searchPlaces={searchPlaces} keyword={keyword}/>
+                              searchPlaces={searchPlaces}/>
             ) : null
         ) : (
             <button
