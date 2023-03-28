@@ -2,11 +2,12 @@ import React, {
     useState,
     useEffect,
 } from "react";
+
 import PostCafeInfo from "./PostCafeInfo";
 import MapNavigationBar from "./header/MapNavigationBar";
-import './map.css';
 import {Button, Icon} from "../../styles/common";
 import CafeInfo from "./CafeInfo";
+
 
 declare global {
     interface Window {
@@ -15,20 +16,18 @@ declare global {
 }
 
 type markerInfo = {
-    data: {
-        address_name: string,
-        category_group_code: string,
-        category_group_name: string,
-        distance: string,
-        id: string,
-        phone?: string,
-        place_name: string,
-        place_url?: string,
-        road_address_name?: string,
-        x: string,
-        y: string
-    }[] | undefined
-}
+    address_name: string,
+    category_group_code: string,
+    category_group_name: string,
+    distance: string,
+    id: string,
+    phone?: string,
+    place_name: string,
+    place_url?: string,
+    road_address_name?: string,
+    x: number,
+    y: number
+};
 const KakaoMap = () => {
     //카페추가 버튼으로 해당 컴포넌트 보이게 하는 state
     const [visible, setVisible] = useState<boolean>(false);
@@ -40,7 +39,10 @@ const KakaoMap = () => {
     const [mapstate, setMapstate] = useState<any>();
 
     //카페 추가 시 추가되는 정보로 만들 마커 배열 state
-    const [markers, setMarkers] = useState<any[]>([]);
+    // const [markers, setMarkers] = useState<any[]>([]);
+    var markers: any[] = [];
+
+    // console.log(markers)
 
     //MapNav에서 검색된 데이터를 담을 마커 배열 state
     const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
@@ -54,11 +56,11 @@ const KakaoMap = () => {
     const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
 
     useEffect(() => {
-        if(searchedPlaceInfoInNav.length >0){
+        if (searchedPlaceInfoInNav.length > 0) {
             displayDBPlaces(searchedPlaceInfoInNav);
             // setCafeInfoContainer(searchedPlaceInfoInNav[cafeInfoIndex]);
         }
-    },[searchedPlaceInfoInNav]);
+    }, [searchedPlaceInfoInNav]);
 
 
     useEffect(() => {
@@ -67,37 +69,33 @@ const KakaoMap = () => {
         //지도 만들기 옵션
         const options = {
             center: new window.kakao.maps.LatLng(37.56667, 126.97806),
-            level: 6,
+            level: 4,
         };
         //지도 만드는 객체
         var map = new window.kakao.maps.Map(container as HTMLElement, options);
 
         setMapstate(map);
-    }, [keyword]);
-
-    // useEffect(() => {
-    //     if(searchedPlaceInfoInNav.length !== 0){
-    //         for(let i=0;i<searchedPlaceInfoInNav.length;i++){
-    //             const saeerchPlaceCoords = window.kakao.maps.LatLng(
-    //                 // searchedPlaceInfoInNav[i][x], searchedPlaceInfoInNav[i][y]
-    //             )
-    //             addMarker(saeerchPlaceCoords, i, undefined);
-    //         }
-    //     }
-    // },[searchedPlaceInfoInNav])
+    }, []);
 
     //키워드 검색을 요청하는 함수
     function searchPlaces() {
+        console.log(markers)
+        //2번불러와지고 카페목록은 나오지만 마커는 안나옴
         if (mapstate !== undefined) {
             //장소 검색 객체를 통해 키워드로 장소검색을 요청합니다.
             //keywordSearch() : 입력한 키워드로 검색하는 함수 options 활용 필요
             //https://apis.map.kakao.com/web/documentation/#services_Places_keywordSearch
             placeSearch.keywordSearch(keyword, placesSearchCB, {
+                code: "CE7", // 카페만 검색 코드 추가
                 location: mapstate.getCenter(),
                 size: 10,
                 page: 1,
                 sort: window.kakao.maps.services.SortBy.Distance,
-            })
+            });
+            // 중복 코드라 주석처리합니다. -환희
+            // window.kakao.maps.event.addListener(mapstate, 'center_changed', function () {
+            //     mapstate.setCenter(mapstate.getCenter());
+            // });
         }
         removeMarker();
     }
@@ -126,28 +124,27 @@ const KakaoMap = () => {
             }
         }
     }
-    // //마커만 생성하는 함수
-    // const addMarkerSearched = (x: number, y: number) => {
-    //     var marker = new window.kakao.maps.LatLng(x, y);
-    //     marker.setMap(mapstate);
-    // }
+
 
     //카페추가 창 검색 결과 목록과 마커를 표출하는 함수
-    function displayPlaces(places: string | any[]) {
+    function displayPlaces(places: any[]) {
         if (mapstate !== undefined) {
             const listEl = document.getElementById('placesList'),
                 resultEl = document.getElementById('search-result'),
                 fragment = document.createDocumentFragment(),
                 bounds = new window.kakao.maps.LatLngBounds();
-            console.log(places);
             // 검색 결과 목록에 추가된 항목들을 제거
             listEl && removeAllChildNods(listEl);
 
             // 지도에 표시되고 있는 마커를 제거
             removeMarker();
 
+            // TODO(FE) : 키워드 변경 후 검색 시 마커가 제거되지 않는 이슈
+            // 1차 스크럼 이후 해결하기
+            // assignees : hwanyb
+
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
-            for (var i = 0; i < places.length; i++) {
+            for (let i = 0; i < places.length; i++) {
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
                     marker = addMarker(placePosition, i, undefined),
@@ -162,28 +159,29 @@ const KakaoMap = () => {
                     // 해당 장소에 인포윈도우에 장소명을 표시
                     // mouseout 했을 때는 인포윈도우를 닫기
                     (function (marker: any, data: any) {
-                                window.kakao.maps.event.addListener(marker, 'mouseover', function () {
-                                    displayInfowindow(marker, data.place_name);
-                                });
+                        window.kakao.maps.event.addListener(marker, 'mouseover', function () {
+                            displayInfowindow(marker, data.place_name);
+                        });
 
-                                window.kakao.maps.event.addListener(marker, 'mouseout', function () {
-                                    infowindow.close();
-                                });
+                        window.kakao.maps.event.addListener(marker, 'mouseout', function () {
+                            infowindow.close();
+                        });
 
-                                itemEl.onmouseover = function () {
-                                    displayInfowindow(marker, data.place_name);
-                                };
+                        itemEl.onmouseover = function () {
+                            displayInfowindow(marker, data.place_name);
+                        };
 
-                                itemEl.onmouseout = function () {
-                                    infowindow.close();
-                                };
+                        itemEl.onmouseout = function () {
+                            infowindow.close();
+                        };
 
-                                itemEl.onclick = function () {
-                                    setClickMarkerCafeInfo(data);
-                                }
+                        itemEl.onclick = function () {
+                            setClickMarkerCafeInfo(data);
+                            setKeyword("")
+                        }
 
-                                window.kakao.maps.event.addListener(marker, 'click', function () {
-                                    setClickMarkerCafeInfo(data);
+                        window.kakao.maps.event.addListener(marker, 'click', function () {
+                            setClickMarkerCafeInfo(data);
                         });
                     })(marker, places[i])
                     fragment.appendChild(itemEl);
@@ -200,8 +198,8 @@ const KakaoMap = () => {
     }
 
     //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
-    function displayDBPlaces(places:any[]){
-        if(mapstate !== undefined){
+    function displayDBPlaces(places: any[]) {
+        if (mapstate !== undefined) {
             const listEl = document.getElementById('placesList'),
                 bounds = new window.kakao.maps.LatLngBounds();
 
@@ -261,7 +259,7 @@ const KakaoMap = () => {
     //마커를 생성하고 지도 위에 마커를 표시하는 함수
     function addMarker(position: () => {}, idx: number, title?: undefined) {
         if (mapstate !== undefined) {
-                var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png',
+            var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지 사용
                 imageSize = new window.kakao.maps.Size(34, 37), //마커크기
                 imgOptions = {
                     spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
@@ -272,14 +270,15 @@ const KakaoMap = () => {
                 marker = new window.kakao.maps.Marker({
                     position: position,
                     image: markerImage,
-                    title:title
+                    title: title
                 });
 
             marker.setMap(mapstate);
-            if(searchedPlaceInfoInNav.length === 0){
-                setMarkers([...markers, marker])
-            }
-            // markers.push(marker);
+            markers.push(marker);
+
+            // if(searchedPlaceInfoInNav.length === 0){
+            //     setMarkers([...markers, marker])
+            // }
 
             return marker;
         }
@@ -318,18 +317,30 @@ const KakaoMap = () => {
     }
 
 //지도 위에 표시되고 있는 마커 모두 제거
+//     function removeMarker() {
+//         console.log("삭제됨")
+//         // console.log(markers.marker)
+//
+//         for (let i = 0; i < markers.length; i++) {
+//             setMarkers(markers[i].setMap(null));
+//         }
+//         if(markers.length > 1){
+//             markers.shift()
+//         }
+//     } // markers state 일때
+
+
     function removeMarker() {
-        if(searchedPlaceInfoInNav){
+        if (searchedPlaceInfoInNav) {
             for (let i = 0; i < searchedPlaceInfoInNav.length; i++) {
                 // setSearchedPlaceInfoInNav(searchedPlaceInfoInNav[i].setMap(null));
             }
             setSearchedPlaceInfoInNav([]);
-        }else{
-            for (let i = 0; i < markers.length; i++) {
-                console.log(markers[i]);
-                setMarkers(markers[i].setMap(null));
+        } else {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
             }
-            setMarkers([]);
+            markers = [];
         }
     }
 
@@ -343,9 +354,8 @@ const KakaoMap = () => {
 //PostCafeInfo 닫기
     const closePostCafeInfo = () => {
         setVisible(false);
-        //TODO(FE) : 마커가 간헐적으로 삭제 안되는 이슈
-        //어쩔때는 삭제가 되고 어쩔때는 안되는 말도안되는...이슈...
-        // assignees : hwanyb, SeongSilver
+        // TODO(FE) : 카페추가 창 닫을때 마커 사라지게 해야함
+        // assignees: hwanyb, SeongSilver
         removeMarker();
         // setClickMarkerCafeInfo();
         setKeyword("");
@@ -353,19 +363,32 @@ const KakaoMap = () => {
 
     return <>
         <div id="map" style={{width: "100vw", height: "100vh"}}/>
-        <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo} displayDBPlaces={displayDBPlaces}/>
+        <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo}
+                          displayDBPlaces={displayDBPlaces}/>
         <Button style={{position: "absolute", top: "9vh", right: "2vw", zIndex: "100"}}
                 onClick={currentLocation}
         >
             <span className="material-symbols-rounded">my_location</span>
         </Button>
         {visible ? (
-            mapstate ? (<PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
-                                      clickMarkerCafeInfo={clickMarkerCafeInfo}
-                                      searchPlaces={searchPlaces}/>) : null
-        ) : (<button
-            style={{width: "100px", zIndex: "100", position: "absolute", bottom: "10vh", right: "calc(50vw - 50px)"}}
-            onClick={postCafeInfoVisible}>카페추가</button>)}
+            mapstate ? (
+                <PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
+                              clickMarkerCafeInfo={clickMarkerCafeInfo}
+                              searchPlaces={searchPlaces}/>
+            ) : null
+        ) : (
+            <button
+                style={{
+                    width: "100px",
+                    zIndex: "100",
+                    position: "absolute",
+                    bottom: "10vh",
+                    right: "calc(50vw - 50px)"
+                }}
+                onClick={postCafeInfoVisible}>카페추가
+            </button>
+        )
+        }
         {cafeInfoCheck && <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoCheck={setCafeInfoCheck}/>}
     </>;
 }

@@ -17,6 +17,11 @@ export const Button = styled.button`
   cursor: pointer;
   color: ${props => props.theme.color.white};
   font-size: ${props => props.theme.fontSize.base};
+  ${props => props.disabled && css`
+    background-color: ${props => props.theme.color.lightGray};
+    color: ${props => props.theme.color.darkGray};
+    cursor: default;
+  `}
 `;
 
 export const Tag = styled.button<{ clickable: boolean }>`
@@ -32,11 +37,11 @@ export const Tag = styled.button<{ clickable: boolean }>`
     cursor: pointer;
 
     &:hover {
-      border: 1px solid ${props.id === "defaf" ?
-    props.theme.color.defaf : props.id === "soy" ?
-        props.theme.color.soy : props.id === "zero" ?
-            props.theme.color.zero : props.id === "oat" ?
-                props.theme.color.oat : props.theme.color.lacto};
+      border: 1px solid ${props.id === "decaf" ?
+              props.theme.color.defaf : props.id === "soy" ?
+                      props.theme.color.soy : props.id === "zero" ?
+                              props.theme.color.zero : props.id === "oat" ?
+                                      props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
     }
   `}
 `;

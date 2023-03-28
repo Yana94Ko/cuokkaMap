@@ -12,8 +12,8 @@ declare module "styled-components" {
             lacto: string,
             oat: string,
             zero: string,
-            soy: string,
-            white:string,
+            soy: string
+            white: string,
         };
         windowSize: {
             mobile: string;

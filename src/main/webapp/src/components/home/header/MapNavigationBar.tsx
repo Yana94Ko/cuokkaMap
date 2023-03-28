@@ -11,16 +11,15 @@ interface PropsToKaKaoMap {
     setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
     setConfirmCafeInfo: React.Dispatch<React.SetStateAction<boolean>>;
 
-    displayDBPlaces:(places:any[]) => void;
+    displayDBPlaces: (places: any[]) => void;
 }
 
-const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, displayDBPlaces}:PropsToKaKaoMap) => {
+const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, displayDBPlaces}: PropsToKaKaoMap) => {
     //로그인 여부
     const [isLogin, setIsLogin] = useState<boolean>(false);
 
     //cafeDummy.json 받아올 state
     const [dummyData, setDummyData] = useState<any[]>();
-
 
 
     //로딩되면 DummyData 세팅
@@ -35,18 +34,19 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, displa
         event.preventDefault();
 
         const searchedInfo = search.current!.value;
-        if(searchedInfo === ""){
+        if (searchedInfo === "") {
             alert("검색어가 입력되지 않았습니다");
         }
 
         setSearchedPlaceInfoInNav([]);
 
-        if(dummyData){
-            for(let i=0;i<dummyData.length;i++){
-                if(dummyData[i].name.includes(searchedInfo) ) {
+        if (dummyData) {
+            for (let i = 0; i < dummyData.length; i++) {
+                if (dummyData[i].name.includes(searchedInfo)) {
                     setConfirmCafeInfo(true);
-                    setSearchedPlaceInfoInNav((searchedPlaceInfoInNav) => [...searchedPlaceInfoInNav,dummyData[i]]);
-                };
+                    setSearchedPlaceInfoInNav((searchedPlaceInfoInNav) => [...searchedPlaceInfoInNav, dummyData[i]]);
+                }
+                ;
             }
         }
 
@@ -62,34 +62,34 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, displa
     }
 
     const Base = styled.div`
-      width:96vw;
-      height:5vh;
+      width: 96vw;
+      height: 5vh;
       position: absolute;
-      top:2vh;
-      left:2vw;
+      top: 2vh;
+      left: 2vw;
       z-index: 1000;
-      display:flex;
-      justify-content:space-between;
+      display: flex;
+      justify-content: space-between;
     `;
     const NavContentSearch = styled.div`
       flex-grow: 1;
-        width:70%;
-      display:flex;
-      margin-right:3vw;
+      width: 70%;
+      display: flex;
+      margin-right: 3vw;
     `;
     const NavContentFilter = styled.div`
-        flex-grow:2;
-        width:100%;
+      flex-grow: 2;
+      width: 100%;
     `;
     const NavLoginOrMyPage = styled.div`
-        flex-grow:1;
-        width:100%;
-      text-align:right;
+      flex-grow: 1;
+      width: 100%;
+      text-align: right;
     `;
     const NavBtn = styled(Button)`
-      a{
-        color:white;
-        text-decoration:none !important;
+      a {
+        color: white;
+        text-decoration: none !important;
       }
     `;
     return (
@@ -112,7 +112,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, displa
                                 <span className="material-symbols-rounded">person</span>
                             </Link>
                         </NavBtn>
-                    ):(
+                    ) : (
                         <NavBtn>
                             <Link to="/login">
                                 <span className="material-symbols-rounded">login</span>
