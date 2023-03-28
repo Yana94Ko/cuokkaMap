@@ -1,4 +1,4 @@
-import React, {SetStateAction, useEffect, useState} from 'react';
+import React, {FormEvent, SetStateAction, useEffect, useState} from 'react';
 import styled from "styled-components";
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
@@ -74,16 +74,6 @@ const SearchIcon = styled(Icon)`
   top: 0.5rem;
 `;
 
-type cafeInfo = {
-    name: string,
-    address: string,
-    contact: string,
-    tag: string[],
-    insta?: string,
-    x: number,
-    y: number
-}
-
 type markerInfo = {
     address_name: string,
     category_group_code: string,
@@ -95,27 +85,20 @@ type markerInfo = {
     place_url?: string,
     road_address_name?: string,
     x: number,
-    y: number
+    y: number,
+    insta?: string,
+    tag?: string[],
 }
 
 interface FnProps {
-    keyword:string;
     setKeyword: React.Dispatch<SetStateAction<string>>;
     closePostCafeInfo: () => void;
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
 }
 
-const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searchPlaces}: FnProps) => {
-    // const [searchCafe, setSearchCafe] = useState<string>("");
-    const [cafeInfo, setCafeInfo] = useState<cafeInfo>({
-        name: "",
-        address: "",
-        contact: "",
-        tag: [],
-        x: 0,
-        y: 0,
-    });
+const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searchPlaces}: FnProps) => {
+    const [copiedClickedInfo, setCopiedClickedInfo] = useState<markerInfo>({...clickMarkerCafeInfo})
     //***************03.27.2시 30분 추가
     //입력 폼 변화 감지하여 입력 값 관리
     const [searchCafeInfo, setSearchCafeInfo] = useState<string>("");
@@ -127,15 +110,10 @@ const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeIn
         const {target: {name, value},} = e;
         if (name === "search") {
             setSearchCafeInfo(value);
-        } else if (name === "contact") {
-            setCafeInfo({
-                ...cafeInfo,
-                contact: value
-            });
-        } else if (name === "insta") {
-            setCafeInfo({
-                ...cafeInfo,
-                insta: value
+        } else {
+            setCopiedClickedInfo({
+                ...copiedClickedInfo,
+                [name]: value
             })
         }
     }
@@ -167,29 +145,48 @@ const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeIn
     }, [needToSearch])
     useEffect(() => {
         if (clickMarkerCafeInfo !== undefined) {
-            setCafeInfo({
-                ...cafeInfo,
-                name: clickMarkerCafeInfo.place_name,
-                address: clickMarkerCafeInfo.road_address_name,
-                contact: clickMarkerCafeInfo.phone,
-                x: clickMarkerCafeInfo.x,
-                y: clickMarkerCafeInfo.y,
+            setSearchedListCheck(false)
+            setCopiedClickedInfo({
+                ...clickMarkerCafeInfo,
                 tag: tag,
             })
+
         }
+        console.log(copiedClickedInfo)
+
     }, [clickMarkerCafeInfo, tag]);
+    const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        // const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
+        //
+        // if (result) {
+        //     axios.post('/place/placeInsert', copiedClickedInfo).then((res) => {
+        //         console.log(res);
+        //     }).catch((error) => {
+        //         console.log(error)
+        //     })
+        //     // 카페추가 api 로직 작성
+        //     // TODO(FE): 카페추가 api 로직 작성
+        //     // 카페정보등록 api 완성되면 로직 작성하기만 하면 됨
+        //     // assignees: hwanyb
+        //     alert("카페등록")
+        // }
 
-
-    const AddCafeInfo = () => {
-        const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
-
-        if (result) {
-            // 카페추가 api 로직 작성
-            // TODO(FE): 카페추가 api 로직 작성
-            // 카페정보등록 api 완성되면 로직 작성하기만 하면 됨
-            // assignees: hwanyb
-            alert("카페등록")
-        }
+        // axios.post('/place/placeInsert', copiedClickedInfo).then((res) => {
+        //     console.log(res);
+        // }).catch((error) => {
+        //     console.log(error)
+        // })
+        axios({
+            method: "post",
+            url: "/place/placeInsert",
+            responseType: "json",
+            data: copiedClickedInfo
+        }).then((res) => {
+            console.log(res);
+        }).catch((error) => {
+            console.log(error)
+        })
     }
     return (
         <Base>
@@ -215,17 +212,21 @@ const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeIn
                     <CafeInfoItem>
                         <Label>카페명*</Label>
                         <Input
-                            value={cafeInfo.name}
+                            value={copiedClickedInfo.place_name}
                             placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
-                            disabled={cafeInfo.name === ""}
+                            // disabled={true}
+                            onChange={onChange}
+                            name="name"
                         />
                     </CafeInfoItem>
                     <CafeInfoItem>
                         <Label>주소*</Label>
                         <Input
-                            value={cafeInfo.address}
+                            value={copiedClickedInfo.address_name}
                             placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
-                            disabled={cafeInfo.name === ""}
+                            // disabled={true}
+                            onChange={onChange}
+                            name="address"
                         />
                     </CafeInfoItem>
                     <CafeInfoItem>
@@ -241,7 +242,7 @@ const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeIn
                     <CafeInfoItem>
                         <Label>연락처</Label>
                         <Input
-                            value={cafeInfo.contact}
+                            value={copiedClickedInfo.phone}
                             name="contact"
                             onChange={onChange}
                             placeholder="카페 연락처를 입력해 주세요."
@@ -253,7 +254,7 @@ const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeIn
                             // type=url 설정함으로 인해서 값 입력시 url 형태인지 자동으로 유효성검사
                             // 값 입력되어있지 않을 시 유효성검사 안함
                             type="url"
-                            value={cafeInfo.insta}
+                            value={copiedClickedInfo.insta}
                             name="insta"
                             onChange={onChange}
                             placeholder="카페 인스타그램 URL을 입력해 주세요."
@@ -262,9 +263,9 @@ const PostCafeInfo = ({keyword, setKeyword, closePostCafeInfo, clickMarkerCafeIn
                 </CafeInfoWrapper>
                 {/*cafeInfo의 name, address, tag 값이 하나라도 "" 일때 버튼 비활성화*/}
                 <AddCafeBtn type="submit"
-                            disabled={cafeInfo.name === ""
-                                || cafeInfo.address === ""
-                                || cafeInfo.tag.length < 1}
+                            disabled={copiedClickedInfo.place_name === ""
+                                || copiedClickedInfo.address_name === ""
+                                || copiedClickedInfo.tag?.length < 1}
                 >카페 등록</AddCafeBtn>
             </Form>
         </Base>
