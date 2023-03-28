@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import Modal from "../../common/Modal";
+import Modal from "../../Modal";
 import axios from "axios";
 
 const KakaoLogin:React.FC = () => {
