@@ -20,8 +20,8 @@ public class KakaoAPI {
     public JSONObject getToken (String authorizeCode) {
         StringBuffer sb = new StringBuffer();
         sb.append("grant_type=authorization_code");
-        sb.append("&client_id"+KAKAO_LOGIN_REST_API_KEY);
-        sb.append("&redirect_uri"+KAKAO_LOGIN_REDIRECT_URI);
+        sb.append("&client_id="+KAKAO_LOGIN_REST_API_KEY);
+        sb.append("&redirect_uri="+KAKAO_LOGIN_REDIRECT_URI);
         sb.append("&code="+authorizeCode);
 
         return getTokenJson(sb);
@@ -45,11 +45,11 @@ public class KakaoAPI {
             bw.flush();
 
             StringBuffer response = getResponse(con);
+
             tokenJson = new JSONObject(response.toString());
         } catch (Exception e) {
            e.printStackTrace();
         }
-
         return tokenJson;
     }
 
@@ -84,12 +84,13 @@ public class KakaoAPI {
             con.setUseCaches(false);
             con.setRequestMethod(method);
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-            con.setRequestProperty("Authorization", "Bearer"+accessToken);
+            con.setRequestProperty("Authorization", "Bearer " + accessToken);
 
             StringBuffer response = getResponse(con);
             JSONObject userJson = new JSONObject(response.toString());
             JSONObject profileJson = (JSONObject) userJson.get("properties");
 
+            System.out.println(userJson.toString());
             // TODO(BE, KAKAO_LOGIN) : 로그인 후 사용자 정보 담기
             // 관련해 VO 생성이 우선되어야 하기에 우선 현재까지 작업을 먼저 올린 후
             // 모델링에 맟추어 VO를 작성할 예정
@@ -97,6 +98,11 @@ public class KakaoAPI {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return userInfo;
     }
+    // TODO(BE, KAKAO_LOGIN) kakao logout, Token Refresh 의 경우 추후 스트럼에서 추가할것.
+    // - 우선 우리 DB, 우리 서버에서 로그아웃 하는 기능을 구현한 후 추후에 disconnKakao, getTokenRefresh 구현
+
 
 }
