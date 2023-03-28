@@ -1,11 +1,8 @@
 import React, {
     useState,
     useEffect,
-    useMemo
 } from "react";
 import PostCafeInfo from "./PostCafeInfo";
-import {Simulate} from "react-dom/test-utils";
-import click = Simulate.click;
 
 declare global {
     interface Window {
@@ -14,18 +11,18 @@ declare global {
 }
 
 type markerInfo = {
-        address_name: string,
-        category_group_code: string,
-        category_group_name: string,
-        distance: string,
-        id: string,
-        phone?: string,
-        place_name: string,
-        place_url?: string,
-        road_address_name?: string,
-        x: number,
-        y: number
-    };
+    address_name: string,
+    category_group_code: string,
+    category_group_name: string,
+    distance: string,
+    id: string,
+    phone?: string,
+    place_name: string,
+    place_url?: string,
+    road_address_name?: string,
+    x: number,
+    y: number
+};
 const KakaoMap = () => {
     //카페추가 버튼으로 해당 컴포넌트 보이게 하는 state
     const [visible, setVisible] = useState<boolean>(false);
@@ -50,7 +47,7 @@ const KakaoMap = () => {
         //지도 만들기 옵션
         const options = {
             center: new window.kakao.maps.LatLng(37.56667, 126.97806),
-            level: 6,
+            level: 4,
         };
         //지도 만드는 객체
         var map = new window.kakao.maps.Map(container as HTMLElement, options);
@@ -91,6 +88,7 @@ const KakaoMap = () => {
             // });
         }
     }
+
     //장소 검색 객체 생성
 
 
@@ -171,14 +169,13 @@ const KakaoMap = () => {
 
                         itemEl.onclick = function () {
                             setClickMarkerCafeInfo(data);
-                            // resultEl.style.display = 'none';
                             setKeyword("")
                         }
 
-                        // window.kakao.maps.event.addListener(marker, 'click', function () {
-                        //     setClickMarkerCafeInfo(data);
-                        // }); 위 이벤트와 중복이라 주석처리합니다
-                    })(marker, places[i].place_name)
+                        window.kakao.maps.event.addListener(marker, 'click', function () {
+                            setClickMarkerCafeInfo(data);
+                        });
+                    })(marker, places[i])
                     fragment.appendChild(itemEl);
                 }
             }
@@ -283,7 +280,7 @@ const KakaoMap = () => {
 
 
     function removeMarker() {
-        for ( var i = 0; i < markers.length; i++ ) {
+        for (var i = 0; i < markers.length; i++) {
             markers[i].setMap(null);
         }
 
