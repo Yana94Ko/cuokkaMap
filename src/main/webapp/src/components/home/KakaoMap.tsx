@@ -2,7 +2,12 @@ import React, {
     useState,
     useEffect,
 } from "react";
+
 import PostCafeInfo from "./PostCafeInfo";
+import MapNavigationBar from "./header/MapNavigationBar";
+import {Button, Icon} from "../../styles/common";
+import CafeInfo from "./CafeInfo";
+
 
 declare global {
     interface Window {
@@ -33,14 +38,31 @@ const KakaoMap = () => {
 
     const [mapstate, setMapstate] = useState<any>();
 
+    //카페 추가 시 추가되는 정보로 만들 마커 배열 state
     // const [markers, setMarkers] = useState<any[]>([]);
     var markers: any[] = [];
-    var placeSearch = new window.kakao.maps.services.Places();
 
     // console.log(markers)
 
-    // // 마커를 담을 배열
-    // var markers: any[] = [];
+    //MapNav에서 검색된 데이터를 담을 마커 배열 state
+    const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
+
+    //CafeInfo 컴포넌트를 띄우기 위한 state MapNavigationBar에서 search된 카페를 띄워줌
+    const [confirmCafeInfo, setConfirmCafeInfo] = useState<boolean>(false);
+
+    //DB검색된 카페 클릭시 해당 정보와 함게 CafeInfo 컴포넌트 띄워주기 위한 state
+    const [cafeInfoCheck, setCafeInfoCheck] = useState<boolean>(false);
+    //DB검색된 카페 클릭시 해당 마커의 정보만 담을 state
+    const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
+
+    useEffect(() => {
+        if (searchedPlaceInfoInNav.length > 0) {
+            displayDBPlaces(searchedPlaceInfoInNav);
+            // setCafeInfoContainer(searchedPlaceInfoInNav[cafeInfoIndex]);
+        }
+    }, [searchedPlaceInfoInNav]);
+
+
     useEffect(() => {
         //지도를 담을 div선택
         const container = document.getElementById("map");
@@ -53,20 +75,8 @@ const KakaoMap = () => {
         var map = new window.kakao.maps.Map(container as HTMLElement, options);
 
         setMapstate(map);
-        //현재위치로 지도 이동
-        //어쩌다보니 현재위치로 이동하면 해당 키워드도 같이 검색되버림
-        //키워드로 장소 검색
-        // searchPlaces();
     }, []);
 
-    // useEffect(() => {
-    //     if (mapstate !== undefined) {
-    //         // 지도 중심 좌표 변화 이벤트를 등록한다
-    //         window.kakao.maps.event.addListener(mapstate, 'center_changed', function () {
-    //             mapstate.setCenter(mapstate.getCenter());
-    //         });
-    //     }
-    // })
     //키워드 검색을 요청하는 함수
     function searchPlaces() {
         console.log(markers)
@@ -87,10 +97,11 @@ const KakaoMap = () => {
             //     mapstate.setCenter(mapstate.getCenter());
             // });
         }
+        removeMarker();
     }
 
     //장소 검색 객체 생성
-
+    var placeSearch = new window.kakao.maps.services.Places();
 
     //검색 결과 목록이나 마커를 클릭했을 때 장소명을 표시할 인포 윈도우 생성
     var infowindow = new window.kakao.maps.InfoWindow({zIndex: 1});
@@ -115,12 +126,8 @@ const KakaoMap = () => {
     }
 
 
-    //검색 결과 목록과 마커를 표출하는 함수
+    //카페추가 창 검색 결과 목록과 마커를 표출하는 함수
     function displayPlaces(places: any[]) {
-
-        // console.log('mapstate: ', mapstate)
-        // console.log('places: ', places)
-
         if (mapstate !== undefined) {
             const listEl = document.getElementById('placesList'),
                 resultEl = document.getElementById('search-result'),
@@ -142,6 +149,7 @@ const KakaoMap = () => {
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
                     marker = addMarker(placePosition, i, undefined),
                     itemEl: HTMLElement | undefined = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성
+
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
                 bounds.extend(placePosition);
@@ -189,6 +197,44 @@ const KakaoMap = () => {
         }
     }
 
+    //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
+    function displayDBPlaces(places: any[]) {
+        if (mapstate !== undefined) {
+            const listEl = document.getElementById('placesList'),
+                bounds = new window.kakao.maps.LatLngBounds();
+
+            // 검색 결과 목록에 추가된 항목들을 제거
+            listEl && removeAllChildNods(listEl);
+
+            removeMarker();
+
+            //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
+            for (var i = 0; i < places.length; i++) {
+                // 마커를 생성하고 지도에 표시
+                let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
+                    marker = addMarker(placePosition, i, places[i].place_name);
+
+                // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+                // LatLngBounds 객체에 좌표를 추가
+                bounds.extend(placePosition);
+
+                // 마커와 검색결과 항목에 mouseover 했을때
+                // 해당 장소에 인포윈도우에 장소명을 표시
+                // mouseout 했을 때는 인포윈도우를 닫기
+                (function (marker: any, data: any) {
+                    window.kakao.maps.event.addListener(marker, 'click', function () {
+                        setCafeInfoContainer(data);
+                        setCafeInfoCheck(true);
+                        console.log(data);
+                    });
+                })(marker, places[i])
+            }
+
+            // 검색된 장소 위치를 기준으로 지도 범위를 재설정
+            mapstate.setBounds(bounds);
+        }
+    }
+
     //검색결과 항목을 Element로 반환하는 함수
     function getListItem(index: number, places: any) {
         if (mapstate !== undefined) {
@@ -211,7 +257,7 @@ const KakaoMap = () => {
     }
 
     //마커를 생성하고 지도 위에 마커를 표시하는 함수
-    function addMarker(position: any, idx: number, title: string) {
+    function addMarker(position: () => {}, idx: number, title?: undefined) {
         if (mapstate !== undefined) {
             var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지 사용
                 imageSize = new window.kakao.maps.Size(34, 37), //마커크기
@@ -223,11 +269,16 @@ const KakaoMap = () => {
                 markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
                 marker = new window.kakao.maps.Marker({
                     position: position,
-                    image: markerImage
+                    image: markerImage,
+                    title: title
                 });
-            // setMarkers(marker)
+
             marker.setMap(mapstate);
             markers.push(marker);
+
+            // if(searchedPlaceInfoInNav.length === 0){
+            //     setMarkers([...markers, marker])
+            // }
 
             return marker;
         }
@@ -280,24 +331,31 @@ const KakaoMap = () => {
 
 
     function removeMarker() {
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(null);
+        if (searchedPlaceInfoInNav) {
+            for (let i = 0; i < searchedPlaceInfoInNav.length; i++) {
+                // setSearchedPlaceInfoInNav(searchedPlaceInfoInNav[i].setMap(null));
+            }
+            setSearchedPlaceInfoInNav([]);
+        } else {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+            markers = [];
         }
-
-        markers = [];
     }
 
 //postCafeInfo 열기
     const postCafeInfoVisible = () => {
         setVisible(true)
+        setCafeInfoCheck(false);
+        removeMarker();
     }
 
 //PostCafeInfo 닫기
     const closePostCafeInfo = () => {
         setVisible(false);
-        //TODO(FE) : 마커가 간헐적으로 삭제 안되는 이슈
-        //어쩔때는 삭제가 되고 어쩔때는 안되는 말도안되는...이슈...
-        // assignees : hwanyb, SeongSilver
+        // TODO(FE) : 카페추가 창 닫을때 마커 사라지게 해야함
+        // assignees: hwanyb, SeongSilver
         removeMarker();
         // setClickMarkerCafeInfo();
         setKeyword("");
@@ -305,10 +363,13 @@ const KakaoMap = () => {
 
     return <>
         <div id="map" style={{width: "100vw", height: "100vh"}}/>
-        <button style={{position: "absolute", top: "2vh", right: "2vw", zIndex: "100"}}
+        <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo}
+                          displayDBPlaces={displayDBPlaces}/>
+        <Button style={{position: "absolute", top: "9vh", right: "2vw", zIndex: "100"}}
                 onClick={currentLocation}
-        >현재위치
-        </button>
+        >
+            <span className="material-symbols-rounded">my_location</span>
+        </Button>
         {visible ? (
             mapstate ? (
                 <PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
@@ -328,6 +389,7 @@ const KakaoMap = () => {
             </button>
         )
         }
+        {cafeInfoCheck && <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoCheck={setCafeInfoCheck}/>}
     </>;
 }
 

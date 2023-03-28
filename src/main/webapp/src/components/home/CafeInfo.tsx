@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from "styled-components"
+
 import {CloseBtn} from "./PostCafeInfo";
 import {Button, Icon, Tag} from "../../styles/common";
 
@@ -51,18 +52,28 @@ const InfoRequestBtn = styled(Button)`
   color: ${props => props.theme.color.darkGray};
 `;
 
+type CafeInfoProps = {
+    cafeInfoContainer: object;
+    setCafeInfoCheck: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const CafeInfo = ({cafeInfoContainer, setCafeInfoCheck}: CafeInfoProps) => {
+    // TODO(FE) : 카페정보 close 이벤트 추가해야 함
+    // assignees: hwanyb, SeongSilver
+    const [data, setData] = useState<any[]>([]);
 
-const CafeInfo = () => {
+    useEffect(() => {
+        setData(Object.values(cafeInfoContainer));
+    }, [cafeInfoContainer])
     return (
         <Base>
             <CloseBtn className="material-symbols-rounded">close</CloseBtn>
             <CafeInfoWrapper>
                 {/*클릭한 카페 이름*/}
-                <PlaceName>라운드브릭</PlaceName>
+                <PlaceName>{data && data[1]}</PlaceName>
                 <Item>
                     <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
                     {/*클릭한 카페 주소*/}
-                    <Info>서울 광진구 광장로 67 1층 라운드브릭</Info>
+                    <Info>{data && data[4]}</Info>
                 </Item>
                 <Item>
                     <LabelIcon className="material-symbols-rounded">phone_enabled</LabelIcon>
@@ -71,9 +82,13 @@ const CafeInfo = () => {
                 </Item>
                 <Label>옵션</Label>
                 {/*클릭한 카페의 옵션*/}
-                <Tag clickable={false}>락토프리우유</Tag>
-                <Tag clickable={false}>두유</Tag>
-                <Tag clickable={false}>오트밀크</Tag>
+                {/*{*/}
+                {/*    data && data[5].map((item: string, index: number) => (*/}
+
+                {/*        <Tag key={index} clickable={false}>{item}</Tag>*/}
+                {/*    ))*/}
+                {/*}*/}
+
                 <InfoRequestBtn>정보수정요청</InfoRequestBtn>
             </CafeInfoWrapper>
         </Base>

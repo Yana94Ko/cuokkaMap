@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Modal from "../../Modal";
 import axios from "axios";
 
-const KakaoLogin:React.FC = () => {
+const KakaoLogin: React.FC = () => {
     const Base = styled.div``;
 
     const loginClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -19,7 +19,8 @@ const KakaoLogin:React.FC = () => {
                 <p>로그인 페이지</p>
                 <img src={process.env.PUBLIC_URL + '/assets/img/logo/symbol.png'} alt="로고"/>
                 <button onClick={loginClickHandler}>
-                    <img src={process.env.PUBLIC_URL + '/assets/img/kakaologin/kakao_login_medium_wide.png'} alt="카카오로그인"/>
+                    <img src={process.env.PUBLIC_URL + '/assets/img/kakaologin/kakao_login_medium_wide.png'}
+                         alt="카카오로그인"/>
                 </button>
             </Base>
         </Modal>
