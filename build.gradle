@@ -21,57 +21,60 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
+    implementation 'org.jetbrains:annotations:20.1.0'
+    compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	annotationProcessor 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// TODO(BE) : p6spy의 경우 운영서버에서는 성능저하를 일으킬 수 있으니, 추후 제거할 것.
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 }
-
-def reactAppDir = "$projectDir/src/main/webapp"
-
-sourceSets {
-	main {
-		resources {
-			srcDirs = ["$projectDir/src/main/resources"]
-		}
-	}
-}
-
-processResources {
-	dependsOn "copyReactFile"
-}
-
-task installReact(type: Exec) {
-	workingDir "$reactAppDir"
-	inputs.dir "$reactAppDir"
-	group = BasePlugin.BUILD_GROUP
-	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
-		commandLine "npm.cmd", "audit", "fix"
-		commandLine 'npm.cmd', 'install'
-	} else {
-		commandLine "npm", "audit", "fix"
-		commandLine 'npm', 'install'
-	}
-}
-
-task "buildReact"(type: Exec) {
-	dependsOn "installReact"
-	workingDir "$reactAppDir"
-	inputs.dir "$reactAppDir"
-	group = BasePlugin.BUILD_GROUP
-	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-		commandLine "npm.cmd", "run-script", "build"
-	} else {
-		commandLine "npm", "run-script", "build"
-	}
-}
-
-task copyReactFile(type: Copy) {
-	dependsOn "buildReact"
-	from "$reactAppDir/build"
-	into "$buildDir/resources/main/static"
-}
-//tasks.named('test') {
-//	useJUnitPlatform()
+//
+//def reactAppDir = "$projectDir/src/main/webapp"
+//
+//sourceSets {
+//	main {
+//		resources {
+//			srcDirs = ["$projectDir/src/main/resources"]
+//		}
+//	}
 //}
+//
+//processResources {
+//	dependsOn "copyReactFile"
+//}
+//
+//task installReact(type: Exec) {
+//	workingDir "$reactAppDir"
+//	inputs.dir "$reactAppDir"
+//	group = BasePlugin.BUILD_GROUP
+//	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
+//		commandLine "npm.cmd", "audit", "fix"
+//		commandLine 'npm.cmd', 'install'
+//	} else {
+//		commandLine "npm", "audit", "fix"
+//		commandLine 'npm', 'install'
+//	}
+//}
+//
+//task "buildReact"(type: Exec) {
+//	dependsOn "installReact"
+//	workingDir "$reactAppDir"
+//	inputs.dir "$reactAppDir"
+//	group = BasePlugin.BUILD_GROUP
+//	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+//		commandLine "npm.cmd", "run-script", "build"
+//	} else {
+//		commandLine "npm", "run-script", "build"
+//	}
+//}
+//
+//task copyReactFile(type: Copy) {
+//	dependsOn "buildReact"
+//	from "$reactAppDir/build"
+//	into "$buildDir/resources/main/static"
+//}
+tasks.named('test') {
+	useJUnitPlatform()
+}
