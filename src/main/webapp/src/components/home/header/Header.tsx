@@ -8,10 +8,14 @@ import CafeInfo from "../CafeInfo";
 
 
 const Header: React.FC = () => {
+    //cafeDummy.json 받아올 state
     const [dummyData, setDummyData] = useState<any[]>();
+
     const [filteredCafeInfo, setFilteredCafeInfo] = useState<object>();
+
     const [confirmCafeInfo, setConfirmCafeInfo] = useState<boolean>(false);
 
+    //로딩되면 DummyData 세팅
     useEffect(() => {
         setDummyData(data);
     }, [])
@@ -47,10 +51,11 @@ const Header: React.FC = () => {
             <form onSubmit={searchPlaceSubmitHandler}>
                 {/*<label htmlFor="search">장소|주소 검색</label>*/}
                 <input type="text" id="search" ref={search}/>&ensp;
-                <button>검색</button>
+                <input type="button" value="검색"/>
             </form>
             <FilterContainer/>
             <Link to="/login">로그인</Link>
+            <Link to="/mypage">마이페이지</Link>
         </Base>
     );
 }
