@@ -1,0 +1,70 @@
+import styled, {css} from "styled-components";
+
+export const Icon = styled.span`
+  font-variation-settings: 'FILL' 1,
+  'wght' 700,
+  'GRAD' 0,
+  'opsz' 48;
+  font-size: ${props => props.theme.fontSize.lg};
+  cursor: pointer;
+`;
+export const Button = styled.button`
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: ${props => props.theme.color.primary};
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: ${props => props.theme.color.white};
+  font-size: ${props => props.theme.fontSize.base};
+`;
+
+export const Tag = styled.button<{ clickable: boolean }>`
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1px solid ${props => props.theme.color.gray};
+  background-color: ${props => props.theme.color.white};
+  font-size: ${props => props.theme.fontSize.base};
+  border-radius: 1rem;
+  padding: 0.2rem 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  ${props => props.clickable && css`
+    cursor: pointer;
+
+    &:hover {
+      border: 1px solid ${props.id === "defaf" ?
+    props.theme.color.defaf : props.id === "soy" ?
+        props.theme.color.soy : props.id === "zero" ?
+            props.theme.color.zero : props.id === "oat" ?
+                props.theme.color.oat : props.theme.color.lacto};
+    }
+  `}
+`;
+export const Input = styled.input`
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 300;
+  border-radius: 1rem;
+  font-size: ${props => props.theme.fontSize.base};
+  padding: 0.5rem 3rem;
+  ${props => props.disabled ? css`
+    background-color: ${props => props.theme.color.lightGray};
+    border: 1px solid ${props => props.theme.color.gray};
+
+    &::placeholder {
+      color: ${props => props.theme.color.darkGray};
+    }
+  ` : css`
+    border: 1px solid ${props => props.theme.color.gray};
+    color: ${props => props.theme.color.text};
+
+    &::placeholder {
+      color: ${props => props.theme.color.text};
+    }
+
+    &:focus {
+      border: 1px solid ${props => props.theme.color.primary};
+      outline: none;
+    }
+  `}
+`;
