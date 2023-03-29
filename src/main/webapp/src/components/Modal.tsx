@@ -10,13 +10,14 @@ const Base = styled.div`
   position: fixed;
   width: 100vw;
   height: 100vh;
-  z-index: 999;
+  z-index: 9999;
   left: 0;
   top: 0;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
 `;
 
 type Props = {
