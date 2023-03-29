@@ -1,14 +1,14 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {Link} from "react-router-dom";
-import FilterContainer from "./FilterContainer";
+import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
-import axios from "axios";
+
+import FilterContainer from "./FilterContainer";
 import data from "../../../cafeDummy.json";
-import CafeInfo from "../CafeInfo";
 import {Button, Tag, Icon, Input} from "../../../styles/common";
 import MyPageList from "../MyPageList";
-import Modal from "../../Modal";
-import KakaoLogin from "./KakaoLogin";
+import {RootState} from "../../../modules";
+import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 
 interface PropsToKaKaoMap {
     setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
@@ -25,6 +25,7 @@ const Base = styled.div`
   z-index: 1000;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 3rem;
 `;
 const InputWrapper = styled.div`
@@ -36,7 +37,9 @@ const InputWrapper = styled.div`
   padding: 0.5rem 1rem;
 `;
 
-const Logo = styled.img``;
+const Logo = styled.img`
+  height: 40px;
+`;
 const SearchInput = styled(Input)`
   width: 30vw;
   background-color: transparent;
@@ -54,15 +57,27 @@ const NavLoginOrMyPage = styled.div`
   text-align: right;
 `;
 const NavBtn = styled(Button)`
-    // background-color: ${props => props.theme.color.white};
+  background-color: ${props => props.theme.color.white};
+  padding: 0.5rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+
   a {
     color: white;
     text-decoration: none !important;
   }
 `;
+
+const NavIcon = styled(Icon)`
+  color: ${props => props.theme.color.primary};
+`;
+
+
 const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, removeMarker}: PropsToKaKaoMap) => {
+    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
+    const dispatch = useDispatch();
+
     //로그인 여부
-    const [isLogin, setIsLogin] = useState<boolean>(false);
+    // const [isLogin, setIsLogin] = useState<boolean>(false);
     //cafeDummy.json 받아올 state
     const [dummyData, setDummyData] = useState<any[]>();
     //search input 핸들링하는 state
@@ -70,7 +85,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
     //마이페이지 마우스 호버 여부
     const [isMypage, setIsMypage] = useState<boolean>(false);
 
-    const [showLogin, setShowLogin] = useState<boolean>(false);
+    // const [showLogin, setShowLogin] = useState<boolean>(false);
 
     //로딩되면 DummyData 세팅
     useEffect(() => {
@@ -126,45 +141,32 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
         setIsMypage(false);
     }
 
-    const onLoginClick = () => {
-        setShowLogin(true)
-    }
     return (
         <Base>
-            {/*<label htmlFor="search">장소|주소 검색</label>*/}
-
             <InputWrapper>
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
                 <SearchInput autoComplete="off" type="text" id="search" value={searchValue}
                              onChange={searchInputChangeHandler}/>
-                <Icon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</Icon>
-
+                <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
             <FilterContainer/>
             <NavLoginOrMyPage>
                 {
-                    isLogin ? (
+                    isLoggedin ? (
                         <div onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
                             <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
                                 <Link to="/mypage">
-                                    <span className="material-symbols-rounded">person</span>
+                                    <NavIcon className="material-symbols-rounded">person</NavIcon>
                                 </Link>
                             </NavBtn>
                             {isMypage && <MyPageList/>}
                         </div>
                     ) : (
-                        <NavBtn onClick={onLoginClick}>
-                            <span className="material-symbols-rounded">login</span>
+                        <NavBtn onClick={() => dispatch(setIsOpenedLoginModal(true))}>
+                            <NavIcon className="material-symbols-rounded">login</NavIcon>
                         </NavBtn>)
                 }
             </NavLoginOrMyPage>
-            {
-                showLogin && (
-                    <Modal>
-                        <KakaoLogin/>
-                    </Modal>
-                )
-            }
         </Base>
     );
 }

@@ -4,8 +4,9 @@ import axios from "axios";
 import {Link} from 'react-router-dom';
 
 const Base = styled.div`
+  position: absolute;
     background-color:white;
-  padding-left:10vw;
+  //padding-left:10vw;
 `;
 
 const MyPageList:React.FC = () => {
@@ -18,7 +19,11 @@ const MyPageList:React.FC = () => {
                 <li>내 사진</li>
                 <li>내 후기</li>
                 <li>의견 보내기</li>
-                <li>로그아웃</li>
+                <li onClick={() => {
+                    sessionStorage.removeItem("id");
+                    window.location.reload();
+                }
+                }>로그아웃</li>
             </ul>
         </Base>
     )
