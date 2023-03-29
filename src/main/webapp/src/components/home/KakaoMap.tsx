@@ -11,8 +11,34 @@ import cafeDummy from "../../cafeDummy.json";
 import {useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import axios from "axios";
+import styled from "styled-components";
 
+const CurrentLocationBtn = styled(Button)`
+  position: absolute;
+  top: 20rem;
+  right: 3rem;
+  z-index: 999;
+  background-color: ${props => props.theme.color.white};
+  padding: 0.5rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  
+& span {
+  color: ${props => props.theme.color.primary};
+`;
 
+const AddCafeButton = styled(Button)`
+  z-index: 999;
+  position: absolute;
+bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  border-radius: 2rem;
+  padding: 1rem 2rem;
+  & span {
+    margin-right: 10px;
+  }
+`;
 declare global {
     interface Window {
         kakao: any;
@@ -431,11 +457,11 @@ const KakaoMap = () => {
         <div id="map" style={{width: "100vw", height: "100vh"}}/>
         <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo}
                           removeMarker={removeMarker}/>
-        <Button style={{position: "absolute", top: "9vh", right: "2vw", zIndex: "100"}}
+        <CurrentLocationBtn
                 onClick={currentLocation}
         >
-            <span className="material-symbols-rounded">my_location</span>
-        </Button>
+            <Icon className="material-symbols-rounded">my_location</Icon>
+        </CurrentLocationBtn>
         {visible ? (
             mapstate ? (
                 <PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
@@ -443,16 +469,11 @@ const KakaoMap = () => {
                               searchPlaces={searchPlaces}/>
             ) : null
         ) : (
-            <button
-                style={{
-                    width: "100px",
-                    zIndex: "100",
-                    position: "absolute",
-                    bottom: "10vh",
-                    right: "calc(50vw - 50px)"
-                }}
-                onClick={postCafeInfoVisible}>카페추가
-            </button>
+            <AddCafeButton
+                onClick={postCafeInfoVisible}>
+                <Icon className="material-symbols-rounded">add</Icon>
+                카페추가
+            </AddCafeButton>
         )
         }
         {cafeInfoCheck && <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoCheck={setCafeInfoCheck}/>}

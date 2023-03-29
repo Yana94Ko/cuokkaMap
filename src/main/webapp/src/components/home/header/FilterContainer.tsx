@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import axios from "axios";
 import {Tag} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
@@ -7,11 +7,30 @@ import {setCurrentFilter} from "../../../modules/filterReducer";
 import {RootState} from "../../../modules";
 
 
+const Base = styled.div`
+  position: absolute;
+  top: 4rem;
+  left: 60vw;
+  transform: translateX(-50%);
 
-const Base = styled.div``;
-const FilterBtn = styled.input`
+`;
+const FilterTag = styled(Tag)`
+  ${props => props.active && css`
+    &::before {
+      width: 10px;
+      height: 10px;
+      content: "";
+      display: inline-block;
+      background-color: ${props.id === "decaf" ?
+              props.theme.color.defaf : props.id === "soy" ?
+                      props.theme.color.soy : props.id === "zero" ?
+                              props.theme.color.zero : props.id === "oat" ?
+                                      props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
+      border-radius: 50%;
       margin-right: 10px;
-    `;
+    }
+  `}
+`;
 
 type filterContentType = {
     name: string,
@@ -22,10 +41,7 @@ const FilterContainer = () => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
-    //필터된 카페 정보
-    // const [filteredCafeInfo, setFilteredCafeInfo] = useState<object[]>();
 
-    //필터될 5가지 정보
     const filterContent: filterContentType = [
         {
             name: "디카페인",
@@ -57,7 +73,6 @@ const FilterContainer = () => {
     // },[])
 
 
-
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         // console.log(event.currentTarget.value, event.currentTarget.id);
@@ -79,15 +94,13 @@ const FilterContainer = () => {
         dispatch(setCurrentFilter(event.currentTarget.id))
     }
 
-    useEffect(() => {
-        console.log(currentFilter)
-
-    })
     return (
         <Base>
             {
                 filterContent.map((filter: { name: string, id: string }, i: number) => (
-                    <FilterBtn type="button" onClick={filterClickHandler} key={i} id={filter.id} value={filter.name}/>))
+                    <FilterTag clickable={true} active={currentFilter === filter.id} onClick={filterClickHandler}
+                               key={i}
+                               id={filter.id}>{filter.name}</FilterTag>))
             }
         </Base>
     )

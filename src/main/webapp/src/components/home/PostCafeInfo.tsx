@@ -232,11 +232,11 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
                     <CafeInfoItem>
                         <Label>옵션*</Label>
                         <TagWrapper onClick={onTagClick}>
-                            <Tag clickable={true} id="decaf">디카페인</Tag>
-                            <Tag clickable={true} id="lactos">락토프리 우유</Tag>
-                            <Tag clickable={true} id="soy">두유</Tag>
-                            <Tag clickable={true} id="oat">오트밀크</Tag>
-                            <Tag clickable={true} id="zero">제로슈가</Tag>
+                            <Tag clickable={true} active={tag.includes("decaf")} id="decaf">디카페인</Tag>
+                            <Tag clickable={true} active={tag.includes("lactos")} id="lactos">락토프리 우유</Tag>
+                            <Tag clickable={true} active={tag.includes("soy")} id="soy">두유</Tag>
+                            <Tag clickable={true} active={tag.includes("oat")} id="oat">오트밀크</Tag>
+                            <Tag clickable={true} active={tag.includes("zero")} id="zero">제로슈가</Tag>
                         </TagWrapper>
                     </CafeInfoItem>
                     <CafeInfoItem>
