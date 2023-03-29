@@ -1,10 +1,23 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MyPageList from "./components/home/MyPageList";
 import KakaoOauth2RedirectHandler from "./components/home/header/KakaoOauth2RedirectHandler";
+import {useDispatch} from "react-redux";
+import {setIsLoggedin, setUserId} from "./modules/userReducer";
 
 function App() {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+     if(sessionStorage.getItem("id") !== null){
+         dispatch(setIsLoggedin(true));
+         dispatch(setUserId(sessionStorage.getItem("id")));
+     }else {
+         dispatch(setIsLoggedin(false));
+         dispatch(setUserId(""));
+     }
+    });
     return (
         <BrowserRouter>
             <Routes>
