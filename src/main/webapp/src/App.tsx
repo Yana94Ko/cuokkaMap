@@ -1,39 +1,23 @@
 import React from 'react';
-import {useEffect, useState} from "react";
-import KakaoMap from "./KakaoMap";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import KakaoLogin from "./components/home/header/KakaoLogin";
+import MyPageList from "./components/home/MyPageList";
+import KakaoOauth2RedirectHandler from "./components/home/header/KakaoOauth2RedirectHandler";
 
 function App() {
-    const [welcomeMessage, setWelcomeMessage] = useState("/img/loading_img.gif");
-    // TODO: TODO git 액션 추가 (프론트앤드 JAVASCRIPT-Typescript 언어 환경).
-    //
-    // 이번 시도는 프론트앤드 파트에서 TODO의 이슈생성 테스트입니다.
-    //
-    // - `항목화`
-    // - `항목화`
-
-    useEffect(() => {
-        fetch("/api/hello")
-            .then(response => response.text())
-            .then(function (message) {
-                setWelcomeMessage(message);
-            });
-    }, []);
-
     return (
-        <div className="App">
-        {/*//     <style>*/}
-        {/*//         @import url('https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap');*/}
-        {/*//     </style>*/}
-        {/*//     <header className="App-header">*/}
-        {/*//         <div style={{height :"50vh",width :"50vw",margin:"25vh 25vw", alignContent:"center", fontFamily:"Hi Melody", fontSize : "2vw"}}>*/}
-        {/*//             <div style={{margin:"auto", textAlign:"center"}}> 이 텍스트는 프론트 서버 구현을 통해 보여지는 텍스트 입니다! </div>*/}
-        {/*//             <div style={{margin:"auto", textAlign:"center"}}> 백엔드가 연결되고 나면 아래에 귀여운 커카가 나타날거에요!</div><br/>*/}
-        {/*//             <img style={{height : "40vh", width:"50vw", margin:"auto", objectFit:"none"}} src={welcomeMessage}/>*/}
-        {/*//         </div>*/}
-        {/*//     </header>*/}
-            <KakaoMap/>
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<HomePage/>}/>
+                {/*↓확인차 만든 라우팅 지워질 친구(모달로 만들것)*/}
+                <Route path="/login" element={<KakaoLogin/>}/>
+                {/*↓얘도 진짜는 아님 잠시 보이기 위한 용도*/}
+                <Route path="/mypage" element={<MyPageList/>}/>
+                {/*↓얘도 진짜는 아님 잠시 보이기 위한 용도*/}
+                <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
-
 export default App;
