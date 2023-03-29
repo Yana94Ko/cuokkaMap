@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
+import {Icon} from "../../styles/common";
 
-import Icon from "../common/Icon";
 
 const Base = styled.div`
   background-color: #fff;

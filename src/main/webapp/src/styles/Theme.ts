@@ -21,6 +21,7 @@ const color = {
     gray: "#EEEEEE",
     darkGray: "#BABABA",
     text: "#000",
+    white: "#fff",
     defaf: "#FFB800",
     lacto: "#26BEFF",
     oat: "#8238E0",

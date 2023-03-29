@@ -13,6 +13,7 @@ declare module "styled-components" {
             oat: string,
             zero: string,
             soy: string
+            white: string,
         };
         windowSize: {
             mobile: string;
