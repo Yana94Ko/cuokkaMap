@@ -64,9 +64,13 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoCheck}: CafeInfoProps) => {
     useEffect(() => {
         setData(Object.values(cafeInfoContainer));
     }, [cafeInfoContainer])
+
+    const closeCafeInfo = () => {
+        setCafeInfoCheck(false);
+    }
     return (
         <Base>
-            <CloseBtn className="material-symbols-rounded">close</CloseBtn>
+            <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             <CafeInfoWrapper>
                 {/*클릭한 카페 이름*/}
                 <PlaceName>{data && data[1]}</PlaceName>

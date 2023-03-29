@@ -46,6 +46,7 @@ const KakaoMap = () => {
     //카페 추가 시 추가되는 정보로 만들 마커 배열 state
     // const [markers, setMarkers] = useState<any[]>([]);
     var markers: any[] = [];
+    var dbMarkers: any[] = [];
 
     // console.log(markers)
 
@@ -61,24 +62,37 @@ const KakaoMap = () => {
     const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
 
     useEffect(() => {
+        if (searchedPlaceInfoInNav.length > 0) {
+            displayDBPlaces(searchedPlaceInfoInNav);
+        }
+    }, [searchedPlaceInfoInNav])
+
+    useEffect(() => {
         //지도를 담을 div선택
         const container = document.getElementById("map");
         //지도 만들기 옵션
-        const options = {
-            center: new window.kakao.maps.LatLng(37.56667, 126.97806),
-            level: 4,
-        };
+
+        let options = {}
+        if (mapstate === undefined) {
+            options = {
+                center: new window.kakao.maps.LatLng(37.56667, 126.97806),
+                level: 4,
+            };
+        } else {
+            options = {
+                center: new window.kakao.maps.LatLng(mapstate.getCenter().getLat(), mapstate.getCenter().getLng()),
+                level: 4,
+            };
+        }
         //지도 만드는 객체
         var map = new window.kakao.maps.Map(container as HTMLElement, options);
 
         setMapstate(map);
-
-    }, []);
+    }, [keyword]);
 
     var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
-
 
 
     useEffect(() => {
@@ -132,7 +146,6 @@ const KakaoMap = () => {
 
     //키워드 검색을 요청하는 함수
     function searchPlaces() {
-        console.log(markers)
         //2번불러와지고 카페목록은 나오지만 마커는 안나옴
         if (mapstate !== undefined) {
             //장소 검색 객체를 통해 키워드로 장소검색을 요청합니다.
@@ -191,10 +204,6 @@ const KakaoMap = () => {
 
             // 지도에 표시되고 있는 마커를 제거
             removeMarker();
-
-            // TODO(FE) : 키워드 변경 후 검색 시 마커가 제거되지 않는 이슈
-            // 1차 스크럼 이후 해결하기
-            // assignees : hwanyb
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
             for (let i = 0; i < places.length; i++) {
@@ -259,13 +268,15 @@ const KakaoMap = () => {
             // 검색 결과 목록에 추가된 항목들을 제거
             listEl && removeAllChildNods(listEl);
 
+            mapstate.setCenter(new window.kakao.maps.LatLng(places[0].y, places[0].x));
+
             removeMarker();
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
             for (var i = 0; i < places.length; i++) {
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
-                    marker = addMarker(placePosition, i, places[i].place_name);
+                    marker = addDBMarker(placePosition, places[i].place_name);
 
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
@@ -285,6 +296,7 @@ const KakaoMap = () => {
 
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapstate.setBounds(bounds);
+            mapstate.setLevel(mapstate.getLevel() + 1);
         }
     }
 
@@ -312,7 +324,7 @@ const KakaoMap = () => {
     //마커를 생성하고 지도 위에 마커를 표시하는 함수
     function addMarker(position: () => {}, idx: number, title?: undefined) {
         if (mapstate !== undefined) {
-            var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지 사용
+            var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
                 imageSize = new window.kakao.maps.Size(34, 37), //마커크기
                 imgOptions = {
                     spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
@@ -326,6 +338,33 @@ const KakaoMap = () => {
                     title: title
                 });
 
+            marker.setMap(mapstate);
+            markers.push(marker);
+
+            return marker;
+        }
+    }
+
+    function addDBMarker(position: () => {}, title?: undefined) {
+        if (mapstate !== undefined) {
+            //마커 이미지 URL
+            let imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+                //마커 크기
+                imageSize = new window.kakao.maps.Size(45, 47),
+                // 마커이미지의 옵션, 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정
+                imageOption = {offset: new window.kakao.maps.Point(27, 69)};
+
+            // 마커의 이미지정보를 가지고 있는 마커이미지를 생성
+            var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+
+            // 마커 생성
+            var marker = new window.kakao.maps.Marker({
+                position: position,
+                image: markerImage, // 마커이미지 설정
+                title: title
+            });
+
+            // 마커가 지도 위에 표시되도록 설정
             marker.setMap(mapstate);
             markers.push(marker);
 
@@ -365,55 +404,33 @@ const KakaoMap = () => {
         }
     }
 
-//지도 위에 표시되고 있는 마커 모두 제거
-//     function removeMarker() {
-//         console.log("삭제됨")
-//         // console.log(markers.marker)
-//
-//         for (let i = 0; i < markers.length; i++) {
-//             setMarkers(markers[i].setMap(null));
-//         }
-//         if(markers.length > 1){
-//             markers.shift()
-//         }
-//     } // markers state 일때
-
-
+    // 지도 위에 표시되고 있는 마커를 모두 제거합니다
     function removeMarker() {
-        if (searchedPlaceInfoInNav) {
-            for (let i = 0; i < searchedPlaceInfoInNav.length; i++) {
-                // setSearchedPlaceInfoInNav(searchedPlaceInfoInNav[i].setMap(null));
-            }
-            setSearchedPlaceInfoInNav([]);
-        } else {
-            for (var i = 0; i < markers.length; i++) {
-                markers[i].setMap(null);
-            }
-            markers = [];
+        //DB검색한 것이 있을때
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
         }
+        markers = [];
     }
 
-//postCafeInfo 열기
+    //postCafeInfo 열기
     const postCafeInfoVisible = () => {
         setVisible(true)
         setCafeInfoCheck(false);
         removeMarker();
     }
 
-//PostCafeInfo 닫기
+    //PostCafeInfo 닫기
     const closePostCafeInfo = () => {
         setVisible(false);
-        // TODO(FE) : 카페추가 창 닫을때 마커 사라지게 해야함
-        // assignees: hwanyb, SeongSilver
         removeMarker();
-        // setClickMarkerCafeInfo();
         setKeyword("");
     }
 
     return <>
         <div id="map" style={{width: "100vw", height: "100vh"}}/>
         <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo}
-                          displayDBPlaces={displayDBPlaces}/>
+                          removeMarker={removeMarker}/>
         <Button style={{position: "absolute", top: "9vh", right: "2vw", zIndex: "100"}}
                 onClick={currentLocation}
         >
