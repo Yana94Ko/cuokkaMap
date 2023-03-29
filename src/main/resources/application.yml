@@ -13,6 +13,7 @@ spring:
       enabled: true # 서버 자동 시작
 
 mybatis:
-  #mybatis 페키지 생략 설정
-  type-aliases-package: com.bside.cuokkaMap
-  mapper-locations: mapper/*Mapper.xml
+  config-location: classpath:mybatis-config.xml
+#  #mybatis 페키지 생략 설정
+#  type-aliases-package: com.bside.cuokkamap
+#  mapper-locations: classpath:mapper/*.xml

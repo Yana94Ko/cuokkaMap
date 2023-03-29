@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bside.cuokkamap.dao.UserDAO">
+    <insert id="signIn">
+        insert  into user(login_id, is_kakao, email)
+        values  (#{login_id}, #{is_kakao}, #{email})
+    </insert>
+
+    <select id="selectUserByLogin_id" resultType="com.bside.cuokkamap.vo.UserVO">
+        select  user_num, login_id, signup_date, email, role
+        from    user where login_id = #{param1}
+    </select>
+</mapper>

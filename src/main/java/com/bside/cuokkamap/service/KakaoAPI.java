@@ -85,15 +85,15 @@ public class KakaoAPI {
             con.setRequestMethod(method);
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             con.setRequestProperty("Authorization", "Bearer " + accessToken);
+            // TODO(BE, KAKAOLOGIN) : 필요없는 정보는 아예 서버에서 받아오지 않도록
 
             StringBuffer response = getResponse(con);
             JSONObject userJson = new JSONObject(response.toString());
-            JSONObject profileJson = (JSONObject) userJson.get("properties");
 
-            System.out.println(userJson.toString());
-            // TODO(BE, KAKAO_LOGIN) : 로그인 후 사용자 정보 담기
-            // 관련해 VO 생성이 우선되어야 하기에 우선 현재까지 작업을 먼저 올린 후
-            // 모델링에 맟추어 VO를 작성할 예정
+            // ㄱㅗ통....
+
+            userInfo.put("login_id", userJson.get("id").toString());
+            userInfo.put("email",((JSONObject) userJson.get("kakao_account")).getString("email"));
 
         } catch (Exception e) {
             e.printStackTrace();
