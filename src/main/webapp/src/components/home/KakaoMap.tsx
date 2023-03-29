@@ -7,6 +7,10 @@ import PostCafeInfo from "./PostCafeInfo";
 import MapNavigationBar from "./header/MapNavigationBar";
 import {Button, Icon} from "../../styles/common";
 import CafeInfo from "./CafeInfo";
+import cafeDummy from "../../cafeDummy.json";
+import {useSelector} from "react-redux";
+import {RootState} from "../../modules";
+import axios from "axios";
 
 
 declare global {
@@ -29,6 +33,7 @@ type markerInfo = {
     y: number
 };
 const KakaoMap = () => {
+    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     //카페추가 버튼으로 해당 컴포넌트 보이게 하는 state
     const [visible, setVisible] = useState<boolean>(false);
     //검색어 : PostCafeInfo 컴포넌트의 카페찾기 input에서 조작
@@ -56,14 +61,6 @@ const KakaoMap = () => {
     const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
 
     useEffect(() => {
-        if (searchedPlaceInfoInNav.length > 0) {
-            displayDBPlaces(searchedPlaceInfoInNav);
-            // setCafeInfoContainer(searchedPlaceInfoInNav[cafeInfoIndex]);
-        }
-    }, [searchedPlaceInfoInNav]);
-
-
-    useEffect(() => {
         //지도를 담을 div선택
         const container = document.getElementById("map");
         //지도 만들기 옵션
@@ -75,7 +72,63 @@ const KakaoMap = () => {
         var map = new window.kakao.maps.Map(container as HTMLElement, options);
 
         setMapstate(map);
+
     }, []);
+
+    var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
+    var filterImgSize = new window.kakao.maps.Size(38, 38);
+    var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
+
+
+
+    useEffect(() => {
+        markers = [...cafeDummy];
+        for (let i = 0; i < markers.length; i++) {
+
+            var filterMarker = new window.kakao.maps.Marker({
+                image: filterMarkerImg,
+                position: new window.kakao.maps.LatLng(markers[i].y, markers[i].x)
+            });
+        }
+        filterMarker.setMap(mapstate);
+        markers = filterMarker
+
+        console.log(markers)
+
+    }, []);
+
+
+    useEffect(() => {
+        markers = cafeDummy.filter(i => i.tag.includes(currentFilter));
+        console.log(markers)
+
+        for (let i = 0; i < markers.length; i++) {
+            let position = new window.kakao.maps.LatLng(markers[i].y, markers[i].x);
+            addFilterMarker(position)
+        }
+    }, [currentFilter])
+
+
+    // 현재 위치 DB에 저장된 데이터 전부 불러온 후 현재 지도에 마커띄우는 함수
+    function addFilterMarker(position: any) {
+        markers = [];
+        var filterMarker = new window.kakao.maps.Marker({
+            image: filterMarkerImg,
+            position: position
+        });
+        filterMarker.setMap(mapstate);
+        markers = filterMarker
+
+        return filterMarker
+    }
+
+    useEffect(() => {
+        if (searchedPlaceInfoInNav.length > 0) {
+            displayDBPlaces(searchedPlaceInfoInNav);
+            // setCafeInfoContainer(searchedPlaceInfoInNav[cafeInfoIndex]);
+        }
+    }, [searchedPlaceInfoInNav]);
+
 
     //키워드 검색을 요청하는 함수
     function searchPlaces() {
@@ -275,10 +328,6 @@ const KakaoMap = () => {
 
             marker.setMap(mapstate);
             markers.push(marker);
-
-            // if(searchedPlaceInfoInNav.length === 0){
-            //     setMarkers([...markers, marker])
-            // }
 
             return marker;
         }
