@@ -3,6 +3,7 @@ import styled from "styled-components";
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
 import axios from "axios";
+import {Session} from "inspector";
 
 const Base = styled.div`
   background-color: #fff;
@@ -143,50 +144,43 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
         searchPlaces();
         setNeedToSearch(false);
     }, [needToSearch])
+
     useEffect(() => {
         if (clickMarkerCafeInfo !== undefined) {
             setSearchedListCheck(false)
             setCopiedClickedInfo({
                 ...clickMarkerCafeInfo,
-                tag: tag,
             })
-
         }
         console.log(copiedClickedInfo)
 
-    }, [clickMarkerCafeInfo, tag]);
+    }, [clickMarkerCafeInfo]);
+
     const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
-        //
-        // if (result) {
-        //     axios.post('/place/placeInsert', copiedClickedInfo).then((res) => {
-        //         console.log(res);
-        //     }).catch((error) => {
-        //         console.log(error)
-        //     })
-        //     // 카페추가 api 로직 작성
-        //     // TODO(FE): 카페추가 api 로직 작성
-        //     // 카페정보등록 api 완성되면 로직 작성하기만 하면 됨
-        //     // assignees: hwanyb
-        //     alert("카페등록")
-        // }
+        const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
+        const dataToSave = {
+            user_num : sessionStorage.getItem("id"),
+            place_filter : tag,
+            place_info : copiedClickedInfo,
+        }
+        if (result) {
+            fetch("/api/place/placeInsert", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dataToSave),
+            })
+                .then(response => response.text())
+                .then(function (message) {
+                    console.log(message);
+                });
+            alert("카페등록 완료")
+        }
 
-        // axios.post('/place/placeInsert', copiedClickedInfo).then((res) => {
-        //     console.log(res);
-        // }).catch((error) => {
-        //     console.log(error)
-        // })
-        axios({
-            method: "post",
-            url: "/place/placeInsert",
-            responseType: "json",
-            data: copiedClickedInfo
-        }).then((res) => {
-            console.log(res);
-        }).catch((error) => {
-            console.log(error)
-        })
+
+
     }
     return (
         <Base>
