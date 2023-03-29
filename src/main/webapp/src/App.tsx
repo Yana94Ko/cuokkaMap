@@ -10,7 +10,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage/>}/>
                 <Route path="/mypage" element={<MyPageList/>}/>
-                {/*↓얘도 진짜는 아님 잠시 보이기 위한 용도*/}
+                {/*↓로그인 콜백 라우팅용*/}
                 <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
             </Routes>
         </BrowserRouter>
