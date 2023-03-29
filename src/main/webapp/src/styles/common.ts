@@ -12,7 +12,7 @@ export const Button = styled.button`
   font-family: 'Noto Sans KR', sans-serif;
   background-color: ${props => props.theme.color.primary};
   border: none;
-  padding: 0.5rem;
+  padding: 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
   color: ${props => props.theme.color.white};
@@ -24,9 +24,9 @@ export const Button = styled.button`
   `}
 `;
 
-export const Tag = styled.button<{ clickable: boolean }>`
+export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
   font-family: 'Noto Sans KR', sans-serif;
-  border: 1px solid ${props => props.theme.color.gray};
+  border: 1px solid ${props => props.theme.color.darkGray};
   background-color: ${props => props.theme.color.white};
   font-size: ${props => props.theme.fontSize.base};
   border-radius: 1rem;
@@ -43,6 +43,14 @@ export const Tag = styled.button<{ clickable: boolean }>`
                               props.theme.color.zero : props.id === "oat" ?
                                       props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
     }
+  `}
+  
+  ${props => props.active && css`
+    border: 1px solid ${props.id === "decaf" ?
+        props.theme.color.defaf : props.id === "soy" ?
+            props.theme.color.soy : props.id === "zero" ?
+                props.theme.color.zero : props.id === "oat" ?
+                    props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
   `}
 `;
 export const Input = styled.input`
