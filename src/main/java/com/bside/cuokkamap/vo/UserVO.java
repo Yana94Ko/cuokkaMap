@@ -12,7 +12,7 @@ public class UserVO {
     private int user_num;
     private String login_id;
     private String password;
-    private boolean login_type;
+    private int login_type;
     private int role;
     private LocalDateTime signup_date;
     private String email;
@@ -30,6 +30,5 @@ public class UserVO {
     //kakaoInfo
     private int age_range;
 
-    //일반 생성자
-    public UserVO(HashMap<String, String> userInfo) {}
+    public UserVO () {};
 }
