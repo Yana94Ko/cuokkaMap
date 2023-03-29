@@ -8,6 +8,10 @@ type filterContentType = {
     id: string
 }[]
 
+const Base = styled.div``;
+const FilterBtn = styled.input`
+      margin-right: 10px;
+    `;
 const FilterContainer = () => {
     //필터된 카페 정보
     const [filteredCafeInfo, setFilteredCafeInfo] = useState<object[]>();
@@ -44,10 +48,6 @@ const FilterContainer = () => {
     // },[])
 
 
-    const Base = styled.div``;
-    const FilterBtn = styled.input`
-      margin-right: 10px;
-    `;
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.preventDefault();
