@@ -7,47 +7,62 @@ import data from "../../../cafeDummy.json";
 import CafeInfo from "../CafeInfo";
 import {Button, Tag, Icon, Input} from "../../../styles/common";
 import MyPageList from "../MyPageList";
+import Modal from "../../Modal";
+import KakaoLogin from "./KakaoLogin";
 
 interface PropsToKaKaoMap {
     setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
     setConfirmCafeInfo: React.Dispatch<React.SetStateAction<boolean>>;
-    removeMarker:() => void;
+    removeMarker: () => void;
 
 }
+
 const Base = styled.div`
-      width: 96vw;
-      height: 5vh;
-      position: absolute;
-      top: 2vh;
-      left: 2vw;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-    `;
-const NavContentSearch = styled.div`
-      flex-grow: 1;
-      width: 70%;
-      display: flex;
-      margin-right: 3vw;
-    `;
-const NavContentFilter = styled.div`
-      flex-grow: 2;
-      width: 100%;
-    `;
+  width: 100%;
+  height: fit-content;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  padding: 3rem;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: ${props => props.theme.color.white};
+  box-shadow: 0 0 5px rgb(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+`;
+
+const Logo = styled.img``;
+const SearchInput = styled(Input)`
+  width: 30vw;
+  background-color: transparent;
+  border: none;
+  color: ${props => props.theme.color.primary};
+
+  &:focus {
+    border: none;
+
+  }
+`;
 const NavLoginOrMyPage = styled.div`
-      flex-grow: 1;
-      width: 100%;
-      text-align: right;
-    `;
+  flex-grow: 1;
+  width: 100%;
+  text-align: right;
+`;
 const NavBtn = styled(Button)`
-      a {
-        color: white;
-        text-decoration: none !important;
-      }
-    `;
-const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo , removeMarker}: PropsToKaKaoMap) => {
+    // background-color: ${props => props.theme.color.white};
+  a {
+    color: white;
+    text-decoration: none !important;
+  }
+`;
+const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, removeMarker}: PropsToKaKaoMap) => {
     //로그인 여부
-    const [isLogin, setIsLogin] = useState<boolean>(true);
+    const [isLogin, setIsLogin] = useState<boolean>(false);
     //cafeDummy.json 받아올 state
     const [dummyData, setDummyData] = useState<any[]>();
     //search input 핸들링하는 state
@@ -55,12 +70,14 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo , remov
     //마이페이지 마우스 호버 여부
     const [isMypage, setIsMypage] = useState<boolean>(false);
 
+    const [showLogin, setShowLogin] = useState<boolean>(false);
+
     //로딩되면 DummyData 세팅
     useEffect(() => {
         setDummyData(data);
     }, [])
 
-    const searchInputChangeHandler = (event:  React.ChangeEvent<HTMLInputElement>) => {
+    const searchInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
     }
 
@@ -74,17 +91,17 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo , remov
         }
 
         setSearchedPlaceInfoInNav([]);
-        let count:number = 0;
+        let count: number = 0;
         if (dummyData) {
             for (let i = 0; i < dummyData.length; i++) {
                 if (dummyData[i].name.includes(searchValue)) {
                     setConfirmCafeInfo(true);
                     setSearchedPlaceInfoInNav((searchedPlaceInfoInNav) => [...searchedPlaceInfoInNav, dummyData[i]]);
-                }else{
+                } else {
                     count++;
                 }
             }
-            if(count === dummyData.length){
+            if (count === dummyData.length) {
                 alert("검색 결과가 없습니다.");
                 setSearchValue("");
             }
@@ -102,45 +119,52 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo , remov
         //.catch(err => {console.log(err)};
     }
 
-    const openMyPageList = ():void => {
+    const openMyPageList = (): void => {
         setIsMypage(true);
     }
-    const closeMyPageList = ():void => {
+    const closeMyPageList = (): void => {
         setIsMypage(false);
     }
 
-
+    const onLoginClick = () => {
+        setShowLogin(true)
+    }
     return (
         <Base>
-            <NavContentSearch>
-                {/*<label htmlFor="search">장소|주소 검색</label>*/}
-                <Input type="text" id="search" value={searchValue} onChange={searchInputChangeHandler}/>&ensp;
-                <Button type="button" value="검색" onClick={searchPlaceSubmitHandler}>
-                    <Icon className="material-symbols-rounded">Search</Icon>
-                </Button>
-            </NavContentSearch>
-            <NavContentFilter>
-                <FilterContainer/>
-            </NavContentFilter>
+            {/*<label htmlFor="search">장소|주소 검색</label>*/}
+
+            <InputWrapper>
+                <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
+                <SearchInput autoComplete="off" type="text" id="search" value={searchValue}
+                             onChange={searchInputChangeHandler}/>
+                <Icon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</Icon>
+
+            </InputWrapper>
+            <FilterContainer/>
             <NavLoginOrMyPage>
                 {
                     isLogin ? (
                         <div onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
-                        <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
-                            <Link to="/mypage">
-                                <span className="material-symbols-rounded">person</span>
-                            </Link>
-                        </NavBtn>
+                            <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
+                                <Link to="/mypage">
+                                    <span className="material-symbols-rounded">person</span>
+                                </Link>
+                            </NavBtn>
                             {isMypage && <MyPageList/>}
                         </div>
                     ) : (
-                        <NavBtn>
-                            <Link to="/login">
-                                <span className="material-symbols-rounded">login</span>
-                            </Link>
+                        <NavBtn onClick={onLoginClick}>
+                            <span className="material-symbols-rounded">login</span>
                         </NavBtn>)
                 }
             </NavLoginOrMyPage>
+            {
+                showLogin && (
+                    <Modal>
+                        <KakaoLogin/>
+                    </Modal>
+                )
+            }
         </Base>
     );
 }
