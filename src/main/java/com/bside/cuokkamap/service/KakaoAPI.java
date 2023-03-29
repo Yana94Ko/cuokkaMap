@@ -90,9 +90,8 @@ public class KakaoAPI {
             StringBuffer response = getResponse(con);
             JSONObject userJson = new JSONObject(response.toString());
 
-            // ㄱㅗ통....
-
             userInfo.put("login_id", userJson.get("id").toString());
+            userInfo.put("login_type","0");
             userInfo.put("email",((JSONObject) userJson.get("kakao_account")).getString("email"));
 
         } catch (Exception e) {

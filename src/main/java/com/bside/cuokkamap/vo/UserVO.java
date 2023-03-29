@@ -12,7 +12,7 @@ public class UserVO {
     private int user_num;
     private String login_id;
     private String password;
-    private boolean is_kakao;
+    private boolean login_type;
     private int role;
     private LocalDateTime signup_date;
     private String email;
@@ -31,14 +31,5 @@ public class UserVO {
     private int age_range;
 
     //일반 생성자
-    public UserVO() {}
-
-    //kakaoLogin 생성자
-    public UserVO (HashMap<String, String> kakaoInfo) {
-        login_id = (String)kakaoInfo.get("login_id");
-        is_kakao = true;
-        if(kakaoInfo.get(email) != null){
-            email = kakaoInfo.get(email);
-        }
-    }
+    public UserVO(HashMap<String, String> userInfo) {}
 }
