@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import FilterContainer from "./FilterContainer";
 import styled from "styled-components";
 import axios from "axios";
-import data from "../cafeDummy.json";
+import data from "../../../cafeDummy.json";
 import CafeInfo from "../CafeInfo";
 import {Button, Tag, Icon, Input} from "../../../styles/common";
 
