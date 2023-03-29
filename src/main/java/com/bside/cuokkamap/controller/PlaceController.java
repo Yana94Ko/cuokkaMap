@@ -30,7 +30,6 @@ public class PlaceController {
         placeVO.setUser_num(jobj.get("user_num").getAsInt());
         placeVO.setPlace_info((jobj.get("place_info").getAsJsonObject()).toString());
 
-        // TODO  : 카페 기본정보 저장
         int result = placeService.savePlaceInfo(placeVO);
 
         if (result == 1){//저장 성공했으면
@@ -38,7 +37,7 @@ public class PlaceController {
             int savedPlaceNum = placeService.getPlaceNum(placeVO.getUser_num());
             placeVO.setPlace_num(savedPlaceNum);
             placeVO.setFilterList(Arrays.asList((jobj.get("place_filter").toString().replaceAll("[\\[\\]\"]","").split(","))));
-            // TODO : 카페 필터정보 저장
+
             if(placeVO.getFilterList()!=null){
                 placeService.insertFilterList(placeVO);
             }
