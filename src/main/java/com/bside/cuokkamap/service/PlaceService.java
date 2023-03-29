@@ -7,6 +7,8 @@ import java.util.List;
 public interface PlaceService {
     //장소정보 등록
     public int savePlaceInfo(PlaceVO vo);
+    //장소 필터 등록
+    public int insertFilterList(PlaceVO vo);
 
     //방금 등록한 장소 번호 가져오기
     public int getPlaceNum(int user_num);

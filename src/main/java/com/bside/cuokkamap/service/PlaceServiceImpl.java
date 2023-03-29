@@ -16,6 +16,9 @@ public class PlaceServiceImpl implements PlaceService{
     public int savePlaceInfo(PlaceVO vo) {return dao.savePlaceInfo(vo);}
 
     @Override
+    public int insertFilterList(PlaceVO vo) {return dao.insertFilterList(vo);}
+
+    @Override
     public int getPlaceNum(int user_num) {return dao.getPlaceNum(user_num);}
 
     @Override

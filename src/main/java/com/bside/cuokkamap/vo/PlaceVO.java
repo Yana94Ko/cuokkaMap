@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 public class PlaceVO {
@@ -25,8 +27,8 @@ public class PlaceVO {
     private LocalDateTime placeReview_writedate;
 
     //filter
-    private int filter_num;
     private String filter_type;
+    private List<String> filterList;
 
     //자체 생성자
     public PlaceVO() {};
