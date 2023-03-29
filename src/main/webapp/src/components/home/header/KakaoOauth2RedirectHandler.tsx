@@ -16,7 +16,8 @@ const KakaoOauth2RedirectHandler:React.FC = () => {
         })
             .then((res) => {
                 sessionStorage.setItem("id", res.data.user_num);
-                navigate("/") // 토큰 받았았고 로그인됐으니 화면 전환시켜줌(메인으로)
+                navigate("/"); // 토큰 받았았고 로그인됐으니 화면 전환시켜줌(메인으로)
+                window.location.reload();
             })
             .catch((err) => {
                 console.log("소셜로그인 에러", err);
