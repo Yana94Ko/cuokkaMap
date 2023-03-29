@@ -36,11 +36,11 @@ public class UserController {
         String refreshToken = tokenJson.getString("refresh_token");
 
         // 카카오 로그인에서 받아온 userInfo를 VO에 담기
-        UserVO kakaoUserVO = new UserVO(kakao.getUserInfo(accessToken));
+        UserVO kakaoUserVO = kakao.getUserInfo(accessToken);
         // 해당하는 정보의 유저가 있는지 확인
-        UserVO userInfo = userService.selectUserByLogin_id(kakaoUserVO.getLogin_id());
-
+        UserVO userInfo = userService.selectUserByLogin_id((String) kakaoUserVO.getLogin_id());
         if(userInfo != null) { // 해당하는 유저에 대한 정보가 있다면
+            System.out.println("회원정보가 있어서 로그인 하러 달려가는중");
             if(userInfo.getRole() == 9) { //블럭회원 관련
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
@@ -49,7 +49,7 @@ public class UserController {
             }
         } else { // 회원정보가 앖다면 회원가입 진행
             userService.signIn(kakaoUserVO);
-            userInfo = userService.selectUserByLogin_id(kakaoUserVO.getLogin_id());
+            userInfo = userService.selectUserByLogin_id((String) kakaoUserVO.getLogin_id());
         }
         // TODO(BE, login) : 로그인 유저 정보의 경우 토큰 등으로 암호화해서 전해주도록 추후 스크럼에서 작업할것
         // - 현재 상황으론 의미있는 정보가 없기때문에 그냥 보내주고 다른 작업들을 시작하지만,

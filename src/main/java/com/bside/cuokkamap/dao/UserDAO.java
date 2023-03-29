@@ -2,7 +2,6 @@ package com.bside.cuokkamap.dao;
 
 import com.bside.cuokkamap.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.stereotype.Repository;
 
 @Mapper
 public interface UserDAO {

@@ -3,13 +3,20 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bside.cuokkamap.dao.UserDAO">
+    <!-- 생성 기능  -->
     <insert id="signIn">
-        insert  into user(login_id, is_kakao, email)
-        values  (#{login_id}, #{is_kakao}, #{email})
+        insert  into user(login_id, login_type, email)
+        values  (#{login_id}, #{login_type}, #{email})
     </insert>
 
+    <!-- 검색 기능 -->
     <select id="selectUserByLogin_id" resultType="com.bside.cuokkamap.vo.UserVO">
-        select  user_num, login_id, signup_date, email, role
+        select  user_num, login_id, signup_date, email, role, login_type
         from    user where login_id = #{param1}
     </select>
+
+    <!-- 수정 기능 -->
+
+    <!-- 삭제 기능 -->
+
 </mapper>

@@ -1,5 +1,6 @@
 package com.bside.cuokkamap.service;
 
+import com.bside.cuokkamap.vo.UserVO;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -72,11 +73,11 @@ public class KakaoAPI {
     }
 
     //oauth 통해서 받은 accessToken 으로 사용자 정보 받아오기
-    public HashMap<String, String> getUserInfo (String accessToken) {
+    public UserVO getUserInfo (String accessToken) {
         String infoUrl = "https://kapi.kakao.com/v2/user/me";
         String method = "GET";
 
-        HashMap <String, String> userInfo = new HashMap<>();
+        UserVO userInfo = new UserVO();
         try {
             URL url = new URL(infoUrl);
 
@@ -89,11 +90,9 @@ public class KakaoAPI {
 
             StringBuffer response = getResponse(con);
             JSONObject userJson = new JSONObject(response.toString());
-
-            // ㄱㅗ통....
-
-            userInfo.put("login_id", userJson.get("id").toString());
-            userInfo.put("email",((JSONObject) userJson.get("kakao_account")).getString("email"));
+            userInfo.setLogin_id(userJson.get("id").toString());
+            userInfo.setLogin_type(0);
+            userInfo.setEmail(((JSONObject) userJson.get("kakao_account")).getString("email"));
 
         } catch (Exception e) {
             e.printStackTrace();
