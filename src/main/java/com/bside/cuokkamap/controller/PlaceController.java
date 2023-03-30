@@ -86,7 +86,10 @@ public class PlaceController {
         }
         System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt);
         List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);
-        System.out.println(placeList);
+        for(PlaceVO place : placeList){
+            System.out.println(place.getFilter_type());
+        }
+
         return new ResponseEntity( placeList, HttpStatus.OK);
     }
 
@@ -103,5 +106,25 @@ public class PlaceController {
         System.out.println(cnt);
         return new ResponseEntity(cnt, HttpStatus.OK);
     }
+
+    // TODO(BE) : (Create) FE에서 받아온 place_num과 user_num, place_img를 DB에 등록
+    // - place_img 를 백엔드로 어떻게.. 받아올 수 있는지 알아보기
+    // assignees : Yana94Ko
+    // TODO(BE) : (Delete) FE에서 받아온 placeImg_num으로 DB에서 삭제
+    // - 또한 메모리 공간에서도 삭제 진행
+    // assignees : Yana94Ko
+
+    // TODO(BE) : (Create) FE에서 받아온 place_num과 user_num, placeReview, placeReview_emogi를 DB에 등록
+    // assignees : Yana94Ko
+    // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
+    // assignees : Yana94Ko
+
+    // TODO(BE) : (Read) FE 에서 받아온 place_num의 상세정보(사진, 리뷰 포함) DB에서 열람
+    // assignees : Yana94Ko
+
+    // TODO(BE) : (Create) FE 에서 받아온 place_num, user_num 으로 favorite_place DB에 등록
+    // assignees : Yana94Ko
+    // TODO(BE) : (Delete) FE 에서 받아온 favoritePlace_num으로 으로 favorite_place DB에서 삭제
+    // assignees : Yana94Ko
 
 }
