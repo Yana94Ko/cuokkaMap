@@ -188,7 +188,7 @@ const PostCafeInfo = ({
 
     const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
+        const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠습니까?");
         const dataToSave = {
             user_num: sessionStorage.getItem("id"),
             place_filter: tag,
@@ -204,10 +204,12 @@ const PostCafeInfo = ({
             })
                 .then(response => response.text())
                 .then(function (message) {
-                    console.log(message);
-                    alert("카페등록 완료")
+                    alert("카페등록이 완료되었습니다.")
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
+                    window.location.reload();
+                    // TODO(FE): 카페 등록 완료 후 해당 위치로 이동
+                    // assigness: hwanyb, SeongSilver
                 });
         }
     }

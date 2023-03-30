@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {Button, Icon} from "../../styles/common";
 import MapNavigationBar from "../home/header/MapNavigationBar";
-import dummy from "../../cafeDummy.json";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import {setIsOpenedLoginModal} from "../../modules/userReducer";
@@ -95,13 +94,9 @@ const Map = () => {
     const [keyword, setKeyword] = useState<string>("");
     //마커를 클릭해서 카페추가에 올릴 정보
     const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
-    // DB검색중인지
-    const [isSearchingDB, setIsSearchingDB] = useState<boolean>(false);
     const [DB, setDB] = useState<any>([]);
+    const [positions, setPositions] = useState<any[]>([]);
     var markers: any[] = [];
-
-    // DB에 저장되어 있는 데이터를 positions에 저장
-    var positions: any[] = [];
 
     var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
@@ -121,19 +116,14 @@ const Map = () => {
             }),
         })
             .then(response => response.text())
-            .then(function (message) {
-                JSON.parse(message).map((i: any) => console.log(i.filter_type))
-                const placeList = JSON.parse(message);
-                setDB(placeList);
+            .then(function (data: any) {
+                setDB(JSON.parse(data));
+                setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
             }).catch(err => console.log("에러", err));
-    }, [])
-
-    //console.log([currentFilter])
+    }, []);
 
     useEffect(() => {
         if (currentFilter !== "all") {
-            // positions = DB.filter((i: any) => i.filter_type?.split(", ").includes(currentFilter)).map((i: any) => JSON.parse(i.place_info));
-
             fetch("/api/place/getAllPlaceInfo", {
                 method: "POST",
                 headers: {
@@ -145,27 +135,17 @@ const Map = () => {
                 }),
             })
                 .then(response => response.text())
-                .then((data) => {
-                    JSON.parse(data).map((i: any) => console.log("현재 필터 : ", currentFilter, "|  받아온 장소정보의 필터들 : ", i.filter_type))
-                    //console.log(JSON.parse(data));
-                    const placeList = JSON.parse(data);
-                    var placeInfoArr = placeList.map((i: any) => i.place_info);
-                    var tag = placeList.map((i: any) => i.filter_type);
-                    //var ddd = placeInfoArr.map((i: any) =>  i.tag = tag[i]);
-                    //console.log(placeList[0].filter_type.split(", "))
-                    //console.log(tag)
-                    setSearchedPlaceInfoInNav(placeInfoArr);
-                    //setTag(tag)
-
-                    //console.log(data)
-                }).catch(err => console.log("에러", err));
+                .then((data: any) => {
+                    var placeInfoArr = JSON.parse(data).map((i: any) => JSON.parse(i.place_info));
+                    setPositions(placeInfoArr);
+                })
+                .catch(err => console.log("에러", err));
         } else {
-            positions = DB.map((i: any) => JSON.parse(i.place_info));
+            setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
         }
-    }, [currentFilter, DB])
-    useEffect(() => {
-        //console.log(DB.filter((i: any) => i.filter_type?.split(", ").includes(currentFilter)).map((i: any) => JSON.parse(i.place_info)))
+    }, [currentFilter, DB]);
 
+    useEffect(() => {
         let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
 
         if (mapState === undefined) {
@@ -184,33 +164,31 @@ const Map = () => {
 
         setMapState(map);
 
-        if (!isOpenedPostCafe && DB.length > 0) {
+        if (!isOpenedPostCafe) {
+            // TODO(FE): DB, 필터DB 마커 mouseOver, click 이벤트 추가하기
+            // assignees: hwanyb, SeongSilver
+
             // 디비에 저장되어있는 마커 띄우기
             for (let i = 0; i < positions.length; i++) {
                 var marker = new window.kakao.maps.Marker({
                     map: map,
                     position: new window.kakao.maps.LatLng(positions[i].y, positions[i].x),
-                    title: positions[i].name,
+                    title: positions[i].place_name,
                     image: filterMarkerImg
                 })
             }
         }
-
-    }, [currentFilter, keyword, isOpenedPostCafe, DB])
+    }, [currentFilter, keyword, isOpenedPostCafe, positions.length])
 
     useEffect(() => {
         if (searchedPlaceInfoInNav.length > 0) {
-            setIsSearchingDB(true);
-
-            positions = [];
-
+            console.log(searchedPlaceInfoInNav)
             displayDBPlaces(searchedPlaceInfoInNav);
-            // setCafeInfoContainer(searchedPlaceInfoInNav[cafeInfoIndex]);
         }
     }, [searchedPlaceInfoInNav]);
 
     useEffect(() => {
-        if(!isOpenedPostCafe){
+        if (!isOpenedPostCafe) {
             setClickMarkerCafeInfo({})
         }
     }, [isOpenedPostCafe])
@@ -240,7 +218,7 @@ const Map = () => {
     const onPostCafeBtnClick = () => {
         // 로그인 되어있을 시 카페추가 창 열기
         if (isLoggedin) {
-            positions = [];
+            setPositions([])
 
             dispatch(setIsOpenedCafeInfo(false));
             dispatch(setIsOpenedPostCafe(true));
@@ -345,9 +323,6 @@ const Map = () => {
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
                             setClickMarkerCafeInfo(data);
-                            // TODO : 선택된 마커 말고 나머지는 지우는 기능 필요
-                            // removeMarker 클론삼아 인덱스로 필터링 하는 함수 구현 필요
-                            // assignees: SeongSilver, hwanyb
                         });
                     })(marker, places[i])
                     fragment.appendChild(itemEl);
@@ -469,7 +444,7 @@ const Map = () => {
         }
     }
 
-    function addDBMarker(position: () => {}, title?: undefined) {
+    function addDBMarker(position: () => {}, title: string) {
         if (mapState !== undefined) {
             //마커 이미지 URL
             let imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',

@@ -110,8 +110,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
         }
 
         setSearchedPlaceInfoInNav([]);
-        // TODO(FE): DB 검색 로직 완료하기
-        // main에서 pull 한 뒤 작성하기
+        // TODO(FE): DB 결과 없을 시 알림
         // assignees: hwanyb
         fetch("/api/place/getAllPlaceInfo", {
             method: "POST",
@@ -124,18 +123,12 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
             }),
         })
             .then(response => response.text())
-            .then(function (data) {
-                // console.log(JSON.parse(message));
-                const placeList = JSON.parse(data);
-                // var placeInfoArr = placeList.map((i: any) => i.place_info);
-                // var tag = placeList.map((i: any) => i.filter_type);
-                // var ddd = placeInfoArr.map((i: any) =>  i.tag = tag[i]);
-                console.log(placeList[0].filter_type.split(", "))
-                // console.log(tag)
-                // setSearchedPlaceInfoInNav(placeInfoArr);
-                // setTag(tag)
-            }).catch(err => console.log("에러", err));
+            .then(function (data: any) {
+                const searchedCafe = JSON.parse(data).map((i: any) => JSON.parse(i.place_info));
+                setSearchedPlaceInfoInNav(searchedCafe);
 
+            }).catch(err => console.log("에러", err));
+        setSearchValue("")
     }
     const openMyPageList = (): void => {
         setIsMypage(true);
