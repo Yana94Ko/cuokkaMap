@@ -22,6 +22,9 @@ public class PlaceServiceImpl implements PlaceService{
     public int getPlaceNum(int user_num) {return dao.getPlaceNum(user_num);}
 
     @Override
+    public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt) {return dao.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);}
+
+    @Override
     public PlaceVO selectPlaceByPlaceNum(int place_num) {return dao.selectPlaceByPlaceNum(place_num);}
 
     @Override

@@ -13,6 +13,8 @@ public interface PlaceService {
     //방금 등록한 장소 번호 가져오기
     public int getPlaceNum(int user_num);
 
+    //모든 장소 정보 전달
+    public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt);
     //장소 번호로 장소 검색
     public PlaceVO selectPlaceByPlaceNum(int place_num);
     //키워드로 장소 검색
