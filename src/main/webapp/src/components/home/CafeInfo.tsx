@@ -55,48 +55,51 @@ const InfoRequestBtn = styled(Button)`
 `;
 
 type CafeInfoProps = {
-    cafeInfoContainer: object;
+    cafeInfoContainer: any;
 }
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
     const dispatch = useDispatch();
-    // TODO(FE) : 카페정보 close 이벤트 추가해야 함
-    // assignees: hwanyb, SeongSilver
-    const [data, setData] = useState<any[]>([]);
-
-    useEffect(() => {
-        setData(Object.values(cafeInfoContainer));
-    }, [cafeInfoContainer])
+    const clickedData = {...cafeInfoContainer};
 
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
     }
+    // TODO(FE): 카페상세정보 DB요청한 후 받은 데이터로 렌더링하기
+    // 카페 상세정보 DB 완성되면 진행하면 됩니다
+    // assignees: hwanyb, SeongSilver
     return (
         <Base>
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
-            <CafeInfoWrapper>
-                {/*클릭한 카페 이름*/}
-                <PlaceName>{data && data[1]}</PlaceName>
-                <Item>
-                    <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
-                    {/*클릭한 카페 주소*/}
-                    <Info>{data && data[4]}</Info>
-                </Item>
-                <Item>
-                    <LabelIcon className="material-symbols-rounded">phone_enabled</LabelIcon>
-                    {/*클릭한 카페 전화번호*/}
-                    <Info>02-1234-5678</Info>
-                </Item>
-                <Label>옵션</Label>
-                {/*클릭한 카페의 옵션*/}
-                {/*{*/}
-                {/*    data && data[5].map((item: string, index: number) => (*/}
+            {
+                clickedData !== undefined && (
 
-                {/*        <Tag key={index} clickable={false}>{item}</Tag>*/}
-                {/*    ))*/}
-                {/*}*/}
+                    <CafeInfoWrapper>
+                        {/*    /!*클릭한 카페 이름*!/*/}
+                        <PlaceName>{clickedData.name}</PlaceName>
+                        <Item>
+                            <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
+                            {/*클릭한 카페 주소*/}
+                            <Info>{clickedData.address}</Info>
+                        </Item>
+                        <Item>
+                            <LabelIcon className="material-symbols-rounded">phone_enabled</LabelIcon>
+                            {/*클릭한 카페 전화번호*/}
+                            <Info>{clickedData.phone}</Info>
+                        </Item>
+                        {/*<Label>옵션</Label>*/}
+                        {/*{*/}
+                        {/*    clickedData.tag.map((tag: string) => (*/}
+                        {/*        <Tag clickable={false} active={true}>{tag}</Tag>*/}
+                        {/*    ))*/}
+                        {/*}*/}
 
-                <InfoRequestBtn>정보수정요청</InfoRequestBtn>
-            </CafeInfoWrapper>
+                        <InfoRequestBtn>정보수정요청</InfoRequestBtn>
+                    </CafeInfoWrapper>
+
+
+                ) //ddd
+            }
+
         </Base>
     )
 }
