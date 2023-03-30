@@ -73,7 +73,7 @@ const FilterContainer = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                "place_filter" : [],
+                "place_filter" : ['soy'],
                 "keywords" : "서울 석관",
             }),
         })
