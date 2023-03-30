@@ -1,10 +1,12 @@
 import {combineReducers} from "redux";
 import filterReducer from "./filterReducer";
 import userReducer from "./userReducer";
+import viewReducer from "./viewReducer";
 
 const rootReducer = combineReducers({
     filterReducer,
-    userReducer
+    userReducer,
+    viewReducer
 });
 
 export default rootReducer;
