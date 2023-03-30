@@ -163,9 +163,31 @@ const PostCafeInfo = ({
     useEffect(() => {
         if (clickMarkerCafeInfo !== undefined) {
             setSearchedListCheck(false)
-            setCopiedClickedInfo({
-                ...clickMarkerCafeInfo,
+            fetch("/api/place/isThereSamePlaceDB", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "x" : clickMarkerCafeInfo.x,
+                    "y" : clickMarkerCafeInfo.y,
+                }),
             })
+                .then(response => response.text())
+                .then(function (message) {
+                    console.log(message);
+                    if(message === "0") {
+                        console.log("DB에 없는 카페에요")
+                        setCopiedClickedInfo({
+                            ...clickMarkerCafeInfo,
+                        })
+                    } else {
+                        alert("이미 DB에 저장된 카페입니다")
+                        // TODO : 이후에 setCopiedClickedInfo로 빈값을 만들어줘야함
+                        //  setCopiedClickedInfo()
+                        // assignees : hwanyb
+                    }
+                });
         }
         console.log(copiedClickedInfo)
 

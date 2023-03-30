@@ -15,6 +15,8 @@ public interface PlaceService {
 
     //모든 장소 정보 전달
     public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt);
+    //해당 좌표의 장소가 DB에 존재하는지 확인
+    public int cntSamePlace(String x, String y);
     //장소 번호로 장소 검색
     public PlaceVO selectPlaceByPlaceNum(int place_num);
     //키워드로 장소 검색
