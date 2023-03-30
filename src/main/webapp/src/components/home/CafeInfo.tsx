@@ -3,6 +3,8 @@ import styled from "styled-components"
 
 import {CloseBtn} from "./PostCafeInfo";
 import {Button, Icon, Tag} from "../../styles/common";
+import {useDispatch} from "react-redux";
+import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -10,7 +12,7 @@ const Base = styled.div`
   height: fit-content;
   position: absolute;
   z-index: 1000;
-  top: 100px;
+  top: 150px;
   left: 50px;
   padding: 2rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -54,9 +56,9 @@ const InfoRequestBtn = styled(Button)`
 
 type CafeInfoProps = {
     cafeInfoContainer: object;
-    setCafeInfoCheck: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const CafeInfo = ({cafeInfoContainer, setCafeInfoCheck}: CafeInfoProps) => {
+const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
+    const dispatch = useDispatch();
     // TODO(FE) : 카페정보 close 이벤트 추가해야 함
     // assignees: hwanyb, SeongSilver
     const [data, setData] = useState<any[]>([]);
@@ -66,7 +68,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoCheck}: CafeInfoProps) => {
     }, [cafeInfoContainer])
 
     const closeCafeInfo = () => {
-        setCafeInfoCheck(false);
+        dispatch(setIsOpenedCafeInfo(false));
     }
     return (
         <Base>
