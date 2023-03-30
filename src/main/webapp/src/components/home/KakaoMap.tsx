@@ -20,23 +20,35 @@ const CurrentLocationBtn = styled(Button)`
   z-index: 999;
   background-color: ${props => props.theme.color.white};
   padding: 0.5rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
-  
-& span {
-  color: ${props => props.theme.color.primary};
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+
+  & span {
+    color: ${props => props.theme.color.primary};
 `;
 
 const AddCafeButton = styled(Button)`
+  transition: all 0.2s ease-in-out;
   z-index: 999;
   position: absolute;
-bottom: 3rem;
+  bottom: 3rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   border-radius: 2rem;
-  padding: 1rem 2rem;
+  padding: 1rem 3rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  color: ${props => props.theme.color.primary};
+  border: 2px solid ${props => props.theme.color.primary};
+
   & span {
     margin-right: 10px;
+  }
+
+  &:hover {
+    background-color: ${props => props.theme.color.primary};
+    color: ${props => props.theme.color.white};
+
   }
 `;
 declare global {
@@ -458,7 +470,7 @@ const KakaoMap = () => {
         <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo}
                           removeMarker={removeMarker}/>
         <CurrentLocationBtn
-                onClick={currentLocation}
+            onClick={currentLocation}
         >
             <Icon className="material-symbols-rounded">my_location</Icon>
         </CurrentLocationBtn>
