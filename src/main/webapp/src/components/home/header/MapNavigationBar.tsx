@@ -22,11 +22,15 @@ const Base = styled.div`
   height: fit-content;
   position: fixed;
   top: 0;
+  left: 0;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 3rem;
+  @media ${props => props.theme.windowSize.mobile} {
+    padding: 2rem;
+  }
 `;
 const InputWrapper = styled.div`
   width: 400px;
@@ -36,19 +40,33 @@ const InputWrapper = styled.div`
   box-shadow: 0 0 5px rgb(0, 0, 0, 0.2);
   border-radius: 1rem;
   padding: 0.5rem 1rem;
+  @media ${props => props.theme.windowSize.tablet} {
+    width: 350px;
+
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70vw;
+  }
 `;
 
 const Logo = styled.img`
   height: 40px;
+  @media ${props => props.theme.windowSize.mobile} {
+    height: 30px;
+
+  }
 `;
 const SearchInput = styled(Input)`
   background-color: transparent;
   border: none;
-  color: ${props => props.theme.color.primary};
+  font-weight: 500;
 
   &:focus {
     border: none;
+  }
 
+  @media ${props => props.theme.windowSize.mobile} {
+    padding: 0 1.5rem;
   }
 `;
 const NavLoginOrMyPage = styled.div``;
@@ -72,18 +90,11 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const dispatch = useDispatch();
 
-    //cafeDummy.json 받아올 state
-    const [dummyData, setDummyData] = useState<any[]>();
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
     //마이페이지 마우스 호버 여부
     const [isMypage, setIsMypage] = useState<boolean>(false);
-
-    //로딩되면 DummyData 세팅
-    useEffect(() => {
-        setDummyData(data);
-    }, [])
-
+    const [tag, setTag] = useState<any>();
     const searchInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
     }
@@ -99,34 +110,33 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
         }
 
         setSearchedPlaceInfoInNav([]);
-        let count: number = 0;
-        if (dummyData) {
-            for (let i = 0; i < dummyData.length; i++) {
-                if (dummyData[i].name.includes(searchValue)) {
-                    setConfirmCafeInfo(true);
-                    setSearchedPlaceInfoInNav((searchedPlaceInfoInNav) => [...searchedPlaceInfoInNav, dummyData[i]]);
-                } else {
-                    count++;
-                }
-            }
-            if (count === dummyData.length) {
-                alert("검색 결과가 없습니다.");
-                setSearchValue("");
-            }
-        }
+        // TODO(FE): DB 검색 로직 완료하기
+        // main에서 pull 한 뒤 작성하기
+        // assignees: hwanyb
+        fetch("/api/place/getAllPlaceInfo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "place_filter": [],
+                "keywords": searchValue,
+            }),
+        })
+            .then(response => response.text())
+            .then(function (data) {
+                // console.log(JSON.parse(message));
+                const placeList = JSON.parse(data);
+                // var placeInfoArr = placeList.map((i: any) => i.place_info);
+                // var tag = placeList.map((i: any) => i.filter_type);
+                // var ddd = placeInfoArr.map((i: any) =>  i.tag = tag[i]);
+                console.log(placeList[0].filter_type.split(", "))
+                // console.log(tag)
+                // setSearchedPlaceInfoInNav(placeInfoArr);
+                // setTag(tag)
+            }).catch(err => console.log("에러", err));
 
-        //검색하면 axios로 백에 요청 보낼거시기
-        //검색버튼이 눌리면 해당 name을 서버에 보내서 DB조회 후 이름이 같은 놈을 받을것임..
-        //받은 놈을 state 배열에 넣고, KakaoMap에 보내서 마커를 다른놈으로 만들어야 한다
-        // axios.post('유알엘', {
-        //     data: {
-        //         "searchedInfo":searchedInfo
-        //     }
-        //})
-        //.then(res => setSearchedPlaceInfoInNav(res.json())
-        //.catch(err => {console.log(err)};
     }
-
     const openMyPageList = (): void => {
         setIsMypage(true);
     }

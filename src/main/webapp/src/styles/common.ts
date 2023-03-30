@@ -43,6 +43,7 @@ export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
                               props.theme.color.zero : props.id === "oat" ?
                                       props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
     }
+    
   `}
   
   ${props => props.active && css`
@@ -52,6 +53,17 @@ export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
                 props.theme.color.zero : props.id === "oat" ?
                     props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
   `}
+
+  ${props => props.disabled && css`
+    cursor: default;
+    background-color: ${props.theme.color.lightGray};
+    color: ${props.theme.color.darkGray};
+    &:hover{
+      border: 1px solid ${props.theme.color.darkGray};
+      
+    }
+  `}
+  
 `;
 export const Input = styled.input`
   width: 100%;
