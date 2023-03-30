@@ -80,6 +80,9 @@ const MyPage = () => {
         if (!isLoggedin) {
             navigate("/");
         }
+        return () => {
+            window.location.reload();
+        }
     });
 
     const myPageContent: TabProps[] = [
