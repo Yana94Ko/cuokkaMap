@@ -64,13 +64,27 @@ const FilterContainer = () => {
             id: "zero"
         },
     ]
-    //유동적으로 필터를 추가하게 될거면...원래는 DB에서 받아와야 되냐며
-    // const [filterInfo, setFilterInfo] = useState<string[]>();
-    // useEffect(() => {
-    //     axios.get('필터가져오는 url')
-    //         .then(res => {setFilterInfo(res)})
-    //         .catch(err => console.log(err))
-    // },[])
+    const [filterInfo, setFilterInfo] = useState<string[]>();
+    useEffect(() => {
+        // [YANA]
+        fetch("/api/place/getAllPlaceInfo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "place_filter" : [],
+                "keywords" : "서울 석관",
+            }),
+        })
+            .then(response => response.text())
+            .then(function (message) {
+                console.log(message);
+            });
+        // axios.get('/api/place/getAllPlaceInfo')
+        //     .then(res => {setFilterInfo(res)})
+        //     .catch(err => console.log(err))
+    },[])
 
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
