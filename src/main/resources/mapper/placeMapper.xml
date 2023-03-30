@@ -17,13 +17,78 @@
         </foreach>
     </insert>
 
-    <!-- 검색 기능 -->
+    <!-- 방금 해당 유저가 등록한 place_num 받아오기 -->
     <select id='getPlaceNum' resultType='int'>
         SELECT  place_num
         FROM  	place
         WHERE   user_num =#{param1}
         ORDER 	BY place_num DESC
             LIMIT 	1
+    </select>
+
+    <select id="selectALLPlaceWithFilterAndKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT p.place_num, p.place_info,
+        (SELECT GROUP_CONCAT(pf.filter_type SEPARATOR ', ')
+        FROM place_filter pf
+        WHERE pf.place_num = p.place_num) AS filter_type
+        FROM place p
+        <where>
+            <if test="param4 > 0">
+                AND (
+                <foreach collection="param3" item="keyword" separator="AND">
+                    EXISTS (
+                    SELECT 1
+                    FROM (
+                    SELECT #{keyword} AS keyword
+                    ) t
+                    WHERE p.place_info LIKE CONCAT('%', t.keyword, '%')
+                    )
+                </foreach>
+                )
+            </if>
+        </where>
+        <if test="param2 > 0">
+            GROUP BY p.place_num, p.place_info
+            HAVING COUNT(DISTINCT (SELECT pf.filter_type FROM place_filter pf WHERE pf.place_num = p.place_num)) = #{param2}
+        </if>
+    </select>
+
+    <select id="selectALLPlaceWithFilterAndKeyword1" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT DISTINCT p.place_num, p.place_Info
+        FROM place p
+        INNER JOIN place_filter pf ON p.place_num = pf.place_num
+        WHERE
+        /* 필터 값이 존재하면 해당 필터 값들이 모두 포함된 place_info만 반환 */
+        (
+        <if test='param1 != null'>
+            SELECT COUNT(DISTINCT filter_type) = #{param2}
+            FROM place_filter
+            WHERE place_num = p.place_num
+            AND filter_type IN
+            <foreach collection='param1' item='filter' open='(' close=')' separator=','>
+                #{filter}
+            </foreach>
+        </if>
+        <if test='param1 == null'>
+            1=1
+        </if>
+        )
+        /* place_info 값에 keyword 값들이 모두 포함된 경우에만 반환 */
+        AND (
+        <if test='param3 != null'>
+            (
+            <foreach collection='param3' item='keyword' open='' close='' separator='AND'>
+                p.place_Info LIKE CONCAT('%', #{keyword}, '%')
+            </foreach>
+            )
+            OR #{param4} = 0
+        </if>
+        <if test='param3 == null'>
+            1=1
+        </if>
+        )
+        GROUP BY p.place_num, p.place_Info
+        HAVING COUNT(DISTINCT pf.filter_type) = #{param2}
     </select>
 
     <select id="selectPlaceByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
