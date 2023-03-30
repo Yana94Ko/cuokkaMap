@@ -122,12 +122,13 @@ const Map = () => {
         })
             .then(response => response.text())
             .then(function (message) {
+                JSON.parse(message).map((i: any) => console.log(i.filter_type))
                 const placeList = JSON.parse(message);
                 setDB(placeList);
             }).catch(err => console.log("에러", err));
     }, [])
 
-    console.log([currentFilter])
+    //console.log([currentFilter])
 
     useEffect(() => {
         if (currentFilter !== "all") {
@@ -145,24 +146,25 @@ const Map = () => {
             })
                 .then(response => response.text())
                 .then((data) => {
-                    // console.log(JSON.parse(message));
-                    // const placeList = JSON.parse(data);
-                    // var placeInfoArr = placeList.map((i: any) => i.place_info);
-                    // var tag = placeList.map((i: any) => i.filter_type);
-                    // var ddd = placeInfoArr.map((i: any) =>  i.tag = tag[i]);
-                    // console.log(placeList[0].filter_type.split(", "))
-                    // console.log(tag)
-                    // setSearchedPlaceInfoInNav(placeInfoArr);
-                    // setTag(tag)
+                    JSON.parse(data).map((i: any) => console.log("현재 필터 : ", currentFilter, "|  받아온 장소정보의 필터들 : ", i.filter_type))
+                    //console.log(JSON.parse(data));
+                    const placeList = JSON.parse(data);
+                    var placeInfoArr = placeList.map((i: any) => i.place_info);
+                    var tag = placeList.map((i: any) => i.filter_type);
+                    //var ddd = placeInfoArr.map((i: any) =>  i.tag = tag[i]);
+                    //console.log(placeList[0].filter_type.split(", "))
+                    //console.log(tag)
+                    setSearchedPlaceInfoInNav(placeInfoArr);
+                    //setTag(tag)
 
-                    console.log(data)
+                    //console.log(data)
                 }).catch(err => console.log("에러", err));
         } else {
             positions = DB.map((i: any) => JSON.parse(i.place_info));
         }
     }, [currentFilter, DB])
     useEffect(() => {
-        console.log(DB.filter((i: any) => i.filter_type?.split(", ").includes(currentFilter)).map((i: any) => JSON.parse(i.place_info)))
+        //console.log(DB.filter((i: any) => i.filter_type?.split(", ").includes(currentFilter)).map((i: any) => JSON.parse(i.place_info)))
 
         let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
 

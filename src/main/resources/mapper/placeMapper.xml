@@ -46,11 +46,22 @@
                 </foreach>
                 )
             </if>
+            <if test="param2 > 0">
+                AND (
+                <foreach collection="param1" item="filter" separator="AND">
+                    EXISTS (
+                    SELECT 1
+                    FROM (
+                    SELECT #{filter} AS filter
+                    ) t
+                    WHERE t.filter IN (
+                    SELECT pf.filter_type FROM place_filter pf WHERE pf.place_num = p.place_num
+                    )
+                    )
+                </foreach>
+                )
+            </if>
         </where>
-        <if test="param2 > 0">
-            GROUP BY p.place_num, p.place_info
-            HAVING COUNT(DISTINCT (SELECT pf.filter_type FROM place_filter pf WHERE pf.place_num = p.place_num)) = #{param2}
-        </if>
     </select>
 
     <select id="cntSamePlace" resultType='int'>

@@ -86,7 +86,10 @@ public class PlaceController {
         }
         System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt);
         List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);
-        System.out.println(placeList);
+        for(PlaceVO place : placeList){
+            System.out.println(place.getFilter_type());
+        }
+
         return new ResponseEntity( placeList, HttpStatus.OK);
     }
 
