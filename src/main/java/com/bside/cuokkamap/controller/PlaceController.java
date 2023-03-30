@@ -90,4 +90,18 @@ public class PlaceController {
         return new ResponseEntity( placeList, HttpStatus.OK);
     }
 
+    @PostMapping("/isThereSamePlaceDB")
+    public ResponseEntity cntSamePlace(@RequestBody String res) {
+        System.out.println("DB에 해당 좌표의 장소가 이미 등록되어있는지 확인");
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject)parser.parse(res);
+        String x = jobj.get("x").toString();
+        String y = jobj.get("y").toString();
+        System.out.println(x + " , " + y);
+        int cnt = placeService.cntSamePlace(x,y);
+        System.out.println(placeService.cntSamePlace(x,y));
+        System.out.println(cnt);
+        return new ResponseEntity(cnt, HttpStatus.OK);
+    }
+
 }
