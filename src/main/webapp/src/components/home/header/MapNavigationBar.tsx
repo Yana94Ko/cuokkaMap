@@ -103,6 +103,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
 
         if (searchValue === "") {
             alert("검색어가 입력되지 않았습니다");
+            return;
         }
 
         setSearchedPlaceInfoInNav([]);

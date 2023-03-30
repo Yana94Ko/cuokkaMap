@@ -90,6 +90,7 @@ const KakaoMap = () => {
     useEffect(() => {
         if (searchedPlaceInfoInNav.length > 0) {
             displayDBPlaces(searchedPlaceInfoInNav);
+            console.log(searchedPlaceInfoInNav)
         }
     }, [searchedPlaceInfoInNav])
 
@@ -97,7 +98,6 @@ const KakaoMap = () => {
         //지도를 담을 div선택
         const container = document.getElementById("map");
         //지도 만들기 옵션
-
         let options = {}
         if (mapstate === undefined) {
             options = {
