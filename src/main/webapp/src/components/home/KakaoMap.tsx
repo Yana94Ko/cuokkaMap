@@ -94,7 +94,7 @@ const Map = () => {
     //검색어 : PostCafeInfo 컴포넌트의 카페찾기 input에서 조작
     const [keyword, setKeyword] = useState<string>("");
     //마커를 클릭해서 카페추가에 올릴 정보
-    const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<markerInfo>();
+    const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
     // DB검색중인지
     const [isSearchingDB, setIsSearchingDB] = useState<boolean>(false);
     const [DB, setDB] = useState<any>([]);
@@ -207,6 +207,11 @@ const Map = () => {
         }
     }, [searchedPlaceInfoInNav]);
 
+    useEffect(() => {
+        if(!isOpenedPostCafe){
+            setClickMarkerCafeInfo({})
+        }
+    }, [isOpenedPostCafe])
     // 현재위치 함수
     const currentLocation = () => {
         if (navigator.geolocation) {
