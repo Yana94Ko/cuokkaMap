@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MyPageList from "./components/home/MyPageList";
 import KakaoOauth2RedirectHandler from "./components/home/header/KakaoOauth2RedirectHandler";
 import {useDispatch} from "react-redux";
 import {setIsLoggedin, setUserId} from "./modules/userReducer";
+import Banner from "./components/home/Banner";
 
 function App() {
     const dispatch = useDispatch();
@@ -18,6 +19,14 @@ function App() {
          dispatch(setUserId(""));
      }
     });
+
+    //배너를 띄워주기 위한 state
+    const [openBanner, setOpenBanner] = useState<boolean>(false);
+
+    useEffect(() => {
+        setOpenBanner(true);
+    },[])
+
     return (
         <BrowserRouter>
             <Routes>
@@ -26,6 +35,7 @@ function App() {
                 {/*↓로그인 콜백 라우팅용*/}
                 <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
             </Routes>
+            {openBanner && <Banner setOpenBanner={setOpenBanner}/>}
         </BrowserRouter>
     );
 }

@@ -3,7 +3,7 @@ import {DefaultTheme} from "styled-components";
 const windowSize = {
     mobile: `screen and (max-width: 480px)`,
     tablet: `screen and (max-width: 768px)`,
-    desktop: `screen and (max-width: 1600px)`,
+    laptop: `screen and (max-width: 1024px)`,
 };
 
 const fontSize = {

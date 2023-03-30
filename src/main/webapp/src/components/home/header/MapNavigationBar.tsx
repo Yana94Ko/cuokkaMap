@@ -29,6 +29,7 @@ const Base = styled.div`
   padding: 3rem;
 `;
 const InputWrapper = styled.div`
+  width: 400px;
   display: flex;
   align-items: center;
   background-color: ${props => props.theme.color.white};
@@ -41,7 +42,6 @@ const Logo = styled.img`
   height: 40px;
 `;
 const SearchInput = styled(Input)`
-  width: 30vw;
   background-color: transparent;
   border: none;
   color: ${props => props.theme.color.primary};
@@ -51,15 +51,11 @@ const SearchInput = styled(Input)`
 
   }
 `;
-const NavLoginOrMyPage = styled.div`
-  flex-grow: 1;
-  width: 100%;
-  text-align: right;
-`;
+const NavLoginOrMyPage = styled.div``;
 const NavBtn = styled(Button)`
   background-color: ${props => props.theme.color.white};
   padding: 0.5rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 
   a {
     color: white;
@@ -76,16 +72,12 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const dispatch = useDispatch();
 
-    //로그인 여부
-    // const [isLogin, setIsLogin] = useState<boolean>(false);
     //cafeDummy.json 받아올 state
     const [dummyData, setDummyData] = useState<any[]>();
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
     //마이페이지 마우스 호버 여부
     const [isMypage, setIsMypage] = useState<boolean>(false);
-
-    // const [showLogin, setShowLogin] = useState<boolean>(false);
 
     //로딩되면 DummyData 세팅
     useEffect(() => {
@@ -103,6 +95,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
 
         if (searchValue === "") {
             alert("검색어가 입력되지 않았습니다");
+            return;
         }
 
         setSearchedPlaceInfoInNav([]);
