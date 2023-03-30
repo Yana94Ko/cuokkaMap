@@ -8,10 +8,11 @@ import MapNavigationBar from "./header/MapNavigationBar";
 import {Button, Icon} from "../../styles/common";
 import CafeInfo from "./CafeInfo";
 import cafeDummy from "../../cafeDummy.json";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import axios from "axios";
 import styled from "styled-components";
+import {setIsOpenedLoginModal} from "../../modules/userReducer";
 
 const CurrentLocationBtn = styled(Button)`
   position: absolute;
@@ -20,23 +21,35 @@ const CurrentLocationBtn = styled(Button)`
   z-index: 999;
   background-color: ${props => props.theme.color.white};
   padding: 0.5rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
-  
-& span {
-  color: ${props => props.theme.color.primary};
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+
+  & span {
+    color: ${props => props.theme.color.primary};
 `;
 
 const AddCafeButton = styled(Button)`
+  transition: all 0.2s ease-in-out;
   z-index: 999;
   position: absolute;
-bottom: 3rem;
+  bottom: 3rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   border-radius: 2rem;
-  padding: 1rem 2rem;
+  padding: 1rem 3rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  color: ${props => props.theme.color.primary};
+  border: 2px solid ${props => props.theme.color.primary};
+
   & span {
     margin-right: 10px;
+  }
+
+  &:hover {
+    background-color: ${props => props.theme.color.primary};
+    color: ${props => props.theme.color.white};
+
   }
 `;
 declare global {
@@ -59,6 +72,11 @@ type markerInfo = {
     y: number
 };
 const KakaoMap = () => {
+    const dispatch = useDispatch();
+    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
+
+    console.log(isLoggedin)
+
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     //카페추가 버튼으로 해당 컴포넌트 보이게 하는 state
     const [visible, setVisible] = useState<boolean>(false);
@@ -265,7 +283,6 @@ const KakaoMap = () => {
 
                         itemEl.onclick = function () {
                             setClickMarkerCafeInfo(data);
-                            setKeyword("")
                         }
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
@@ -441,9 +458,15 @@ const KakaoMap = () => {
 
     //postCafeInfo 열기
     const postCafeInfoVisible = () => {
-        setVisible(true)
-        setCafeInfoCheck(false);
-        removeMarker();
+        // 로그인 되어있을 시 카페추가 창 열기
+        if (isLoggedin) {
+            setVisible(true)
+            setCafeInfoCheck(false);
+            removeMarker();
+        } else {
+            // 로그인되어있지 않으 시 로그인 모달창 열기
+            dispatch(setIsOpenedLoginModal(true));
+        }
     }
 
     //PostCafeInfo 닫기
@@ -458,7 +481,7 @@ const KakaoMap = () => {
         <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav} setConfirmCafeInfo={setConfirmCafeInfo}
                           removeMarker={removeMarker}/>
         <CurrentLocationBtn
-                onClick={currentLocation}
+            onClick={currentLocation}
         >
             <Icon className="material-symbols-rounded">my_location</Icon>
         </CurrentLocationBtn>
@@ -466,7 +489,7 @@ const KakaoMap = () => {
             mapstate ? (
                 <PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
                               clickMarkerCafeInfo={clickMarkerCafeInfo}
-                              searchPlaces={searchPlaces}/>
+                              searchPlaces={searchPlaces} setVisible={setVisible} removeMarker={removeMarker}/>
             ) : null
         ) : (
             <AddCafeButton
