@@ -215,6 +215,8 @@ const Map = () => {
                 var currentLat = position.coords.latitude,
                     currentLng = position.coords.longitude;
                 if (mapState !== undefined) mapState.setCenter(new window.kakao.maps.LatLng(currentLat, currentLng))
+            }, () => {
+                window.alert("브라우저 위치 설정을 허용해 주세요.")
             })
         }
     }
