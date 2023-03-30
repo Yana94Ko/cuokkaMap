@@ -18,7 +18,7 @@ declare module "styled-components" {
         windowSize: {
             mobile: string;
             tablet: string;
-            desktop: string;
+            laptop: string;
         };
         fontSize: {
             xs: string;
