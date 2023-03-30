@@ -52,6 +52,10 @@ const AddCafeButton = styled(Button)`
     color: ${props => props.theme.color.white};
 
   }
+
+  @media ${props => props.theme.windowSize.mobile} {
+    bottom: 2rem;
+  }
 `;
 declare global {
     interface Window {
@@ -93,7 +97,7 @@ const Map = () => {
     const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<markerInfo>();
     // DB검색중인지
     const [isSearchingDB, setIsSearchingDB] = useState<boolean>(false);
-
+    const [DB, setDB] = useState<any>([]);
     var markers: any[] = [];
 
     // DB에 저장되어 있는 데이터를 positions에 저장
@@ -102,16 +106,63 @@ const Map = () => {
     var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
+
+    // DB 받아오는 로직
+    useEffect(() => {
+        // [YANA]
+        fetch("/api/place/getAllPlaceInfo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "place_filter": [],
+                "keywords": "",
+            }),
+        })
+            .then(response => response.text())
+            .then(function (message) {
+                const placeList = JSON.parse(message);
+                setDB(placeList);
+            }).catch(err => console.log("에러", err));
+    }, [])
+
+    console.log([currentFilter])
+
     useEffect(() => {
         if (currentFilter !== "all") {
-            positions = dummy.filter(i => i.tag.includes(currentFilter));
+            // positions = DB.filter((i: any) => i.filter_type?.split(", ").includes(currentFilter)).map((i: any) => JSON.parse(i.place_info));
+
+            fetch("/api/place/getAllPlaceInfo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "place_filter": [currentFilter],
+                    "keywords": "",
+                }),
+            })
+                .then(response => response.text())
+                .then((data) => {
+                    // console.log(JSON.parse(message));
+                    // const placeList = JSON.parse(data);
+                    // var placeInfoArr = placeList.map((i: any) => i.place_info);
+                    // var tag = placeList.map((i: any) => i.filter_type);
+                    // var ddd = placeInfoArr.map((i: any) =>  i.tag = tag[i]);
+                    // console.log(placeList[0].filter_type.split(", "))
+                    // console.log(tag)
+                    // setSearchedPlaceInfoInNav(placeInfoArr);
+                    // setTag(tag)
+
+                    console.log(data)
+                }).catch(err => console.log("에러", err));
         } else {
-            positions = [...dummy]
-
+            positions = DB.map((i: any) => JSON.parse(i.place_info));
         }
-
-    }, [currentFilter])
+    }, [currentFilter, DB])
     useEffect(() => {
+        console.log(DB.filter((i: any) => i.filter_type?.split(", ").includes(currentFilter)).map((i: any) => JSON.parse(i.place_info)))
 
         let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
 
@@ -131,7 +182,7 @@ const Map = () => {
 
         setMapState(map);
 
-        if (!isOpenedPostCafe) {
+        if (!isOpenedPostCafe && DB.length > 0) {
             // 디비에 저장되어있는 마커 띄우기
             for (let i = 0; i < positions.length; i++) {
                 var marker = new window.kakao.maps.Marker({
@@ -143,7 +194,7 @@ const Map = () => {
             }
         }
 
-    }, [currentFilter, keyword, isOpenedPostCafe])
+    }, [currentFilter, keyword, isOpenedPostCafe, DB])
 
     useEffect(() => {
         if (searchedPlaceInfoInNav.length > 0) {
