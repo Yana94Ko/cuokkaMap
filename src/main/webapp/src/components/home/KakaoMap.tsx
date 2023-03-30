@@ -287,6 +287,9 @@ const KakaoMap = () => {
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
                             setClickMarkerCafeInfo(data);
+                            // TODO : 선택된 마커 말고 나머지는 지우는 기능 필요
+                            // removeMarker 클론삼아 인덱스로 필터링 하는 함수 구현 필요
+                            // assignees: SeongSilver, hwanyb
                         });
                     })(marker, places[i])
                     fragment.appendChild(itemEl);
