@@ -11,6 +11,8 @@ public interface PlaceDAO {
     public int savePlaceInfo(PlaceVO vo);
     //장소 필터 등록
     public int insertFilterList(PlaceVO vo);
+    //장소 이미지 등록
+    public int savePlaceImg(PlaceVO vo);
 
     //방금 등록한 장소 번호 가져오기
     public int getPlaceNum(int user_num);
@@ -25,4 +27,6 @@ public interface PlaceDAO {
     public List<PlaceVO> selectPlaceByKeyword(String Keyword);
     //필터로 장소 검색
     public List<PlaceVO> selectPlaceByFilter(String Filter);
+    //user_num으로 최근에 등록한 place_img 검색
+    public PlaceVO selectResentPlaceImgByUserNum(int user_num);
 }

@@ -18,6 +18,7 @@ public class PlaceVO {
     private int user_num;
 
     //place_img
+    private int placeImg_num;
     private String placeImg_src;
     private LocalDateTime placeImg_writedate;
 
