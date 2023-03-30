@@ -8,10 +8,11 @@ import MapNavigationBar from "./header/MapNavigationBar";
 import {Button, Icon} from "../../styles/common";
 import CafeInfo from "./CafeInfo";
 import cafeDummy from "../../cafeDummy.json";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import axios from "axios";
 import styled from "styled-components";
+import {setIsOpenedLoginModal} from "../../modules/userReducer";
 
 const CurrentLocationBtn = styled(Button)`
   position: absolute;
@@ -71,6 +72,11 @@ type markerInfo = {
     y: number
 };
 const KakaoMap = () => {
+    const dispatch = useDispatch();
+    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
+
+    console.log(isLoggedin)
+
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     //카페추가 버튼으로 해당 컴포넌트 보이게 하는 state
     const [visible, setVisible] = useState<boolean>(false);
@@ -452,9 +458,15 @@ const KakaoMap = () => {
 
     //postCafeInfo 열기
     const postCafeInfoVisible = () => {
-        setVisible(true)
-        setCafeInfoCheck(false);
-        removeMarker();
+        // 로그인 되어있을 시 카페추가 창 열기
+        if (isLoggedin) {
+            setVisible(true)
+            setCafeInfoCheck(false);
+            removeMarker();
+        } else {
+            // 로그인되어있지 않으 시 로그인 모달창 열기
+            dispatch(setIsOpenedLoginModal(true));
+        }
     }
 
     //PostCafeInfo 닫기
