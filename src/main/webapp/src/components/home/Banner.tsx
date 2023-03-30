@@ -12,6 +12,7 @@ const Base = styled.div`
   width: 300px;
   height: 150px;
   overflow: hidden;
+  z-index:200;
 `;
 const CloseBtn = styled(Icon)` 
     position: absolute;
@@ -20,15 +21,24 @@ const CloseBtn = styled(Icon)`
     color: red;
     display: block;
 `;
+
+type BannerProps = {
+    setOpenBanner: (openBanner: boolean) => void;
+}
+
 const BannerImg = styled.img``;
-const Banner = () => {
+const Banner = ({setOpenBanner}: BannerProps) => {
+    const closeBanner = () => {
+        setOpenBanner(false);
+    }
+
     return (
         <Base>
-            <CloseBtn>close</CloseBtn>
+            <CloseBtn onClick={closeBanner}>close</CloseBtn>
             {/*TODO(hwanyb): 구글 설문조사 배너*/}
             {/*- 이미지 src 채워야 함*/}
             {/*assignees: hwanyb*/}
-            <BannerImg alt="구글 설문조사 배너"/>
+            <a href="https://forms.gle/HHW9noC2oHbwziV49" target="_blank"><BannerImg alt="구글 설문조사 배너"/></a>
         </Base>
     )
 }
