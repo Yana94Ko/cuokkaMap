@@ -16,6 +16,11 @@
             (#{place_num}, #{item})
         </foreach>
     </insert>
+    <!-- 이미지 등록 -->
+    <insert id='savePlaceImg'>
+        INSERT 	place_img(place_num, user_num, placeImg_src)
+        VALUES  (#{place_num}, #{user_num}, #{placeImg_src})
+    </insert>
 
     <!-- 방금 해당 유저가 등록한 place_num 받아오기 -->
     <select id='getPlaceNum' resultType='int'>
@@ -74,6 +79,11 @@
     <select id="selectPlaceByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, place_info
         from    place where place_num = #{param1}
+    </select>
+
+    <select id="selectResentPlaceImgByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        select  place_num, user_num, placeImg_src, placeImg_num
+        from    place_img where user_num = #{param1}
     </select>
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">

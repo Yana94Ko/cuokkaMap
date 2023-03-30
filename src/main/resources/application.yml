@@ -8,6 +8,11 @@ spring:
 #  datasource: # dataSource DB 연결
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet: # multipart 설정
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+
   devtools:
     livereload:
       enabled: true # 서버 자동 시작
@@ -17,3 +22,4 @@ mybatis:
 #  #mybatis 페키지 생략 설정
 #  type-aliases-package: com.bside.cuokkamap
 #  mapper-locations: classpath:mapper/*.xml
+
