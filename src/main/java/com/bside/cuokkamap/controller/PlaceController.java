@@ -27,8 +27,14 @@ public class PlaceController {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject)parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
-        placeVO.setUser_num(jobj.get("user_num").getAsInt());
-        placeVO.setPlace_info((jobj.get("place_info").getAsJsonObject()).toString());
+
+        placeVO.setUser_num(
+                jobj.get("user_num")
+                        .getAsInt());
+        placeVO.setPlace_info(
+                (jobj.get("place_info")
+                        .getAsJsonObject())
+                        .toString());
 
         int result = placeService.savePlaceInfo(placeVO);
 
@@ -36,7 +42,10 @@ public class PlaceController {
             // 방금 저장한 장소의 번호 호출
             int savedPlaceNum = placeService.getPlaceNum(placeVO.getUser_num());
             placeVO.setPlace_num(savedPlaceNum);
-            placeVO.setFilterList(Arrays.asList((jobj.get("place_filter").toString().replaceAll("[\\[\\]\"]","").split(","))));
+            placeVO.setFilterList(
+                    Arrays.asList((jobj.get("place_filter")
+                            .toString().replaceAll("[\\[\\]\"]","")
+                            .split(","))));
 
             if(placeVO.getFilterList()!=null){
                 placeService.insertFilterList(placeVO);
@@ -49,6 +58,36 @@ public class PlaceController {
         } else {
             return new ResponseEntity("DB 저장 실패!", HttpStatus.NOT_ACCEPTABLE);
         }
+    }
+
+    @PostMapping("/getAllPlaceInfo")
+    public ResponseEntity getALLPlaceWithFilterAndKeyword(@RequestBody String res) {
+        System.out.println("DB에 저장된 카페 정보 받으러옴");
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject)parser.parse(res);
+        List <String> filters = null;;
+        List<String> keywords = null;
+        int filterCnt = 0;
+        int keywordCnt = 0;
+
+        //filters
+        if(jobj.get("place_filter") != null && ! (jobj.get("place_filter").toString()).equals("[]")) {
+            filters = Arrays.asList((jobj.get("place_filter")
+                                            .toString().replaceAll("[\\[\\]\"]","")
+                                            .split(",")));
+            filterCnt = filters.size();
+        }
+        //keyword
+        if(jobj.get("keywords") != null && ! jobj.get("keywords").toString().equals("\"\"")) {
+            keywords =  Arrays.asList((jobj.get("keywords")
+                                .toString().replaceAll("[\\[\\]\"]","")
+                                .split(" ")));
+            keywordCnt = keywords.size();
+        }
+        System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt);
+        List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);
+        System.out.println(placeList);
+        return new ResponseEntity( placeList, HttpStatus.OK);
     }
 
 }

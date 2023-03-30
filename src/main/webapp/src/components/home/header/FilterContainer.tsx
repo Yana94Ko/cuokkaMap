@@ -10,11 +10,37 @@ import {RootState} from "../../../modules";
 const Base = styled.div`
   position: absolute;
   top: 4rem;
-  left: 60vw;
-  transform: translateX(-50%);
+  //right: 30rem;
+  left: 45vw;
+  display: flex;
+  overflow-x: scroll;
 
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media ${props => props.theme.windowSize.laptop} {
+    width: 100vw;
+    top: 8rem;
+    left: 0;
+    justify-content: space-between;
+    padding: 0 3rem;
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    top: 7rem;
+    padding: 0 2rem;
+  }
+  //&:last-child{
+  //  margin-right: 0;
+  //}
+  & > button:last-child {
+    margin-right: 0;
+  }
 `;
 const FilterTag = styled(Tag)`
+  white-space: nowrap;
+  margin-bottom: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   ${props => props.active && css`
     &::before {
       width: 10px;
@@ -29,6 +55,7 @@ const FilterTag = styled(Tag)`
       border-radius: 50%;
       margin-right: 10px;
     }
+
   `}
 `;
 
@@ -64,33 +91,10 @@ const FilterContainer = () => {
             id: "zero"
         },
     ]
-    //유동적으로 필터를 추가하게 될거면...원래는 DB에서 받아와야 되냐며
-    // const [filterInfo, setFilterInfo] = useState<string[]>();
-    // useEffect(() => {
-    //     axios.get('필터가져오는 url')
-    //         .then(res => {setFilterInfo(res)})
-    //         .catch(err => console.log(err))
-    // },[])
 
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        // console.log(event.currentTarget.value, event.currentTarget.id);
-        //event.currentTarget.value를 서버로 보내서 해당 필터에 해당되는 정보만 받아오도록
-        // try {
-        //     axios.post('서버로 보내는 api url', {
-        //         data: {
-        //             //서버에 보낼 필터 키워드
-        //             filter: event.currentTarget.value
-        //         }
-        //     }).then((res: any) => {
-        //         setFilteredCafeInfo(res);
-        //         console.log(res);
-        //     }).catch((err) => console.log(err));
-        // } catch (error) {
-        //     console.log(error);
-        // }
-
         dispatch(setCurrentFilter(event.currentTarget.id))
     }
 
