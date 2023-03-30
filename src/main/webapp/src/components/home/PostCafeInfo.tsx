@@ -4,6 +4,8 @@ import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
 import axios from "axios";
 import {Session} from "inspector";
+import {useDispatch} from "react-redux";
+import {setIsOpenedPostCafe} from "../../modules/viewReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -93,12 +95,18 @@ type markerInfo = {
 
 interface FnProps {
     setKeyword: React.Dispatch<SetStateAction<string>>;
-    closePostCafeInfo: () => void;
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
+    removeMarker: () => void;
 }
 
-const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searchPlaces}: FnProps) => {
+const PostCafeInfo = ({
+                          setKeyword,
+                          clickMarkerCafeInfo,
+                          searchPlaces,
+                          removeMarker
+                      }: FnProps) => {
+    const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<markerInfo>({...clickMarkerCafeInfo})
     //***************03.27.2시 30분 추가
     //입력 폼 변화 감지하여 입력 값 관리
@@ -125,6 +133,12 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
             // tag 안에 클릭한 값이 없을때만 setTag
             if (!tag.includes(e.target.id)) {
                 setTag([...tag, e.target.id])
+            } else{
+                // tag 안에 클릭한 태그 값이 있을 때 해당 값 빼기
+                const copiedTag = [...tag];
+                const index = copiedTag.indexOf(e.target.id);
+                copiedTag.splice(index, 1);
+                setTag([...copiedTag])
             }
         }
     };
@@ -138,6 +152,7 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
             setSearchedListCheck(true);
             setKeyword(searchCafeInfo);
             setNeedToSearch(true);
+            setSearchCafeInfo("")
         }
     }
     useEffect(() => {
@@ -160,9 +175,9 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
         e.preventDefault();
         const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
         const dataToSave = {
-            user_num : sessionStorage.getItem("id"),
-            place_filter : tag,
-            place_info : copiedClickedInfo,
+            user_num: sessionStorage.getItem("id"),
+            place_filter: tag,
+            place_info: copiedClickedInfo,
         }
         if (result) {
             fetch("/api/place/placeInsert", {
@@ -175,16 +190,24 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
                 .then(response => response.text())
                 .then(function (message) {
                     console.log(message);
+                    alert("카페등록 완료")
+                    dispatch(setIsOpenedPostCafe(false));
+                    removeMarker();
+
                 });
-            alert("카페등록 완료")
         }
 
 
+    }
 
+    const closePostCafe = () => {
+        dispatch(setIsOpenedPostCafe(false));
+        removeMarker();
+        setKeyword("");
     }
     return (
         <Base>
-            <CloseBtn className="material-symbols-rounded" onClick={closePostCafeInfo}>close</CloseBtn>
+            <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
             <Title>카페 추가</Title>
             <Form onSubmit={AddCafeInfo}>
                 <SearchCafe>
@@ -259,8 +282,9 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
                 <AddCafeBtn type="submit"
                             disabled={copiedClickedInfo.place_name === ""
                                 || copiedClickedInfo.address_name === ""
-                                || copiedClickedInfo.tag?.length < 1}
-                >카페 등록</AddCafeBtn>
+                                || tag?.length < 1}
+                >카페 등록
+                </AddCafeBtn>
             </Form>
         </Base>
     )
