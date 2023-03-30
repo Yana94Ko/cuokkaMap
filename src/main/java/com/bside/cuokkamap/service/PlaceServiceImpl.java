@@ -19,6 +19,9 @@ public class PlaceServiceImpl implements PlaceService{
     public int insertFilterList(PlaceVO vo) {return dao.insertFilterList(vo);}
 
     @Override
+    public int savePlaceImg(PlaceVO vo) {return dao.savePlaceImg(vo);}
+
+    @Override
     public int getPlaceNum(int user_num) {return dao.getPlaceNum(user_num);}
 
     @Override
@@ -35,4 +38,7 @@ public class PlaceServiceImpl implements PlaceService{
 
     @Override
     public List<PlaceVO> selectPlaceByFilter(String filter) {return dao.selectPlaceByFilter(filter);}
+
+    @Override
+    public PlaceVO selectResentPlaceImgByUserNum(int user_num) {return  dao.selectResentPlaceImgByUserNum(user_num);}
 }

@@ -6,11 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -20,6 +27,9 @@ public class PlaceController {
 
     @Autowired
     PlaceService placeService;
+
+//    @Value("${spring.servlet.multipart.location}")
+//    private String uploadPath;
 
     @PostMapping("placeInsert")
     public ResponseEntity saveCafeInfo(@RequestBody String response) {
@@ -98,8 +108,10 @@ public class PlaceController {
         System.out.println("DB에 해당 좌표의 장소가 이미 등록되어있는지 확인");
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject)parser.parse(res);
-        String x = jobj.get("x").toString();
-        String y = jobj.get("y").toString();
+        String x = jobj
+                .get("x").toString();
+        String y = jobj
+                .get("y").toString();
         System.out.println(x + " , " + y);
         int cnt = placeService.cntSamePlace(x,y);
         System.out.println(placeService.cntSamePlace(x,y));
@@ -110,6 +122,58 @@ public class PlaceController {
     // TODO(BE) : (Create) FE에서 받아온 place_num과 user_num, place_img를 DB에 등록
     // - place_img 를 백엔드로 어떻게.. 받아올 수 있는지 알아보기
     // assignees : Yana94Ko
+
+    @PostMapping("/uploadPlaceImg")
+    public ResponseEntity uploadPlaceImg (PlaceVO placeVO, HttpServletRequest request) {
+        try {
+            //파일 업로드 구현
+            // TODO(BE, image_upload) : 가능하면 파일업로드 함수를 외부에 별도로 빼두기(추후 프로필 이미지 업로드 등에 사용)
+            // assignees Yana94Ko
+            // 1) 파일 받아오기
+            MultipartFile file = ((MultipartRequest) request).getFile("place_img");
+            // 2) 파일명 수정용 String 생성(현재 DateTime + 100~999까지 랜덤 수)
+            String newFileName =
+                    System.currentTimeMillis()
+                            + ""
+                            + (new Random().ints(100, 999).findAny().getAsInt());
+            // 3) 파일의 확장자 받아오기
+            String ext = file
+                    .getOriginalFilename()
+                    .substring(
+                            file
+                                    .getOriginalFilename()
+                                    .lastIndexOf(".") + 1);
+//            //배포/ 비배포에 따른 path 분리
+//            String path;
+//            if(System.getenv("isNotDevVer") == "Y"){
+//                path = uploadPath;
+//            } else {
+//                path = request.getServletContext().getRealPath("/public/upload");
+//            }
+            File f = new File( request.getServletContext().getRealPath("public/upload") + "/" + newFileName + "." + ext);
+
+            try {
+                file.transferTo(f);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                return new ResponseEntity("이미지 업로드 실패 IllegalStateException", HttpStatus.EXPECTATION_FAILED);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseEntity("이미지 업로드 실패 IOException", HttpStatus.EXPECTATION_FAILED);
+            }
+
+            //이미지 업로드 성공 후, DB 저장
+            placeVO.setPlaceImg_src("/public/upload/" + newFileName + "." + ext);
+            System.out.println("저장할 데이터 : " + placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceImg_src());
+            placeService.savePlaceImg(placeVO);
+            PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(placeVO.getUser_num());
+            System.out.println("저장완료한 데이터 ==> "+ savedPlaceImg.getPlaceImg_num() +"   " + savedPlaceImg.getPlace_num() +"   "+ savedPlaceImg.getUser_num() +"   "+ savedPlaceImg.getPlaceImg_src());
+            return new ResponseEntity(savedPlaceImg, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity("이미지 업로드 실패", HttpStatus.EXPECTATION_FAILED);
+        }
+    }
     // TODO(BE) : (Delete) FE에서 받아온 placeImg_num으로 DB에서 삭제
     // - 또한 메모리 공간에서도 삭제 진행
     // assignees : Yana94Ko

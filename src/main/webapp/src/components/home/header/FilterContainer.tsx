@@ -6,7 +6,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {setCurrentFilter} from "../../../modules/filterReducer";
 import {RootState} from "../../../modules";
 
-
 const Base = styled.div`
   position: absolute;
   top: 4rem;
@@ -68,6 +67,7 @@ const FilterContainer = () => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
 
     const filterContent: filterContentType = [
         {
@@ -100,12 +100,17 @@ const FilterContainer = () => {
 
     return (
         <Base>
-            {
-                filterContent.map((filter: { name: string, id: string }, i: number) => (
-                    <FilterTag clickable={true} active={currentFilter === filter.id} onClick={filterClickHandler}
-                               key={i}
-                               id={filter.id}>{filter.name}</FilterTag>))
-            }
+            {filterContent.map((filter: { name: string, id: string }, i: number) => (
+                <FilterTag clickable={true}
+                           active={currentFilter === filter.id}
+                           onClick={filterClickHandler}
+                           key={i}
+                           id={filter.id}
+                           disabled={isOpenedPostCafe}
+                >
+                    {filter.name}
+                </FilterTag>
+            ))}
         </Base>
     )
 }

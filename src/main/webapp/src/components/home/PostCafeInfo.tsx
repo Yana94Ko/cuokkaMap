@@ -2,8 +2,6 @@ import React, {FormEvent, SetStateAction, useEffect, useState} from 'react';
 import styled from "styled-components";
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
-import axios from "axios";
-import {Session} from "inspector";
 import {useDispatch} from "react-redux";
 import {setIsOpenedPostCafe} from "../../modules/viewReducer";
 
@@ -107,7 +105,7 @@ const PostCafeInfo = ({
                           removeMarker
                       }: FnProps) => {
     const dispatch = useDispatch();
-    const [copiedClickedInfo, setCopiedClickedInfo] = useState<markerInfo>({...clickMarkerCafeInfo})
+    const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
     //***************03.27.2시 30분 추가
     //입력 폼 변화 감지하여 입력 값 관리
     const [searchCafeInfo, setSearchCafeInfo] = useState<string>("");
@@ -133,7 +131,7 @@ const PostCafeInfo = ({
             // tag 안에 클릭한 값이 없을때만 setTag
             if (!tag.includes(e.target.id)) {
                 setTag([...tag, e.target.id])
-            } else{
+            } else {
                 // tag 안에 클릭한 태그 값이 있을 때 해당 값 빼기
                 const copiedTag = [...tag];
                 const index = copiedTag.indexOf(e.target.id);
@@ -161,7 +159,7 @@ const PostCafeInfo = ({
     }, [needToSearch])
 
     useEffect(() => {
-        if (clickMarkerCafeInfo !== undefined) {
+        if (Object.keys(clickMarkerCafeInfo).length > 0) {
             setSearchedListCheck(false)
             fetch("/api/place/isThereSamePlaceDB", {
                 method: "POST",
@@ -169,33 +167,28 @@ const PostCafeInfo = ({
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "x" : clickMarkerCafeInfo.x,
-                    "y" : clickMarkerCafeInfo.y,
+                    "x": clickMarkerCafeInfo.x,
+                    "y": clickMarkerCafeInfo.y,
                 }),
             })
                 .then(response => response.text())
                 .then(function (message) {
                     console.log(message);
-                    if(message === "0") {
-                        console.log("DB에 없는 카페에요")
+                    if (message === "0") {
                         setCopiedClickedInfo({
                             ...clickMarkerCafeInfo,
                         })
                     } else {
+                        setCopiedClickedInfo({})
                         alert("이미 DB에 저장된 카페입니다")
-                        // TODO : 이후에 setCopiedClickedInfo로 빈값을 만들어줘야함
-                        //  setCopiedClickedInfo()
-                        // assignees : hwanyb
                     }
                 });
         }
-        console.log(copiedClickedInfo)
-
     }, [clickMarkerCafeInfo]);
 
     const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
+        const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠습니까?");
         const dataToSave = {
             user_num: sessionStorage.getItem("id"),
             place_filter: tag,
@@ -211,21 +204,24 @@ const PostCafeInfo = ({
             })
                 .then(response => response.text())
                 .then(function (message) {
-                    console.log(message);
-                    alert("카페등록 완료")
+                    alert("카페등록이 완료되었습니다.")
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
-
+                    window.location.reload();
+                    // TODO(FE): 카페 등록 완료 후 해당 위치로 이동
+                    // assigness: hwanyb, SeongSilver
                 });
         }
-
-
     }
-
     const closePostCafe = () => {
         dispatch(setIsOpenedPostCafe(false));
         removeMarker();
         setKeyword("");
+    }
+    const onInputClick = () => {
+        if (Object.keys(copiedClickedInfo).length === 0) {
+            alert("카페찾기를 먼저 완료해 주세요.");
+        }
     }
     return (
         <Base>
@@ -248,22 +244,22 @@ const PostCafeInfo = ({
                     </SearchInputWrapper>
                 </SearchCafe>
                 <CafeInfoWrapper>
-                    <CafeInfoItem>
+                    <CafeInfoItem onClick={onInputClick}>
                         <Label>카페명*</Label>
                         <Input
                             value={copiedClickedInfo.place_name}
                             placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
-                            // disabled={true}
+                            disabled={true}
                             onChange={onChange}
                             name="name"
                         />
                     </CafeInfoItem>
-                    <CafeInfoItem>
+                    <CafeInfoItem onClick={onInputClick}>
                         <Label>주소*</Label>
                         <Input
                             value={copiedClickedInfo.address_name}
                             placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
-                            // disabled={true}
+                            disabled={true}
                             onChange={onChange}
                             name="address"
                         />
@@ -271,23 +267,46 @@ const PostCafeInfo = ({
                     <CafeInfoItem>
                         <Label>옵션*</Label>
                         <TagWrapper onClick={onTagClick}>
-                            <Tag clickable={true} active={tag.includes("decaf")} id="decaf">디카페인</Tag>
-                            <Tag clickable={true} active={tag.includes("lactos")} id="lactos">락토프리 우유</Tag>
-                            <Tag clickable={true} active={tag.includes("soy")} id="soy">두유</Tag>
-                            <Tag clickable={true} active={tag.includes("oat")} id="oat">오트밀크</Tag>
-                            <Tag clickable={true} active={tag.includes("zero")} id="zero">제로슈가</Tag>
+                            <Tag
+                                clickable={true}
+                                active={tag.includes("decaf")}
+                                id="decaf"
+                                disabled={Object.keys(copiedClickedInfo).length === 0}
+                            >디카페인</Tag>
+                            <Tag clickable={true}
+                                 active={tag.includes("lactos")}
+                                 id="lactos"
+                                 disabled={Object.keys(copiedClickedInfo).length === 0}
+                            >락토프리 우유</Tag>
+                            <Tag clickable={true}
+                                 active={tag.includes("soy")}
+                                 id="soy"
+                                 disabled={Object.keys(copiedClickedInfo).length === 0}
+                            >두유</Tag>
+                            <Tag clickable={true}
+                                 active={tag.includes("oat")}
+                                 id="oat"
+                                 disabled={Object.keys(copiedClickedInfo).length === 0}
+                            >오트밀크</Tag>
+                            <Tag clickable={true}
+                                 active={tag.includes("zero")}
+                                 id="zero"
+                                 disabled={Object.keys(copiedClickedInfo).length === 0}
+                            >제로슈가</Tag>
                         </TagWrapper>
                     </CafeInfoItem>
-                    <CafeInfoItem>
+                    <CafeInfoItem onClick={onInputClick}>
                         <Label>연락처</Label>
                         <Input
                             value={copiedClickedInfo.phone}
                             name="contact"
                             onChange={onChange}
                             placeholder="카페 연락처를 입력해 주세요."
+                            disabled={Object.keys(copiedClickedInfo).length === 0}
+                            onClick={onInputClick}
                         />
                     </CafeInfoItem>
-                    <CafeInfoItem>
+                    <CafeInfoItem onClick={onInputClick}>
                         <Label>인스타그램</Label>
                         <Input
                             // type=url 설정함으로 인해서 값 입력시 url 형태인지 자동으로 유효성검사
@@ -297,6 +316,8 @@ const PostCafeInfo = ({
                             name="insta"
                             onChange={onChange}
                             placeholder="카페 인스타그램 URL을 입력해 주세요."
+                            disabled={Object.keys(copiedClickedInfo).length === 0}
+                            onClick={onInputClick}
                         />
                     </CafeInfoItem>
                 </CafeInfoWrapper>

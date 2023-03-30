@@ -18,9 +18,11 @@ const Item = styled.li`
   color: ${props => props.theme.color.darkGray};
   cursor: pointer;
   margin-bottom: 10px;
-  &:last-child{
+
+  &:last-child {
     margin-bottom: 0;
   }
+
   &:hover {
     color: ${props => props.theme.color.primary};
   }
@@ -28,7 +30,13 @@ const Item = styled.li`
 
 const MyPageList: React.FC = () => {
 
-
+    const onLogoutClick = () => {
+        const result = window.confirm("로그아웃 하시겠습니까?");
+        if (result) {
+            sessionStorage.removeItem("id");
+            window.location.reload();
+        }
+    }
     return (
         <Base>
             <List>
@@ -36,11 +44,7 @@ const MyPageList: React.FC = () => {
                 <Item>내 사진</Item>
                 <Item>내 후기</Item>
                 <Item>의견 보내기</Item>
-                <Item onClick={() => {
-                    sessionStorage.removeItem("id");
-                    window.location.reload();
-                }
-                }>로그아웃</Item>
+                <Item onClick={onLogoutClick}>로그아웃</Item>
             </List>
         </Base>
     )

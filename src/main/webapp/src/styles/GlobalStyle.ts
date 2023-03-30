@@ -24,6 +24,9 @@ const GlobalStyle = createGlobalStyle`
       font-size: 12px;
     }
   }
+  img {
+    transform: translateZ(0);
+  }
 `;
 
 export default GlobalStyle;
