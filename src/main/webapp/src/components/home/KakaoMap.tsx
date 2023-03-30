@@ -277,7 +277,6 @@ const KakaoMap = () => {
 
                         itemEl.onclick = function () {
                             setClickMarkerCafeInfo(data);
-                            setKeyword("")
                         }
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
@@ -478,7 +477,7 @@ const KakaoMap = () => {
             mapstate ? (
                 <PostCafeInfo setKeyword={setKeyword} closePostCafeInfo={closePostCafeInfo}
                               clickMarkerCafeInfo={clickMarkerCafeInfo}
-                              searchPlaces={searchPlaces}/>
+                              searchPlaces={searchPlaces} setVisible={setVisible} removeMarker={removeMarker}/>
             ) : null
         ) : (
             <AddCafeButton
