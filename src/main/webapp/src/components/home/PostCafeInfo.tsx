@@ -92,13 +92,22 @@ type markerInfo = {
 }
 
 interface FnProps {
+    setVisible: React.Dispatch<SetStateAction<boolean>>;
     setKeyword: React.Dispatch<SetStateAction<string>>;
     closePostCafeInfo: () => void;
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
+    removeMarker: () => void;
 }
 
-const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searchPlaces}: FnProps) => {
+const PostCafeInfo = ({
+                          setKeyword,
+                          closePostCafeInfo,
+                          clickMarkerCafeInfo,
+                          searchPlaces,
+                          setVisible,
+                          removeMarker
+                      }: FnProps) => {
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<markerInfo>({...clickMarkerCafeInfo})
     //***************03.27.2시 30분 추가
     //입력 폼 변화 감지하여 입력 값 관리
@@ -138,6 +147,7 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
             setSearchedListCheck(true);
             setKeyword(searchCafeInfo);
             setNeedToSearch(true);
+            setSearchCafeInfo("")
         }
     }
     useEffect(() => {
@@ -160,9 +170,9 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
         e.preventDefault();
         const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠어요?");
         const dataToSave = {
-            user_num : sessionStorage.getItem("id"),
-            place_filter : tag,
-            place_info : copiedClickedInfo,
+            user_num: sessionStorage.getItem("id"),
+            place_filter: tag,
+            place_info: copiedClickedInfo,
         }
         if (result) {
             fetch("/api/place/placeInsert", {
@@ -177,8 +187,9 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
                     console.log(message);
                 });
             alert("카페등록 완료")
+            setVisible(false);
+            removeMarker();
         }
-
 
 
     }
