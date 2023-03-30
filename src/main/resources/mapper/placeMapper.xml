@@ -53,42 +53,11 @@
         </if>
     </select>
 
-    <select id="selectALLPlaceWithFilterAndKeyword1" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        SELECT DISTINCT p.place_num, p.place_Info
-        FROM place p
-        INNER JOIN place_filter pf ON p.place_num = pf.place_num
-        WHERE
-        /* 필터 값이 존재하면 해당 필터 값들이 모두 포함된 place_info만 반환 */
-        (
-        <if test='param1 != null'>
-            SELECT COUNT(DISTINCT filter_type) = #{param2}
-            FROM place_filter
-            WHERE place_num = p.place_num
-            AND filter_type IN
-            <foreach collection='param1' item='filter' open='(' close=')' separator=','>
-                #{filter}
-            </foreach>
-        </if>
-        <if test='param1 == null'>
-            1=1
-        </if>
-        )
-        /* place_info 값에 keyword 값들이 모두 포함된 경우에만 반환 */
-        AND (
-        <if test='param3 != null'>
-            (
-            <foreach collection='param3' item='keyword' open='' close='' separator='AND'>
-                p.place_Info LIKE CONCAT('%', #{keyword}, '%')
-            </foreach>
-            )
-            OR #{param4} = 0
-        </if>
-        <if test='param3 == null'>
-            1=1
-        </if>
-        )
-        GROUP BY p.place_num, p.place_Info
-        HAVING COUNT(DISTINCT pf.filter_type) = #{param2}
+    <select id="cntSamePlace" resultType='int'>
+        SELECT COUNT(*)
+        FROM place
+        WHERE place_info LIKE CONCAT('%', CONCAT('"x":', #{param1}), '%')
+          AND place_info LIKE CONCAT('%', CONCAT('"y":', #{param2}), '%')
     </select>
 
     <select id="selectPlaceByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">

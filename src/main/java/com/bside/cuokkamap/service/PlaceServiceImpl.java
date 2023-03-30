@@ -25,6 +25,9 @@ public class PlaceServiceImpl implements PlaceService{
     public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt) {return dao.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);}
 
     @Override
+    public int cntSamePlace(String x, String y) {return dao.cntSamePlace(x, y);}
+
+    @Override
     public PlaceVO selectPlaceByPlaceNum(int place_num) {return dao.selectPlaceByPlaceNum(place_num);}
 
     @Override
