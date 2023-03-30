@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class UserController {
     @Autowired

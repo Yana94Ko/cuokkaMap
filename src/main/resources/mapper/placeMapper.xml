@@ -3,10 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bside.cuokkamap.dao.PlaceDAO">
-    <!-- 생성 기능  -->
+    <!-- 장소 등록  -->
     <insert id="savePlaceInfo">
-        insert  into place(place_info)
-        values  (#{place_info})
+        insert  into place(place_info, user_num)
+        values  (#{place_info}, #{user_num})
+    </insert>
+    <!-- 필터 등록 -->
+    <insert id='insertFilterList'>
+        INSERT 	place_filter(place_num, filter_type)
+        VALUES
+        <foreach collection="filterList" item="item" separator=",">
+            (#{place_num}, #{item})
+        </foreach>
     </insert>
 
     <!-- 검색 기능 -->
