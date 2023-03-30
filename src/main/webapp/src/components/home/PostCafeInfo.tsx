@@ -147,7 +147,6 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
 
     useEffect(() => {
         if (clickMarkerCafeInfo !== undefined) {
-
             setSearchedListCheck(false)
             fetch("/api/place/isThereSamePlaceDB", {
                 method: "POST",
@@ -169,6 +168,9 @@ const PostCafeInfo = ({setKeyword, closePostCafeInfo, clickMarkerCafeInfo, searc
                         })
                     } else {
                         alert("이미 DB에 저장된 카페입니다")
+                        // TODO : 이후에 setCopiedClickedInfo로 빈값을 만들어줘야함
+                        //  setCopiedClickedInfo()
+                        // assignees : hwanyb
                     }
                 });
         }
