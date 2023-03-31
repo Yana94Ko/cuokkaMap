@@ -3,8 +3,10 @@ package com.bside.cuokkamap.controller;
 import com.bside.cuokkamap.service.PlaceService;
 import com.bside.cuokkamap.vo.PlaceVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -60,7 +62,6 @@ public class PlaceController {
             if(placeVO.getFilterList()!=null){
                 placeService.insertFilterList(placeVO);
             }
-            ObjectMapper objectMapper = new ObjectMapper();
 
             PlaceVO savedPlaceInfo = placeService.selectPlaceByPlaceNum(savedPlaceNum);
             savedPlaceInfo.setFilterList(placeVO.getFilterList());
@@ -119,8 +120,7 @@ public class PlaceController {
         return new ResponseEntity(cnt, HttpStatus.OK);
     }
 
-    // TODO(BE) : (Create) FE에서 받아온 place_num과 user_num, place_img를 DB에 등록
-    // - place_img 를 백엔드로 어떻게.. 받아올 수 있는지 알아보기
+    // TODO(BE) : 사진등록 관련 프론트 연동후 재확인 필요
     // assignees : Yana94Ko
 
     @PostMapping("/uploadPlaceImg")
@@ -165,10 +165,14 @@ public class PlaceController {
             //이미지 업로드 성공 후, DB 저장
             placeVO.setPlaceImg_src("/public/upload/" + newFileName + "." + ext);
             System.out.println("저장할 데이터 : " + placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceImg_src());
-            placeService.savePlaceImg(placeVO);
-            PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(placeVO.getUser_num());
-            System.out.println("저장완료한 데이터 ==> "+ savedPlaceImg.getPlaceImg_num() +"   " + savedPlaceImg.getPlace_num() +"   "+ savedPlaceImg.getUser_num() +"   "+ savedPlaceImg.getPlaceImg_src());
-            return new ResponseEntity(savedPlaceImg, HttpStatus.OK);
+            int result = placeService.savePlaceImg(placeVO);
+            if (result != 0) {
+                PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(placeVO.getUser_num());
+                System.out.println("저장완료한 데이터 ==> "+ savedPlaceImg.getPlaceImg_num() +"   " + savedPlaceImg.getPlace_num() +"   "+ savedPlaceImg.getUser_num() +"   "+ savedPlaceImg.getPlaceImg_src());
+                return new ResponseEntity(savedPlaceImg, HttpStatus.OK);
+            } else {
+                return new ResponseEntity("DB 저장 실패", HttpStatus.EXPECTATION_FAILED);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("이미지 업로드 실패", HttpStatus.EXPECTATION_FAILED);
@@ -178,13 +182,53 @@ public class PlaceController {
     // - 또한 메모리 공간에서도 삭제 진행
     // assignees : Yana94Ko
 
-    // TODO(BE) : (Create) FE에서 받아온 place_num과 user_num, placeReview, placeReview_emogi를 DB에 등록
+    // TODO(BE) : 리뷰등록 관련 프론트 연동후 제확인 필요
     // assignees : Yana94Ko
+    @PostMapping("/uploadPlaceReview")
+    public ResponseEntity uploadPlaceImg (PlaceVO placeVO) {
+        //placeReview 저장
+        System.out.println(placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceReview_emoji() +"   "+ placeVO.getPlaceReview());
+        int result = placeService.savePlaceReview(placeVO);
+        if (result != 0) {
+            PlaceVO savedOlaceReview = placeService.selectResentPlaceReviewByUserNum(placeVO.getUser_num());
+            return new ResponseEntity(savedOlaceReview, HttpStatus.OK);
+        } else {
+            return new ResponseEntity("리뷰쓰기 실패", HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
     // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
     // assignees : Yana94Ko
 
-    // TODO(BE) : (Read) FE 에서 받아온 place_num의 상세정보(사진, 리뷰 포함) DB에서 열람
+    // TODO(BE) : 장소정보 열람(사진, 리뷰 포함)관련 프론트 연동후 제확인 필요
     // assignees : Yana94Ko
+    @PostMapping("/selectDetailPlaceInfo")
+    public ResponseEntity selectDetailPlaceInfo (@RequestBody String response) {
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject jobj = (JsonObject)parser.parse(response);
+            int place_num = jobj.get("place_num")
+                    .getAsInt();
+            System.out.println("장소 상세정보 확인하러 옴  " + place_num);
+            //값을 담아 보내줄 json 객체 생성
+            JSONObject placeDetailInfo = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
+            PlaceVO selectedPlaceInfo = placeService.selectPlaceByPlaceNum(place_num);
+            jsonObject.put("place_num", selectedPlaceInfo.getPlace_num());
+            jsonObject.put("place_info", selectedPlaceInfo.getPlace_info());
+            jsonObject.put("user_num", selectedPlaceInfo.getUser_num());
+            //place_num으로 place 의 기본정보 열람
+            placeDetailInfo.put("selectedPlaceInfo",jsonObject.toString());
+            //place_num으로 place의 place_img 리스트 열람
+            placeDetailInfo.put("placeImgList",placeService.selectPlaceImgByPlaceNum(place_num));
+            //place_num으로 place의 place_review 리스트 열람
+            placeDetailInfo.put("placeReviewList", placeService.selectPlaceReviewByPlaceNum(place_num));
+
+            return new ResponseEntity(placeDetailInfo.toString(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity("장소정보 열람 실패", HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
 
     // TODO(BE) : (Create) FE 에서 받아온 place_num, user_num 으로 favorite_place DB에 등록
     // assignees : Yana94Ko
