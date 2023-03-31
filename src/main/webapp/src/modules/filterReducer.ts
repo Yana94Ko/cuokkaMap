@@ -1,7 +1,7 @@
 const SET_CURRENT_FILTER = "filterReducer/SET_CURRENT_FILTER" as const;
 
 
-export const setCurrentFilter = (currentFilter: string) => ({
+export const setCurrentFilter = (currentFilter: object) => ({
 
     type: SET_CURRENT_FILTER,
     payload: currentFilter
@@ -10,11 +10,11 @@ export const setCurrentFilter = (currentFilter: string) => ({
 type FilterAction = ReturnType<typeof setCurrentFilter>;
 
 type FilterState = {
-    currentFilter: string
+    currentFilter: any
 }
 
 const initialState: FilterState = {
-    currentFilter: "all"
+    currentFilter: []
 }
 
 function filterReducer(
