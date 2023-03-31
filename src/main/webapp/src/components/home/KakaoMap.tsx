@@ -76,10 +76,8 @@ type markerInfo = {
     x: number,
     y: number
 };
-const Map = () => {
+const KakaoMap = () => {
     const dispatch = useDispatch();
-    // [Yana] 로딩페이지
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
@@ -98,34 +96,51 @@ const Map = () => {
     //마커를 클릭해서 카페추가에 올릴 정보
     const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
     const [DB, setDB] = useState<any>([]);
-    const [positions, setPositions] = useState<any[]>([]);
+    const [test, setTest] = useState<any[]>([]);
+    // 3가지 종류의 마커가 상태에 따라 담기는 배열
     var markers: any[] = [];
+    // DB 검색 마커
+    var DBSearchMarkerSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+        DBSearchMarkerSize = new window.kakao.maps.Size(45, 47);
 
-    var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
-    var filterImgSize = new window.kakao.maps.Size(38, 38);
-    var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
+    // DB전체 / 필터 마커
+    // var DBMarkerSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`,
+    var DBMarkerSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+        DBMarkerSize = new window.kakao.maps.Size(38, 38);
 
     // DB 받아오는 로직
     useEffect(() => {
         // [YANA]
-        abc();
+        fetchDB();
     }, []);
-    function abc(){
+    useEffect(() => {
+        if (test.length > 0 && currentFilter === "all") {
+            displayDBPlaces(test, DBMarkerSrc, DBMarkerSize)
+            // console.log(test)
+
+        }
+
+
+    },[]);
+
+    function fetchDB() {
         fetch("/api/place/getAllPlaceInfo", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                "place_filter": [],
+                "place_filter": currentFilter,
                 "keywords": "",
             }),
         })
             .then(response => response.text())
-            .then(function (data: any) {
-                setDB(JSON.parse(data));
-                setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
-            }).catch(err => console.log("에러", err));
+            .then((data: any) => {
+                // setDB(JSON.parse(data));
+                setTest(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
+            })
+            .catch(err => console.log("에러", err));
+
     }
 
     useEffect(() => {
@@ -142,15 +157,18 @@ const Map = () => {
             })
                 .then(response => response.text())
                 .then((data: any) => {
-                    var placeInfoArr = JSON.parse(data).map((i: any) => JSON.parse(i.place_info));
-                    setPositions(placeInfoArr);
+                    // var placeInfoArr = JSON.parse(data).map((i: any) => JSON.parse(i.place_info));
+                    // setDB(JSON.parse(data));
+                    setTest(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
                 })
                 .catch(err => console.log("에러", err));
-        } else {
-            setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
-        }
 
-    }, [currentFilter, DB]);
+            // console.log("필터")
+            // displayDBPlaces(test, DBMarkerSrc, DBMarkerSize);
+
+
+        }
+    }, [currentFilter]);
 
     useEffect(() => {
         let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
@@ -170,40 +188,35 @@ const Map = () => {
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 
         setMapState(map);
-        setIsLoaded(true);
-        if (!isOpenedPostCafe) {
-            // TODO(FE): DB, 필터DB 마커 mouseOver, click 이벤트 추가하기
-            // assignees: hwanyb, SeongSilver
 
-            // 디비에 저장되어있는 마커 띄우기
-            for (let i = 0; i < positions.length; i++) {
-                var marker = new window.kakao.maps.Marker({
-                    map: map,
-                    position: new window.kakao.maps.LatLng(positions[i].y, positions[i].x),
-                    title: positions[i].place_name,
-                    image: filterMarkerImg
-                })
-            }
+    }, [keyword, isOpenedPostCafe]);
+
+console.log(currentFilter);
+
+    useEffect(() => {
+        if (test.length > 0 && currentFilter !== "all") {
+            displayDBPlaces(test, DBMarkerSrc, DBMarkerSize)
         }
-    }, [currentFilter, keyword, isOpenedPostCafe, positions.length])
+    }, [currentFilter]);
 
     useEffect(() => {
         if (searchedPlaceInfoInNav.length > 0) {
-            console.log(searchedPlaceInfoInNav)
-            displayDBPlaces(searchedPlaceInfoInNav);
+            displayDBPlaces(searchedPlaceInfoInNav, DBSearchMarkerSrc, DBSearchMarkerSize);
         }
     }, [searchedPlaceInfoInNav]);
 
-    useEffect(() => {
-        if (!isOpenedPostCafe) {
-            setClickMarkerCafeInfo({})
-        }
-    }, [isOpenedPostCafe])
+
+    // PostCafeInfo 클릭 / 제출 이벤트로 옮기기
+    // useEffect(() => {
+    //     if (!isOpenedPostCafe) {
+    //         setClickMarkerCafeInfo({})
+    //     }
+    // }, [isOpenedPostCafe])
 
     //해당 위치로 이동하는 함수
-    function panToMap(x: number, y:number){
+    function panToMap(x: number, y: number) {
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
-        abc();
+        fetchDB();
         mapState.setCenter(moveLatLng);
     }
 
@@ -233,11 +246,12 @@ const Map = () => {
     const onPostCafeBtnClick = () => {
         // 로그인 되어있을 시 카페추가 창 열기
         if (isLoggedin) {
-            setPositions([])
+            // setPositions([])
+            // markers = [];
+            removeMarker();
 
             dispatch(setIsOpenedCafeInfo(false));
             dispatch(setIsOpenedPostCafe(true));
-            removeMarker();
 
         } else {
             // 로그인되어있지 않으 시 로그인 모달창 열기
@@ -394,17 +408,21 @@ const Map = () => {
         }
     }
 
+
     //마커를 생성하고 지도 위에 마커를 표시하는 함수(카페 추가 검색)
-    function addMarker(position: () => {}, idx: number, title?: string | undefined) {
+    function addMarker(position: () => {}, idx?: number, title?: string | undefined) {
         if (mapState !== undefined) {
-            var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
-                imageSize = new window.kakao.maps.Size(34, 37), //마커크기
-                imgOptions = {
-                    spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
-                    spriteOrigin: new window.kakao.maps.Point(0, (idx * 46) + 10), //스프라이트 이미지 중 사용할 영역의 좌상단 좌표
-                    offset: new window.kakao.maps.Point(13, 37) //마커 좌표에 일치시킬 이미지 내에서의 좌표
-                },
-                markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+        // 카페추가 검색 마커
+        var AddCafeMarkerSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+            AddCafeMarkerSize = new window.kakao.maps.Size(34, 37), //마커크기
+            AddCafeMarkerOptions = {
+                spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
+                spriteOrigin: new window.kakao.maps.Point(0, (idx * 46) + 10), //스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+                offset: new window.kakao.maps.Point(13, 37) //마커 좌표에 일치시킬 이미지 내에서의 좌표
+            };
+
+
+            var markerImage = new window.kakao.maps.MarkerImage(AddCafeMarkerSrc, AddCafeMarkerSize, AddCafeMarkerOptions),
                 marker = new window.kakao.maps.Marker({
                     position: position,
                     image: markerImage,
@@ -419,7 +437,7 @@ const Map = () => {
     }
 
     //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
-    function displayDBPlaces(places: any[]) {
+    function displayDBPlaces(places: any[], imgSrc: string, imgSize: any) {
         if (mapState !== undefined) {
             const listEl = document.getElementById('placesList'),
                 bounds = new window.kakao.maps.LatLngBounds();
@@ -433,7 +451,7 @@ const Map = () => {
             for (var i = 0; i < places.length; i++) {
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
-                    marker = addDBMarker(placePosition, places[i].place_name);
+                    marker = addDBMarker(placePosition, places[i].place_name, imgSrc, imgSize);
 
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
@@ -457,17 +475,9 @@ const Map = () => {
         }
     }
 
-    function addDBMarker(position: () => {}, title: string) {
+    function addDBMarker(position: any, title: string, imgSrc: string, imgSize: any) {
         if (mapState !== undefined) {
-            //마커 이미지 URL
-            let imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-                //마커 크기
-                imageSize = new window.kakao.maps.Size(45, 47),
-                // 마커이미지의 옵션, 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정
-                imageOption = {offset: new window.kakao.maps.Point(27, 69)};
-
-            // 마커의 이미지정보를 가지고 있는 마커이미지를 생성
-            var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+            var markerImage = new window.kakao.maps.MarkerImage(imgSrc, imgSize);
 
             // 마커 생성
             var marker = new window.kakao.maps.Marker({
@@ -488,20 +498,16 @@ const Map = () => {
         <Base>
             <MapContainer id="map">
             </MapContainer>
-            { !isLoaded ? (
-                <Loading/>
-            ) : (
-                <>
-                <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
-                                  setConfirmCafeInfo={setConfirmCafeInfo} removeMarker={removeMarker}/>
-                <CurrentLocationBtn onClick={currentLocation}>
-                    <Icon className="material-symbols-rounded">my_location</Icon>
-                </CurrentLocationBtn>
-                <AddCafeButton onClick={onPostCafeBtnClick}>
-                    <Icon className="material-symbols-rounded">add</Icon>
-                    카페추가
-                </AddCafeButton>
 
+            <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
+                              setConfirmCafeInfo={setConfirmCafeInfo} removeMarker={removeMarker}/>
+            <CurrentLocationBtn onClick={currentLocation}>
+                <Icon className="material-symbols-rounded">my_location</Icon>
+            </CurrentLocationBtn>
+            <AddCafeButton onClick={onPostCafeBtnClick}>
+                <Icon className="material-symbols-rounded">add</Icon>
+                카페추가
+            </AddCafeButton>
             {
                 isOpenedPostCafe && (
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
@@ -516,11 +522,8 @@ const Map = () => {
                     <CafeInfo cafeInfoContainer={cafeInfoContainer}/>
                 )
             }
-
-            </>
-            )}
         </Base>
     )
 }
 
-export default Map;
+export default KakaoMap;

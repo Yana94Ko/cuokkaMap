@@ -95,14 +95,14 @@ const FilterContainer = () => {
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(setCurrentFilter(event.currentTarget.id))
+        dispatch(setCurrentFilter([event.currentTarget.id]))
     }
 
     return (
         <Base>
             {filterContent.map((filter: { name: string, id: string }, i: number) => (
                 <FilterTag clickable={true}
-                           active={currentFilter === filter.id}
+                           active={currentFilter.includes(filter.id)}
                            onClick={filterClickHandler}
                            key={i}
                            id={filter.id}
