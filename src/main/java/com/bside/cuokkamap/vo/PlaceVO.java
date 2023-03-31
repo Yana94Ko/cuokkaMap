@@ -18,12 +18,12 @@ public class PlaceVO {
     private int user_num;
 
     //place_img
-    private int placeImg_num;
+    private Integer placeImg_num = null;
     private String placeImg_src;
     private LocalDateTime placeImg_writedate;
 
     //place_review
-    private int placeReview_emoji;
+    private Integer placeReview_emoji = null;
     private String placeReview;
     private LocalDateTime placeReview_writedate;
 

@@ -213,11 +213,14 @@ public class PlaceController {
             //값을 담아 보내줄 json 객체 생성
             JSONObject placeDetailInfo = new JSONObject();
             JSONObject jsonObject = new JSONObject();
+
+            //place_num으로 place의 filter_type 리스트 열람
+            placeDetailInfo.put("filterList", placeService.selectPlaceFilterByPlaceNum(place_num).split(", "));
+            //place_num으로 place 의 기본정보 열람
             PlaceVO selectedPlaceInfo = placeService.selectPlaceByPlaceNum(place_num);
             jsonObject.put("place_num", selectedPlaceInfo.getPlace_num());
             jsonObject.put("place_info", selectedPlaceInfo.getPlace_info());
             jsonObject.put("user_num", selectedPlaceInfo.getUser_num());
-            //place_num으로 place 의 기본정보 열람
             placeDetailInfo.put("selectedPlaceInfo",jsonObject.toString());
             //place_num으로 place의 place_img 리스트 열람
             placeDetailInfo.put("placeImgList",placeService.selectPlaceImgByPlaceNum(place_num));
