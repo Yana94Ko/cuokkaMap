@@ -11,6 +11,8 @@ public interface PlaceService {
     public int insertFilterList(PlaceVO vo);
     //장소 이미지 등록
     public int savePlaceImg(PlaceVO vo);
+    //장소 리뷰 등록
+    public int savePlaceReview(PlaceVO vo);
 
     //방금 등록한 장소 번호 가져오기
     public int getPlaceNum(int user_num);
@@ -27,4 +29,10 @@ public interface PlaceService {
     public List<PlaceVO> selectPlaceByFilter(String filter);
     //user_num으로 최근에 등록한 place_img 검색
     public PlaceVO selectResentPlaceImgByUserNum(int user_num);
+    //user_num으로 최근에 등록한 Place_revies 검색
+    public PlaceVO selectResentPlaceReviewByUserNum(int user_num);
+    //place_num으로 해당하는 place의 img 조회
+    public List<PlaceVO> selectPlaceImgByPlaceNum(int user_num);
+    //place_num으로 해당하는 place의 review 조회
+    public List<PlaceVO> selectPlaceReviewByPlaceNum(int user_num);
 }
