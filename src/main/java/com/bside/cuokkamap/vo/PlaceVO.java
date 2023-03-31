@@ -23,7 +23,7 @@ public class PlaceVO {
     private LocalDateTime placeImg_writedate;
 
     //place_review
-    private int plcaeReview_emoji;
+    private int placeReview_emoji;
     private String placeReview;
     private LocalDateTime placeReview_writedate;
 

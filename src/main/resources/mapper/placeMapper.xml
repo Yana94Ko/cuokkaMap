@@ -21,6 +21,11 @@
         INSERT 	place_img(place_num, user_num, placeImg_src)
         VALUES  (#{place_num}, #{user_num}, #{placeImg_src})
     </insert>
+    <!-- 리뷰 등록 -->
+    <insert id='savePlaceReview'>
+        INSERT 	place_review(place_num, user_num, placeReview, placeReview_emoji)
+        VALUES  (#{place_num}, #{user_num}, #{placeReview}, #{placeReview_emoji})
+    </insert>
 
     <!-- 방금 해당 유저가 등록한 place_num 받아오기 -->
     <select id='getPlaceNum' resultType='int'>
@@ -83,7 +88,17 @@
 
     <select id="selectResentPlaceImgByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, user_num, placeImg_src, placeImg_num
-        from    place_img where user_num = #{param1}
+        from    place_img
+        where user_num = #{param1}
+        ORDER 	BY placeImg_num DESC
+        LIMIT 	1
+    </select>
+    <select id="selectResentPlaceReviewByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        select  place_num, user_num, placeReview, placeReview_emoji, placeReview_num
+        from    place_review
+        where user_num = #{param1}
+        ORDER 	BY placeReview_num DESC
+        LIMIT 	1
     </select>
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">

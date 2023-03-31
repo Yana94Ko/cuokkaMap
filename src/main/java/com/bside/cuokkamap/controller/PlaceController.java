@@ -165,10 +165,14 @@ public class PlaceController {
             //이미지 업로드 성공 후, DB 저장
             placeVO.setPlaceImg_src("/public/upload/" + newFileName + "." + ext);
             System.out.println("저장할 데이터 : " + placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceImg_src());
-            placeService.savePlaceImg(placeVO);
-            PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(placeVO.getUser_num());
-            System.out.println("저장완료한 데이터 ==> "+ savedPlaceImg.getPlaceImg_num() +"   " + savedPlaceImg.getPlace_num() +"   "+ savedPlaceImg.getUser_num() +"   "+ savedPlaceImg.getPlaceImg_src());
-            return new ResponseEntity(savedPlaceImg, HttpStatus.OK);
+            int result = placeService.savePlaceImg(placeVO);
+            if (result != 0) {
+                PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(placeVO.getUser_num());
+                System.out.println("저장완료한 데이터 ==> "+ savedPlaceImg.getPlaceImg_num() +"   " + savedPlaceImg.getPlace_num() +"   "+ savedPlaceImg.getUser_num() +"   "+ savedPlaceImg.getPlaceImg_src());
+                return new ResponseEntity(savedPlaceImg, HttpStatus.OK);
+            } else {
+                return new ResponseEntity("DB 저장 실패", HttpStatus.EXPECTATION_FAILED);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("이미지 업로드 실패", HttpStatus.EXPECTATION_FAILED);
@@ -180,6 +184,19 @@ public class PlaceController {
 
     // TODO(BE) : (Create) FE에서 받아온 place_num과 user_num, placeReview, placeReview_emogi를 DB에 등록
     // assignees : Yana94Ko
+    @PostMapping("/uploadPlaceReview")
+    public ResponseEntity uploadPlaceImg (PlaceVO placeVO) {
+        //placeReview 저장
+        System.out.println(placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceReview_emoji() +"   "+ placeVO.getPlaceReview());
+        int result = placeService.savePlaceReview(placeVO);
+        if (result != 0) {
+            PlaceVO savedOlaceReview = placeService.selectResentPlaceReviewByUserNum(placeVO.getUser_num());
+            return new ResponseEntity(savedOlaceReview, HttpStatus.OK);
+        } else {
+            return new ResponseEntity("리뷰쓰기 실패", HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
     // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
     // assignees : Yana94Ko
 
