@@ -200,7 +200,7 @@ public class PlaceController {
     // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
     // assignees : Yana94Ko
 
-    // TODO(BE) : (Read) FE 에서 받아온 place_num의 상세정보(사진, 리뷰 포함) DB에서 열람
+    // TODO(BE) : 장소정보 열람(사진, 리뷰 포함)관련 프론트 연동후 제확인 필요
     // assignees : Yana94Ko
     @PostMapping("/selectDetailPlaceInfo")
     public ResponseEntity selectDetailPlaceInfo (@RequestBody String response) {
