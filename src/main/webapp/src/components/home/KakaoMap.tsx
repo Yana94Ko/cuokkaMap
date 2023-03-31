@@ -105,6 +105,9 @@ const Map = () => {
     // DB 받아오는 로직
     useEffect(() => {
         // [YANA]
+        abc();
+    }, []);
+    function abc(){
         fetch("/api/place/getAllPlaceInfo", {
             method: "POST",
             headers: {
@@ -120,7 +123,7 @@ const Map = () => {
                 setDB(JSON.parse(data));
                 setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
             }).catch(err => console.log("에러", err));
-    }, []);
+    }
 
     useEffect(() => {
         if (currentFilter !== "all") {
@@ -143,6 +146,7 @@ const Map = () => {
         } else {
             setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
         }
+
     }, [currentFilter, DB]);
 
     useEffect(() => {
@@ -192,6 +196,14 @@ const Map = () => {
             setClickMarkerCafeInfo({})
         }
     }, [isOpenedPostCafe])
+
+    //해당 위치로 이동하는 함수
+    function panToMap(x: number, y:number){
+        var moveLatLng = new window.kakao.maps.LatLng(x, y);
+        abc();
+        mapState.setCenter(moveLatLng);
+    }
+
     // 현재위치 함수
     const currentLocation = () => {
         if (navigator.geolocation) {
@@ -412,8 +424,6 @@ const Map = () => {
             // 검색 결과 목록에 추가된 항목들을 제거
             listEl && removeAllChildNods(listEl);
 
-            mapState.setCenter(new window.kakao.maps.LatLng(places[0].y, places[0].x));
-
             removeMarker();
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
@@ -488,7 +498,9 @@ const Map = () => {
                 isOpenedPostCafe && (
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
                                   searchPlaces={searchPlaces}
-                                  removeMarker={removeMarker}/>
+                                  removeMarker={removeMarker}
+                                  panToMap={panToMap}
+                    />
                 )
             }
             {
