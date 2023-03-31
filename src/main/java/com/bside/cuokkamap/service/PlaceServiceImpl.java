@@ -47,4 +47,12 @@ public class PlaceServiceImpl implements PlaceService{
 
     @Override
     public PlaceVO selectResentPlaceReviewByUserNum(int user_num) {return dao.selectResentPlaceReviewByUserNum(user_num);}
+
+    @Override
+    public List<PlaceVO> selectPlaceImgByPlaceNum(int user_num) {return dao.selectPlaceImgByPlaceNum(user_num);}
+
+    @Override
+    public List<PlaceVO> selectPlaceReviewByPlaceNum(int user_num) {return dao.selectPlaceReviewByPlaceNum(user_num);}
+
+
 }

@@ -21,7 +21,7 @@
         INSERT 	place_img(place_num, user_num, placeImg_src)
         VALUES  (#{place_num}, #{user_num}, #{placeImg_src})
     </insert>
-    <!-- 리뷰 등록 -->
+    <!-- 리 등록 -->
     <insert id='savePlaceReview'>
         INSERT 	place_review(place_num, user_num, placeReview, placeReview_emoji)
         VALUES  (#{place_num}, #{user_num}, #{placeReview}, #{placeReview_emoji})
@@ -100,6 +100,21 @@
         ORDER 	BY placeReview_num DESC
         LIMIT 	1
     </select>
+    <select id="selectPlaceImgByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT p.place_num, pi.user_num, pi.placeImg_num, pi.placeImg_src, pi.placeImg_writedate
+        FROM place p
+                 JOIN place_img pi
+                     ON p.place_num = pi.place_num
+        WHERE p.place_num = #{param1}
+    </select>
+    <select id="selectPlaceReviewByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT p.place_num, pr.user_num, pr.placeReview_num, pr.placeReview, pr.placeReview_emoji, pr.placeReview_writedate
+        FROM place p
+                 JOIN place_review pr
+                      ON p.place_num = pr.place_num
+        WHERE p.place_num = #{param1}
+    </select>
+
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, place_info

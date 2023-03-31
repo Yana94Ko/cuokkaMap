@@ -33,4 +33,8 @@ public interface PlaceDAO {
     public PlaceVO selectResentPlaceImgByUserNum(int user_num);
     //user_num으로 최근에 등록한 Place_revies 검색
     public PlaceVO selectResentPlaceReviewByUserNum(int user_num);
+    //place_num으로 해당하는 place의 img 조회
+    public List<PlaceVO> selectPlaceImgByPlaceNum(int user_num);
+    //place_num으로 해당하는 place의 review 조회
+    public List<PlaceVO> selectPlaceReviewByPlaceNum(int user_num);
 }
