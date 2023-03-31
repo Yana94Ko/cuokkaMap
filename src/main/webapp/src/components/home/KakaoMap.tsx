@@ -8,6 +8,7 @@ import {setIsOpenedLoginModal} from "../../modules/userReducer";
 import {setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
+import Loading from "./header/Laoding";
 
 const Base = styled.div``;
 const MapContainer = styled.div`
@@ -77,6 +78,8 @@ type markerInfo = {
 };
 const Map = () => {
     const dispatch = useDispatch();
+    // [Yana] 로딩페이지
+    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
@@ -163,7 +166,7 @@ const Map = () => {
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 
         setMapState(map);
-
+        setIsLoaded(true);
         if (!isOpenedPostCafe) {
             // TODO(FE): DB, 필터DB 마커 mouseOver, click 이벤트 추가하기
             // assignees: hwanyb, SeongSilver
@@ -474,6 +477,11 @@ const Map = () => {
     return (
         <Base>
             <MapContainer id="map">
+            </MapContainer>
+            { !isLoaded ? (
+                <Loading/>
+            ) : (
+                <>
                 <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                                   setConfirmCafeInfo={setConfirmCafeInfo} removeMarker={removeMarker}/>
                 <CurrentLocationBtn onClick={currentLocation}>
@@ -483,7 +491,7 @@ const Map = () => {
                     <Icon className="material-symbols-rounded">add</Icon>
                     카페추가
                 </AddCafeButton>
-            </MapContainer>
+
             {
                 isOpenedPostCafe && (
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
@@ -496,6 +504,9 @@ const Map = () => {
                     <CafeInfo cafeInfoContainer={cafeInfoContainer}/>
                 )
             }
+
+            </>
+            )}
         </Base>
     )
 }
