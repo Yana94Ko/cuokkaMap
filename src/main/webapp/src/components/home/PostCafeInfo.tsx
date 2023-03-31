@@ -96,13 +96,16 @@ interface FnProps {
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
     removeMarker: () => void;
+    panToMap:(x:number, y:number) => void;
+
 }
 
 const PostCafeInfo = ({
                           setKeyword,
                           clickMarkerCafeInfo,
                           searchPlaces,
-                          removeMarker
+                          removeMarker,
+                          panToMap
                       }: FnProps) => {
     const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
@@ -203,13 +206,14 @@ const PostCafeInfo = ({
                 body: JSON.stringify(dataToSave),
             })
                 .then(response => response.text())
-                .then(function (message) {
+                .then((data) =>  {
+                    const loadData = JSON.parse(data);
+                    const placeInfo = JSON.parse(loadData.place_info);
+                    console.log(placeInfo);
                     alert("카페등록이 완료되었습니다.")
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
-                    window.location.reload();
-                    // TODO(FE): 카페 등록 완료 후 해당 위치로 이동
-                    // assigness: hwanyb, SeongSilver
+                    panToMap(placeInfo.y, placeInfo.x);
                 });
         }
     }
@@ -298,7 +302,7 @@ const PostCafeInfo = ({
                     <CafeInfoItem onClick={onInputClick}>
                         <Label>연락처</Label>
                         <Input
-                            value={copiedClickedInfo.phone}
+                            defaultValue={copiedClickedInfo.phone}
                             name="contact"
                             onChange={onChange}
                             placeholder="카페 연락처를 입력해 주세요."
