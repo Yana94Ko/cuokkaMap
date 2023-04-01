@@ -62,6 +62,7 @@ declare global {
     }
 }
 
+
 type KakaoMapProps = {
     dbData: any[];
     setDBData: React.Dispatch<SetStateAction<any[]>>;
@@ -109,7 +110,9 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     //마커를 클릭해서 카페추가에 올릴 정보
     const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
 
+
     /*------------------------------------------- [ END ] 데이터 관련 -------------------------------------------*/
+
 
 
 
@@ -138,6 +141,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 
         setMapState(map);
+
     }, []);
     //장소 검색 객체 생성
     var placeSearch = new window.kakao.maps.services.Places();
@@ -146,6 +150,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     var infowindow = new window.kakao.maps.InfoWindow({zIndex: 1});
 
         /*====================================== [ END ] 지도 초기설정 외 =====================================*/
+
 
         /*====================================== 마커 공통 START =====================================*/
     //모든 마커를 제거하는 함수
@@ -323,17 +328,21 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
         }
     }
 
+
     //마커를 생성하고 지도 위에 마커를 표시하는 함수(카페 추가 검색)
-    function addMarker(position: () => {}, idx: number, title?: string | undefined) {
+    function addMarker(position: () => {}, idx?: number, title?: string | undefined) {
         if (mapState !== undefined) {
-            var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
-                imageSize = new window.kakao.maps.Size(34, 37), //마커크기
-                imgOptions = {
-                    spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
-                    spriteOrigin: new window.kakao.maps.Point(0, (idx * 46) + 10), //스프라이트 이미지 중 사용할 영역의 좌상단 좌표
-                    offset: new window.kakao.maps.Point(13, 37) //마커 좌표에 일치시킬 이미지 내에서의 좌표
-                },
-                markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+        // 카페추가 검색 마커
+        var AddCafeMarkerSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+            AddCafeMarkerSize = new window.kakao.maps.Size(34, 37), //마커크기
+            AddCafeMarkerOptions = {
+                spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
+                spriteOrigin: new window.kakao.maps.Point(0, (idx * 46) + 10), //스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+                offset: new window.kakao.maps.Point(13, 37) //마커 좌표에 일치시킬 이미지 내에서의 좌표
+            };
+
+
+            var markerImage = new window.kakao.maps.MarkerImage(AddCafeMarkerSrc, AddCafeMarkerSize, AddCafeMarkerOptions),
                 marker = new window.kakao.maps.Marker({
                     position: position,
                     image: markerImage,
@@ -350,6 +359,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     }
     /*============================================== [ END ] API 검색 관련 ============================================*/
     /*=========================================================================================================*/
+
 
 
 
@@ -414,7 +424,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 //console.log(places[i].x)
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
-                    marker = addDBMarker(placePosition, places[i].place_name);
+                    marker = addDBMarker(placePosition, places[i].place_name, imgSrc, imgSize);
 
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
@@ -447,7 +457,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
         }
     }
 
-    function addDBMarker(position: () => {}, title: string) {
+    function addDBMarker(position: any, title: string, imgSrc: string, imgSize: any) {
         if (mapState !== undefined) {
             // 마커 생성
             var marker = new window.kakao.maps.Marker({
@@ -515,6 +525,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     return (
         <Base>
             <MapContainer id="map">
+
                 <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                                   removeMarker={removeMarker} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
                 <CurrentLocationBtn onClick={currentLocation}>
