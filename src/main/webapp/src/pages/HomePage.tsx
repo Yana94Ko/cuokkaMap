@@ -22,14 +22,14 @@ function HomePage() {
 
     //모든 마커를 제거하는 함수
     function removeMarker() {
-
         //DB검색한 것이 있을때
         if(markers !== undefined) {
-            console.log("마커지우러 왔어요 0 " ,markers ? 0 :markers.length)
+            console.log("마커지우러 왔어요" ,markers ? 0 :markers)
             for (var i = 0; i < markers.length; i++) {
                 markers[i].setMap(null);
             }
             setMarkers([]);
+            console.log("마커지우고 왔어요" ,markers ? 0 :markers)
             //markers = [];
         }
 
