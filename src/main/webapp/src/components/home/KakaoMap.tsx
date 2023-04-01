@@ -8,6 +8,7 @@ import {setIsOpenedLoginModal} from "../../modules/userReducer";
 import {setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
+import Loading from "./header/Laoding";
 
 const Base = styled.div``;
 const MapContainer = styled.div`
@@ -512,6 +513,11 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
     return (
         <Base>
             <MapContainer id="map">
+            </MapContainer>
+            { !isLoaded ? (
+                <Loading/>
+            ) : (
+                <>
                 <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                                   removeMarker={removeMarker} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
                 <CurrentLocationBtn onClick={currentLocation}>
@@ -521,7 +527,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                     <Icon className="material-symbols-rounded">add</Icon>
                     카페추가
                 </AddCafeButton>
-            </MapContainer>
+
             {
                 isOpenedPostCafe && (
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
@@ -536,6 +542,9 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                     <CafeInfo cafeInfoContainer={cafeInfoContainer}/>
                 )
             }
+
+            </>
+            )}
         </Base>
     )
 }
