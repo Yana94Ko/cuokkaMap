@@ -12,8 +12,8 @@ import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 
 interface PropsToKaKaoMap {
     setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
-    setConfirmCafeInfo: React.Dispatch<React.SetStateAction<boolean>>;
     removeMarker: () => void;
+    setDBData:React.Dispatch<React.SetStateAction<any[]>>;
 
 }
 
@@ -86,7 +86,7 @@ const NavIcon = styled(Icon)`
 `;
 
 
-const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, removeMarker}: PropsToKaKaoMap) => {
+const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker, setDBData}: PropsToKaKaoMap) => {
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const dispatch = useDispatch();
 
@@ -145,7 +145,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
                              onChange={searchInputChangeHandler}/>
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
-            <FilterContainer/>
+            <FilterContainer setDBData={setDBData}/>
             <NavLoginOrMyPage>
                 {
                     isLoggedin ? (

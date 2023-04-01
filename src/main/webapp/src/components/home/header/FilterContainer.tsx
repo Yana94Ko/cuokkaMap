@@ -54,16 +54,19 @@ const FilterTag = styled(Tag)`
       border-radius: 50%;
       margin-right: 10px;
     }
-
   `}
 `;
+
 
 type filterContentType = {
     name: string,
     id: string
 }[]
 
-const FilterContainer = () => {
+type FilterContainerProps={
+    setDBData:React.Dispatch<React.SetStateAction<any[]>>;
+}
+const FilterContainer = ({setDBData}:FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
@@ -91,11 +94,31 @@ const FilterContainer = () => {
             id: "zero"
         },
     ]
+    function fetchDB() {
+        console.log(currentFilter)
+        fetch("/api/place/getAllPlaceInfo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "place_filter": currentFilter,
+                "keywords": "",
+            }),
+        })
+            .then(response => response.text())
+            .then((data: any) => {
+                // setDB(JSON.parse(data));
+                setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
+            })
+            .catch(err => console.log("에러", err));
+    }
 
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(setCurrentFilter(event.currentTarget.id))
+        dispatch(setCurrentFilter(event.currentTarget.id));
+        fetchDB();
     }
 
     return (
