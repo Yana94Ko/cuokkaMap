@@ -164,8 +164,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 markers[i].setMap(null);
             }
         }
-        // markers = [];
-        setMarkers([]);
+        markers = [];
+        // setMarkers([]);
     }
         /*====================================== [ END ] 마커 공통 =====================================*/
 
@@ -196,7 +196,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 sort: window.kakao.maps.services.SortBy.Distance,
             });
         }
-        removeMarker();
     }
 
 //장소검색 완료시 호출하는 콜백함수
@@ -488,6 +487,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
         mapState.setCenter(moveLatLng);
         mapState.setLevel(4);
+        // displayDBPlaces(dbData, dbFilterData);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
