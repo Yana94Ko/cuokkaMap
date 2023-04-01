@@ -514,10 +514,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
         <Base>
             <MapContainer id="map">
             </MapContainer>
-            { !isLoaded ? (
-                <Loading/>
-            ) : (
-                <>
                 <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                                   removeMarker={removeMarker} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
                 <CurrentLocationBtn onClick={currentLocation}>
@@ -542,9 +538,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                     <CafeInfo cafeInfoContainer={cafeInfoContainer}/>
                 )
             }
-
-            </>
-            )}
         </Base>
     )
 }
