@@ -65,8 +65,9 @@ type filterContentType = {
 
 type FilterContainerProps={
     setDBData:React.Dispatch<React.SetStateAction<any[]>>;
+    setSearchDBKeyword:React.Dispatch<React.SetStateAction<string>>;
 }
-const FilterContainer = ({setDBData}:FilterContainerProps) => {
+const FilterContainer = ({setDBData, setSearchDBKeyword}:FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
@@ -94,38 +95,18 @@ const FilterContainer = ({setDBData}:FilterContainerProps) => {
             id: "zero"
         },
     ]
-    function fetchDB() {
-        console.log(currentFilter)
-        fetch("/api/place/getAllPlaceInfo", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "place_filter": currentFilter,
-                "keywords": "",
-            }),
-        })
-            .then(response => response.text())
-            .then((data: any) => {
-                // setDB(JSON.parse(data));
-                setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
-            })
-            .catch(err => console.log("에러", err));
-    }
-
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(setCurrentFilter(event.currentTarget.id));
-        fetchDB();
+        setSearchDBKeyword("");
+        dispatch(setCurrentFilter([event.currentTarget.id]));
     }
 
     return (
         <Base>
             {filterContent.map((filter: { name: string, id: string }, i: number) => (
                 <FilterTag clickable={true}
-                           active={currentFilter === filter.id}
+                           active={currentFilter.includes(filter.id)}
                            onClick={filterClickHandler}
                            key={i}
                            id={filter.id}
