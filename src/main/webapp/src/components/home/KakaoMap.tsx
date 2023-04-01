@@ -106,7 +106,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
     /*------------------------------------------- 지도, 마커 등 맵 관련 START -------------------------------------------*/
     const [mapState, setMapState] = useState<any>();
 
-    //var markers: any[] = [];
+    var markersTmp: any[] = [];
     var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
@@ -238,7 +238,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
                     marker = addMarker(placePosition, i, undefined),
                     itemEl: HTMLElement | undefined = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성
-
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
                 bounds.extend(placePosition);
@@ -344,10 +343,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 });
 
             marker.setMap(mapState);
-            // setMarkers((markers:any[]) => {
-            //     [...markers, marker];
-            // })
-            // markers.push(marker);
+            markersTmp.push(marker);
+            console.log(markersTmp)
 
             return marker;
         }
@@ -438,6 +435,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                         infowindow.close();
                     });
                 })(marker, places[i])
+                setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapState.setBounds(bounds);
@@ -456,9 +454,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
 
             // 마커가 지도 위에 표시되도록 설정
             marker.setMap(mapState);
-            //setMarkers([...markers,marker]);
-            console.log(markers)
-            // markers.push(marker);
+            markersTmp.push(marker);
             return marker;
         }
     }

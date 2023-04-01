@@ -21,6 +21,11 @@
         INSERT 	place_img(place_num, user_num, placeImg_src)
         VALUES  (#{place_num}, #{user_num}, #{placeImg_src})
     </insert>
+    <!-- 리 등록 -->
+    <insert id='savePlaceReview'>
+        INSERT 	place_review(place_num, user_num, placeReview, placeReview_emoji)
+        VALUES  (#{place_num}, #{user_num}, #{placeReview}, #{placeReview_emoji})
+    </insert>
 
     <!-- 방금 해당 유저가 등록한 place_num 받아오기 -->
     <select id='getPlaceNum' resultType='int'>
@@ -83,8 +88,40 @@
 
     <select id="selectResentPlaceImgByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, user_num, placeImg_src, placeImg_num
-        from    place_img where user_num = #{param1}
+        from    place_img
+        where user_num = #{param1}
+        ORDER 	BY placeImg_num DESC
+        LIMIT 	1
     </select>
+    <select id="selectResentPlaceReviewByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        select  place_num, user_num, placeReview, placeReview_emoji, placeReview_num
+        from    place_review
+        where user_num = #{param1}
+        ORDER 	BY placeReview_num DESC
+        LIMIT 	1
+    </select>
+    <select id="selectPlaceImgByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT p.place_num, pi.user_num, pi.placeImg_num, pi.placeImg_src, pi.placeImg_writedate
+        FROM place p
+                 JOIN place_img pi
+                     ON p.place_num = pi.place_num
+        WHERE p.place_num = #{param1}
+    </select>
+    <select id="selectPlaceReviewByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT p.place_num, pr.user_num, pr.placeReview_num, pr.placeReview, pr.placeReview_emoji, pr.placeReview_writedate
+        FROM place p
+                 JOIN place_review pr
+                      ON p.place_num = pr.place_num
+        WHERE p.place_num = #{param1}
+    </select>
+    <select id="selectPlaceFilterByPlaceNum" resultType="String">
+        SELECT GROUP_CONCAT(pf.filter_type SEPARATOR ', ') AS filter_types
+        FROM place p
+                 LEFT JOIN place_filter pf ON p.place_num = pf.place_num
+        WHERE p.place_num = #{param1}
+        GROUP BY p.place_num, p.place_info
+    </select>
+
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, place_info
