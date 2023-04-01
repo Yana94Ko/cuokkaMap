@@ -5,6 +5,7 @@ import {Button, Icon, Input, Tag} from "../../styles/common";
 import {useDispatch} from "react-redux";
 import {setIsOpenedPostCafe} from "../../modules/viewReducer";
 
+
 const Base = styled.div`
   background-color: #fff;
   width: 400px;
@@ -102,6 +103,8 @@ interface FnProps {
     dbFilterData: any[];
     removeMarkerAPI: () => void;
     setNeedToRemove:React.Dispatch<SetStateAction<boolean>>;
+    searchCafeInfo:string;
+    setSearchCafeInfo : React.Dispatch<SetStateAction<string>>;
 }
 
 const PostCafeInfo = ({
@@ -112,18 +115,20 @@ const PostCafeInfo = ({
                           moveMapAfterPost,
     displayDBPlaces, dbData, dbFilterData,
                           removeMarkerAPI,
-                          setNeedToRemove
+                          setNeedToRemove,
+                          searchCafeInfo,
+                          setSearchCafeInfo,
                       }: FnProps) => {
     const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
     //***************03.27.2시 30분 추가
     //입력 폼 변화 감지하여 입력 값 관리
-    const [searchCafeInfo, setSearchCafeInfo] = useState<string>("");
+
     const [searchedListCheck, setSearchedListCheck] = useState<boolean>(false);
     const [tag, setTag] = useState<string[]>([]);
     const [needToSearch, setNeedToSearch] = useState<boolean>(false);
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    function onChange (e: React.ChangeEvent<HTMLInputElement>) {
         const {target: {name, value},} = e;
         if (name === "search") {
             setSearchCafeInfo(value);
@@ -152,22 +157,22 @@ const PostCafeInfo = ({
     };
 
     //카페찾기 input에 enter 이벤트
-    const activeEnter = (e:React.KeyboardEvent<HTMLInputElement>) => {
+    function activeEnter (e:React.KeyboardEvent<HTMLInputElement>) {
         if(e.key === "Enter") {
+            console.log(searchCafeInfo)
             if (searchCafeInfo === "") {
                 alert("검색어를 입력해주세요");
             } else {
                 setSearchedListCheck(true);
                 setKeyword(searchCafeInfo);
                 setNeedToSearch(true);
-                setSearchCafeInfo("")
             }
         }
     }
 
     //카페찾기 돋보기 클릭 시 검색어 state에 담아주는 함수
     const submitKeyword = (e: React.MouseEvent<HTMLButtonElement>) => {
-        setNeedToRemove(!setNeedToRemove)
+        //setNeedToRemove(!setNeedToRemove)
         e.preventDefault();
         if (searchCafeInfo === "") {
             alert("검색어를 입력해주세요");
@@ -175,7 +180,6 @@ const PostCafeInfo = ({
             setSearchedListCheck(true);
             setKeyword(searchCafeInfo);
             setNeedToSearch(true);
-            setSearchCafeInfo("")
         }
     }
     useEffect(() => {
@@ -233,12 +237,14 @@ const PostCafeInfo = ({
                 .then((data) =>  {
                     const loadData = JSON.parse(data);
                     const placeInfo = JSON.parse(loadData.place_info);
-                    console.log(placeInfo);
-                    alert("카페등록이 완료되었습니다.")
+                    alert("카페등록이 완료되었습니다.");
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
-                });
+                    window.location.reload();
+                })
+
+            ;
         }
     }
     const closePostCafe = () => {
@@ -270,7 +276,7 @@ const PostCafeInfo = ({
                             onChange={onChange}
                             autoComplete="off"
                             placeholder="카페 이름으로 검색해주세요."
-                            onKeyDown={activeEnter}
+                            onKeyPress={activeEnter}
                         >
                         </SearchInput>
                         <SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>

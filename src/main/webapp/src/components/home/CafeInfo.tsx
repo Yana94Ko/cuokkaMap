@@ -23,11 +23,26 @@ const Base = styled.div`
   justify-content: space-between;
   border-radius: 2rem;
 `;
-const CafeInfoWrapper = styled.div``;
+const CafeInfoWrapper = styled.div`
+  a{
+    outline:none;
+    text-decoration: none;
+    color:black;
+    transition:0.1s ease-in-out;
+    &:hover{
+      color:rgb(51, 134, 255);
+    }
+  }`;
 const PlaceName = styled.h3`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 900;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+  a{
+    img{
+      position:absolute;
+      top:27px;
+    }
+  }
 `;
 const Item = styled.div`
   display: flex;
@@ -83,8 +98,19 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
                 cafeInfoContainer !== undefined && (
 
                     <CafeInfoWrapper>
-                            {/*클릭한 카페 이름*/}
-                        <PlaceName>{dataObject.data.place_name}</PlaceName>
+                        {dataObject.data.place_url ? (
+                            <a href={dataObject.data.place_url} target="_blank"><PlaceName>
+                                {dataObject.data.place_name}&emsp;
+                                {dataObject.data.insta ? (
+                                    <a href={dataObject.data.insta} target="_blank"><img className="insta" src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"} width="30px" alt="insta"/></a>
+                                ) : (
+                                    <PlaceName>{dataObject.data.insta}</PlaceName>
+                                )}
+                            </PlaceName></a>
+                        ) : (
+                            <PlaceName>{dataObject.data.place_name}</PlaceName>
+                        )}
+
                         <Item>
                             <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
                             {/*클릭한 카페 주소*/}
@@ -104,7 +130,7 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
                             ))
                         }
 
-                        <InfoRequestBtn><a href="https://forms.gle/H3M3YwCPgqgHVoRn7" target="_blank">정보수정요청</a></InfoRequestBtn>
+                        <a href="https://forms.gle/H3M3YwCPgqgHVoRn7" target="_blank"><InfoRequestBtn>정보수정요청</InfoRequestBtn></a>
                     </CafeInfoWrapper>
 
 
