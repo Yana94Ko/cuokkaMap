@@ -169,8 +169,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 markers[i].setMap(null);
             }
         }
-        // markers = [];
-        setMarkers([]);
+        markers = [];
+        //setMarkers([]);
     }
         /*====================================== [ END ] 마커 공통 =====================================*/
 
@@ -201,7 +201,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 sort: window.kakao.maps.services.SortBy.Distance,
             });
         }
-        removeMarker();
     }
 
 //장소검색 완료시 호출하는 콜백함수
@@ -425,7 +424,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 //console.log(places[i].x)
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
-                    marker = addDBMarker(placePosition, places[i].place_name, imgSrc, imgSize);
+                    marker = addDBMarker(placePosition, places[i].place_name);
 
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
@@ -458,7 +457,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
         }
     }
 
-    function addDBMarker(position: any, title: string, imgSrc: string, imgSize: any) {
+    function addDBMarker(position: any, title: string) {
         if (mapState !== undefined) {
             // 마커 생성
             var marker = new window.kakao.maps.Marker({
