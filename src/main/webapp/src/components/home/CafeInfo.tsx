@@ -52,6 +52,11 @@ const Label = styled.label`
 const InfoRequestBtn = styled(Button)`
   width: 100%;
   margin-top: 1rem;
+  a{
+    outline:none;
+    text-decoration: none;
+    color:white;
+  }
 `;
 
 type CafeInfoProps = {
@@ -99,7 +104,7 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
                             ))
                         }
 
-                        <InfoRequestBtn>정보수정요청</InfoRequestBtn>
+                        <a href="https://forms.gle/H3M3YwCPgqgHVoRn7" target="_blank"><InfoRequestBtn>정보수정요청</InfoRequestBtn></a>
                     </CafeInfoWrapper>
 
 
