@@ -107,6 +107,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
     const [mapState, setMapState] = useState<any>();
 
     var markersTmp: any[] = [];
+    var markerAPI: any[] = [];
     var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
@@ -162,14 +163,24 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
 
         /*====================================== 마커 공통 START =====================================*/
     //모든 마커를 제거하는 함수
-    // function removeMarker() {
-    //     console.log("마커지우러 왔어요" ,markers.length)
-    //     //DB검색한 것이 있을때
-    //     for (var i = 0; i < markers.length; i++) {
-    //         markers[i].setMap(null);
-    //     }
-    //     markers = [];
-    // }
+    const [needToRemove,setNeedToRemove] = useState(false);
+    useEffect(()=>{
+        if (mapState !== undefined) {
+            removeMarkerAPI();
+        }
+    },[needToRemove])
+
+    function removeMarkerAPI() {
+        console.log("API마커지우러 왔어요" ,markers.length)
+        //DB검색한 것이 있을때
+        if(markers !== undefined && markers.length > 0) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+        }
+        markers = [];
+        //setMarkers([]);
+    }
         /*====================================== [ END ] 마커 공통 =====================================*/
 
 
@@ -199,7 +210,10 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 sort: window.kakao.maps.services.SortBy.Distance,
             });
         }
-        removeMarker();
+        //removeMarker();
+        //removeMarkerAPI();
+
+        return "GGG";
     }
 //장소검색 완료시 호출하는 콜백함수
     function placesSearchCB(data: any, status: any) {
@@ -217,6 +231,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 return;
             }
         }
+        return markerAPI;
     }
 
     //카페추가 창 검색 결과 목록과 마커를 표출하는 함수
@@ -230,7 +245,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
             listEl && removeAllChildNods(listEl);
 
             // 지도에 표시되고 있는 마커를 제거
-            removeMarker();
+            //removeMarker();
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
             for (let i = 0; i < places.length; i++) {
@@ -282,6 +297,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapState.setBounds(bounds);
         }
+
     }
 
     //검색결과 항목을 Element로 반환하는 함수
@@ -343,8 +359,9 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 });
 
             marker.setMap(mapState);
-            markersTmp.push(marker);
-            console.log(markersTmp)
+            markersTmp.push(marker)
+            setMarkers(markersTmp);
+            //console.log(markersTmp)
 
             return marker;
         }
@@ -524,6 +541,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                                   searchPlaces={searchPlaces}
                                   removeMarker={removeMarker}
                                   moveMapAfterPost={moveMapAfterPost}
+                                  removeMarkerAPI={removeMarkerAPI}
+                                  setNeedToRemove={setNeedToRemove}
                     />
                 )
             }
