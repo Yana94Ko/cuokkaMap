@@ -89,6 +89,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     //검색어 : PostCafeInfo 컴포넌트의 카페찾기 input에서 조작
     const [keyword, setKeyword] = useState<string>("");
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    const [searchCafeInfo, setSearchCafeInfo] = useState<string>("");
     /*------------------------------------------- [ END ] 검색 필터링 관련 -------------------------------------------*/
 
     /*------------------------------------------- 지도, 마커 등 맵 관련 START -------------------------------------------*/
@@ -169,8 +170,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 markers[i].setMap(null);
             }
         }
-        // markers = [];
-        setMarkers([]);
+        markers = [];
+        //setMarkers([]);
     }
         /*====================================== [ END ] 마커 공통 =====================================*/
 
@@ -201,7 +202,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 sort: window.kakao.maps.services.SortBy.Distance,
             });
         }
-        removeMarker();
     }
 
 //장소검색 완료시 호출하는 콜백함수
@@ -268,10 +268,12 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
 
                         itemEl.onclick = function () {
                             setClickMarkerCafeInfo(data);
+                            setSearchCafeInfo("")
                         }
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
                             setClickMarkerCafeInfo(data);
+                            setSearchCafeInfo("")
                         });
                     })(marker, places[i])
                     fragment.appendChild(itemEl);
@@ -425,7 +427,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                 //console.log(places[i].x)
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
-                    marker = addDBMarker(placePosition, places[i].place_name, imgSrc, imgSize);
+                    marker = addDBMarker(placePosition, places[i].place_name);
 
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
@@ -458,7 +460,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
         }
     }
 
-    function addDBMarker(position: any, title: string, imgSrc: string, imgSize: any) {
+    function addDBMarker(position: any, title: string) {
         if (mapState !== undefined) {
             // 마커 생성
             var marker = new window.kakao.maps.Marker({
@@ -545,6 +547,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                                   removeMarkerAPI={removeMarkerAPI}
                                   setNeedToRemove={setNeedToRemove}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
+                                  searchCafeInfo={searchCafeInfo}
+                                  setSearchCafeInfo={setSearchCafeInfo}
                     />
                 )
             }
