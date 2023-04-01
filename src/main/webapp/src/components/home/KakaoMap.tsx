@@ -89,6 +89,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     //검색어 : PostCafeInfo 컴포넌트의 카페찾기 input에서 조작
     const [keyword, setKeyword] = useState<string>("");
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    const [searchCafeInfo, setSearchCafeInfo] = useState<string>("");
     /*------------------------------------------- [ END ] 검색 필터링 관련 -------------------------------------------*/
 
     /*------------------------------------------- 지도, 마커 등 맵 관련 START -------------------------------------------*/
@@ -267,10 +268,12 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
 
                         itemEl.onclick = function () {
                             setClickMarkerCafeInfo(data);
+                            setSearchCafeInfo("")
                         }
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
                             setClickMarkerCafeInfo(data);
+                            setSearchCafeInfo("")
                         });
                     })(marker, places[i])
                     fragment.appendChild(itemEl);
@@ -544,6 +547,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                                   removeMarkerAPI={removeMarkerAPI}
                                   setNeedToRemove={setNeedToRemove}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
+                                  searchCafeInfo={searchCafeInfo}
+                                  setSearchCafeInfo={setSearchCafeInfo}
                     />
                 )
             }
