@@ -16,6 +16,13 @@ const Base = styled.main`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  @media ${props => props.theme.windowSize.mobile} {
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
+    }
+  }
 `;
 
 const TabWrapper = styled.div`
@@ -63,6 +70,16 @@ const MyPageContent = styled.div`
   overflow-y: auto;
 `;
 
+const Notice = styled.h1`
+  position: absolute;
+  text-align: center;
+  width: 100vw;
+  top: 50%;
+  left:0;
+  font-size: ${props => props.theme.fontSize.lg};
+  word-break: keep-all;
+`;
+
 type TabProps = {
     name: string,
     id: string
@@ -103,20 +120,21 @@ const MyPage = () => {
     return (
         <Base>
             <Header/>
-            <TabWrapper>
-                {
-                    myPageContent.map((tab, index) => (
-                        <Tab key={index} id={tab.id} active={currentMyPageView === tab.id} onClick={onTabClick}>
-                            {tab.name}
-                        </Tab>
-                    ))
-                }
-            </TabWrapper>
-            <MyPageContent>
-                {currentMyPageView === "photo" ? <PhotoReview/>
-                    : currentMyPageView === "review" ? <Review/>
-                        : <Bookmark/>}
-            </MyPageContent>
+            {/*<TabWrapper>*/}
+            {/*    {*/}
+            {/*        myPageContent.map((tab, index) => (*/}
+            {/*            <Tab key={index} id={tab.id} active={currentMyPageView === tab.id} onClick={onTabClick}>*/}
+            {/*                {tab.name}*/}
+            {/*            </Tab>*/}
+            {/*        ))*/}
+            {/*    }*/}
+            {/*</TabWrapper>*/}
+            {/*<MyPageContent>*/}
+            {/*    {currentMyPageView === "photo" ? <PhotoReview/>*/}
+            {/*        : currentMyPageView === "review" ? <Review/>*/}
+            {/*            : <Bookmark/>}*/}
+            {/*</MyPageContent>*/}
+            <Notice>마이페이지 서비스 준비중입니다 😊</Notice>
         </Base>
     )
 }
