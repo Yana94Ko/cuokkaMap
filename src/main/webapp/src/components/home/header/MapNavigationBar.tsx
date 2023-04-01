@@ -9,13 +9,8 @@ import {Button, Tag, Icon, Input} from "../../../styles/common";
 import MyPageList from "../MyPageList";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
+import {setCurrentFilter} from "../../../modules/filterReducer";
 
-interface PropsToKaKaoMap {
-    setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
-    setConfirmCafeInfo: React.Dispatch<React.SetStateAction<boolean>>;
-    removeMarker: () => void;
-
-}
 
 const Base = styled.div`
   width: 100%;
@@ -86,8 +81,15 @@ const NavIcon = styled(Icon)`
 `;
 
 
-const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, removeMarker}: PropsToKaKaoMap) => {
+interface PropsToKaKaoMap {
+    setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
+    removeMarker: () => void;
+    setDBData:React.Dispatch<React.SetStateAction<any[]>>;
+    setSearchDBKeyword:React.Dispatch<React.SetStateAction<string>>;
+}
+const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, setSearchDBKeyword}: PropsToKaKaoMap) => {
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
+
     const dispatch = useDispatch();
 
     //search input 핸들링하는 state
@@ -99,7 +101,6 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
         setSearchValue(event.target.value);
     }
 
-
     const searchPlaceSubmitHandler = (event: React.FormEvent) => {
         event.preventDefault();
         removeMarker();
@@ -108,26 +109,12 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
             alert("검색어가 입력되지 않았습니다");
             return;
         }
-
+        dispatch(setCurrentFilter([]));
+        setSearchDBKeyword(searchValue);
         setSearchedPlaceInfoInNav([]);
         // TODO(FE): DB 결과 없을 시 알림
         // assignees: hwanyb
-        fetch("/api/place/getAllPlaceInfo", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "place_filter": [],
-                "keywords": searchValue,
-            }),
-        })
-            .then(response => response.text())
-            .then(function (data: any) {
-                const searchedCafe = JSON.parse(data).map((i: any) => JSON.parse(i.place_info));
-                setSearchedPlaceInfoInNav(searchedCafe);
 
-            }).catch(err => console.log("에러", err));
         setSearchValue("")
     }
     const openMyPageList = (): void => {
@@ -145,7 +132,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, setConfirmCafeInfo, remove
                              onChange={searchInputChangeHandler}/>
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
-            <FilterContainer/>
+            <FilterContainer setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>
                 {
                     isLoggedin ? (

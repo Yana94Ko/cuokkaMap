@@ -5,14 +5,16 @@ import {CloseBtn} from "./PostCafeInfo";
 import {Button, Icon, Tag} from "../../styles/common";
 import {useDispatch} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
+import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
+import CafeInfoReview from "./review/CafeInfoReview";
 
 const Base = styled.div`
   background-color: #fff;
   width: 400px;
-  height: fit-content;
+  height: 330px;
   position: absolute;
   z-index: 1000;
-  top: 150px;
+  top: 15vh;
   left: 50px;
   padding: 2rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -55,36 +57,36 @@ const InfoRequestBtn = styled(Button)`
 `;
 
 type CafeInfoProps = {
-    cafeInfoContainer: any;
+    cafeInfoContainer: object;
 }
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
+    //6:번호 7:이름, 9:도로명주소,
+    const infoAff = Object.values(cafeInfoContainer);
     const dispatch = useDispatch();
-    const clickedData = {...cafeInfoContainer};
 
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
     }
-    // TODO(FE): 카페상세정보 DB요청한 후 받은 데이터로 렌더링하기
     // 카페 상세정보 DB 완성되면 진행하면 됩니다
     // assignees: hwanyb, SeongSilver
     return (
         <Base>
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             {
-                clickedData !== undefined && (
+                cafeInfoContainer !== undefined && (
 
                     <CafeInfoWrapper>
-                        {/*    /!*클릭한 카페 이름*!/*/}
-                        <PlaceName>{clickedData.name}</PlaceName>
+                            {/*클릭한 카페 이름*/}
+                        <PlaceName>{infoAff[7]}</PlaceName>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
                             {/*클릭한 카페 주소*/}
-                            <Info>{clickedData.address}</Info>
+                            <Info>{infoAff[9]}</Info>
                         </Item>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">phone_enabled</LabelIcon>
                             {/*클릭한 카페 전화번호*/}
-                            <Info>{clickedData.phone}</Info>
+                            <Info>{infoAff[6]}</Info>
                         </Item>
                         {/*<Label>옵션</Label>*/}
                         {/*{*/}
@@ -99,7 +101,8 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
                 ) //ddd
             }
-
+            <CafeInfoPhotoReview/>
+            <CafeInfoReview/>
         </Base>
     )
 }

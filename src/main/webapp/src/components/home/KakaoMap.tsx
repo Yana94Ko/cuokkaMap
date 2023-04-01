@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {SetStateAction, useEffect, useState} from "react";
 import styled from "styled-components";
 import {Button, Icon} from "../../styles/common";
 import MapNavigationBar from "../home/header/MapNavigationBar";
@@ -76,85 +76,66 @@ type markerInfo = {
     x: number,
     y: number
 };
-const Map = () => {
-    const dispatch = useDispatch();
-    // [Yana] 로딩페이지
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+type KakaoMapProps = {
+    dbData: any[];
+    setDBData: React.Dispatch<SetStateAction<any[]>>;
+    setSearchDBKeyword : React.Dispatch<React.SetStateAction<string>>;
+    markers: any[];
+    setMarkers:React.Dispatch<SetStateAction<any[]>>;
+    removeMarker:()=>void;
+}
+const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, removeMarker}:KakaoMapProps) => {
+
+    const dispatch = useDispatch();
+    /*------------------------------------------- 상태 관련 START -------------------------------------------*/
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const isOpenedCafeInfo = useSelector((state: RootState) => state.viewReducer.isOpenedCafeInfo);
     const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
 
-    const [mapState, setMapState] = useState<any>();
-    //MapNav에서 검색된 데이터를 담을 마커 배열 state
-    const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
-    //CafeInfo 컴포넌트를 띄우기 위한 state MapNavigationBar에서 search된 카페를 띄워줌
-    const [confirmCafeInfo, setConfirmCafeInfo] = useState<boolean>(false);
-    //DB검색된 카페 클릭시 해당 마커의 정보만 담을 state
-    const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
+
+    /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
+
+
+
+    /*------------------------------------------- 검색/ 필터링 관련 START -------------------------------------------*/
     //검색어 : PostCafeInfo 컴포넌트의 카페찾기 input에서 조작
     const [keyword, setKeyword] = useState<string>("");
-    //마커를 클릭해서 카페추가에 올릴 정보
-    const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
-    const [DB, setDB] = useState<any>([]);
-    const [positions, setPositions] = useState<any[]>([]);
-    var markers: any[] = [];
+    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    /*------------------------------------------- [ END ] 검색 필터링 관련 -------------------------------------------*/
 
-    var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
+    /*------------------------------------------- 지도, 마커 등 맵 관련 START -------------------------------------------*/
+    const [mapState, setMapState] = useState<any>();
+
+    //var markers: any[] = [];
+    var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
+    /*------------------------------------------- [ END ] 지도, 마커 등 맵 관련 -------------------------------------------*/
 
-    // DB 받아오는 로직
-    useEffect(() => {
-        // [YANA]
-        abc();
-    }, []);
-    function abc(){
-        fetch("/api/place/getAllPlaceInfo", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "place_filter": [],
-                "keywords": "",
-            }),
-        })
-            .then(response => response.text())
-            .then(function (data: any) {
-                setDB(JSON.parse(data));
-                setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
-            }).catch(err => console.log("에러", err));
-    }
+    /*------------------------------------------- 데이터 관련 START -------------------------------------------*/
 
-    useEffect(() => {
-        if (currentFilter !== "all") {
-            fetch("/api/place/getAllPlaceInfo", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "place_filter": [currentFilter],
-                    "keywords": "",
-                }),
-            })
-                .then(response => response.text())
-                .then((data: any) => {
-                    var placeInfoArr = JSON.parse(data).map((i: any) => JSON.parse(i.place_info));
-                    setPositions(placeInfoArr);
-                })
-                .catch(err => console.log("에러", err));
-        } else {
-            setPositions(DB.map((i: any) => JSON.parse(i.place_info)));
-        }
+    //MapNav에서 검색된 데이터를 담을 마커 배열 state
+    const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
+    //DB검색된 카페 클릭시 해당 마커의 정보만 담을 state
+    const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
+    //마커를 클릭해서 카페추가에 올릴 정보
+    const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
 
-    }, [currentFilter, DB]);
+    /*------------------------------------------- [ END ] 데이터 관련 -------------------------------------------*/
 
+
+
+
+
+
+    /*=========================================================================================================*/
+    /*============================================== 맵 관련 START ==============================================*/
+
+        /*====================================== 지도 초기설정 외 START =====================================*/
+    // 1. 지도 생성하기
     useEffect(() => {
         let container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
-
         if (mapState === undefined) {
             var options = { //지도를 생성할 때 필요한 기본 옵션
                 center: new window.kakao.maps.LatLng(37.56667, 126.97806), //지도의 중심좌표.
@@ -170,87 +151,40 @@ const Map = () => {
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 
         setMapState(map);
-        setIsLoaded(true);
-        if (!isOpenedPostCafe) {
-            // TODO(FE): DB, 필터DB 마커 mouseOver, click 이벤트 추가하기
-            // assignees: hwanyb, SeongSilver
-
-            // 디비에 저장되어있는 마커 띄우기
-            for (let i = 0; i < positions.length; i++) {
-                var marker = new window.kakao.maps.Marker({
-                    map: map,
-                    position: new window.kakao.maps.LatLng(positions[i].y, positions[i].x),
-                    title: positions[i].place_name,
-                    image: filterMarkerImg
-                })
-            }
-        }
-    }, [currentFilter, keyword, isOpenedPostCafe, positions.length])
-
-    useEffect(() => {
-        if (searchedPlaceInfoInNav.length > 0) {
-            console.log(searchedPlaceInfoInNav)
-            displayDBPlaces(searchedPlaceInfoInNav);
-        }
-    }, [searchedPlaceInfoInNav]);
-
-    useEffect(() => {
-        if (!isOpenedPostCafe) {
-            setClickMarkerCafeInfo({})
-        }
-    }, [isOpenedPostCafe])
-
-    //해당 위치로 이동하는 함수
-    function panToMap(x: number, y:number){
-        var moveLatLng = new window.kakao.maps.LatLng(x, y);
-        abc();
-        mapState.setCenter(moveLatLng);
-    }
-
-    // 현재위치 함수
-    const currentLocation = () => {
-        if (navigator.geolocation) {
-            //Gelocation으로 현재 위치 얻기
-            navigator.geolocation.getCurrentPosition((position) => {
-                var currentLat = position.coords.latitude,
-                    currentLng = position.coords.longitude;
-                if (mapState !== undefined) mapState.setCenter(new window.kakao.maps.LatLng(currentLat, currentLng))
-            }, () => {
-                window.alert("브라우저 위치 설정을 허용해 주세요.")
-            })
-        }
-    }
-
-    function removeMarker() {
-        //DB검색한 것이 있을때
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(null);
-        }
-        markers = [];
-    }
-
-    // 카페 추가 버튼 클릭 이벤트
-    const onPostCafeBtnClick = () => {
-        // 로그인 되어있을 시 카페추가 창 열기
-        if (isLoggedin) {
-            setPositions([])
-
-            dispatch(setIsOpenedCafeInfo(false));
-            dispatch(setIsOpenedPostCafe(true));
-            removeMarker();
-
-        } else {
-            // 로그인되어있지 않으 시 로그인 모달창 열기
-            dispatch(setIsOpenedLoginModal(true));
-        }
-    }
-
+    }, []);
 
     //장소 검색 객체 생성
     var placeSearch = new window.kakao.maps.services.Places();
 
     //검색 결과 목록이나 마커를 클릭했을 때 장소명을 표시할 인포 윈도우 생성
     var infowindow = new window.kakao.maps.InfoWindow({zIndex: 1});
+
+        /*====================================== [ END ] 지도 초기설정 외 =====================================*/
+
+        /*====================================== 마커 공통 START =====================================*/
+    //모든 마커를 제거하는 함수
+    // function removeMarker() {
+    //     console.log("마커지우러 왔어요" ,markers.length)
+    //     //DB검색한 것이 있을때
+    //     for (var i = 0; i < markers.length; i++) {
+    //         markers[i].setMap(null);
+    //     }
+    //     markers = [];
+    // }
+        /*====================================== [ END ] 마커 공통 =====================================*/
+
+
+
+    /*============================================== [ END ] 맵 관련 ============================================*/
+    /*=========================================================================================================*/
+
+
+
+
+
+
+    /*=========================================================================================================*/
+    /*============================================== API 검색 관련 START ==============================================*/
 
     // 카카오맵 api를 이용하여 키워드 검색을 요청하는 함수
     function searchPlaces() {
@@ -268,8 +202,7 @@ const Map = () => {
         }
         removeMarker();
     }
-
-    //장소검색 완료시 호출하는 콜백함수
+//장소검색 완료시 호출하는 콜백함수
     function placesSearchCB(data: any, status: any) {
         if (mapState !== undefined) {
             if (status === window.kakao.maps.services.Status.OK) {
@@ -412,25 +345,74 @@ const Map = () => {
                 });
 
             marker.setMap(mapState);
-            markers.push(marker);
+            // setMarkers((markers:any[]) => {
+            //     [...markers, marker];
+            // })
+            // markers.push(marker);
 
             return marker;
         }
     }
+    /*============================================== [ END ] API 검색 관련 ============================================*/
+    /*=========================================================================================================*/
 
-    //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
+
+
+
+    /*=========================================================================================================*/
+    /*============================================== DB 검색 관련 START ==============================================*/
+
+
+    //처음 맵이 로딩되고 mpaState가 있을 때 데이터에 있는 모든 카페를 뿌려주는 useEffect
+    useEffect(() => {
+        if(mapState !== undefined){
+            //처음 렌더링 될 때 mapState가 있으면
+            //DB에 있는 모든 카페 뿌려주기.
+            //의존성 배열에는 위 useEffedct에 setMapState가 되어서 널이 아니면 한번 더 렌더링
+            //총 3번돌음
+
+            //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
+            displayDBPlaces(dbData);
+        }
+    }, [mapState, dbData]);
+
+    //DB카페를 검색했을 시 displayDBPlaces하기
+    useEffect(() => {
+        if (searchedPlaceInfoInNav.length > 0) {
+            displayDBPlaces(searchedPlaceInfoInNav);
+        }
+    }, [searchedPlaceInfoInNav]);
+
+    // //DB에 있는 카페 중 키워드에 맞는 CafeInfo에 쓸 데이터를 불러오는 함수
+    function loadClickMarkerData(keywords :string){
+        fetch("/api/place/getAllPlaceInfo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "place_filter": [],
+                "keywords": keywords,
+            }),
+        })
+            .then(response => response.text())
+            .then(function (data: any) {
+                removeMarker();
+                const responseData = JSON.parse(data).map((i: any) => JSON.parse(i.place_info))
+                setDBData(responseData);
+                setCafeInfoContainer(responseData[0]);
+            }).catch(err => console.log("에러", err));
+    }
+//DB의 카페 검색 결과 목록과 마커를 표출하는 함수
     function displayDBPlaces(places: any[]) {
         if (mapState !== undefined) {
-            const listEl = document.getElementById('placesList'),
-                bounds = new window.kakao.maps.LatLngBounds();
-
-            // 검색 결과 목록에 추가된 항목들을 제거
-            listEl && removeAllChildNods(listEl);
+            const bounds = new window.kakao.maps.LatLngBounds();
 
             removeMarker();
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
             for (var i = 0; i < places.length; i++) {
+                //console.log(places[i].x)
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
                     marker = addDBMarker(placePosition, places[i].place_name);
@@ -446,11 +428,18 @@ const Map = () => {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
                         setCafeInfoContainer(data);
                         dispatch(setIsOpenedCafeInfo(true));
+                        loadClickMarkerData(data.place_name);
                         console.log(data);
+                    });
+                    window.kakao.maps.event.addListener(marker, 'mouseover', function () {
+                        displayInfowindow(marker, data.place_name);
+                    });
+
+                    window.kakao.maps.event.addListener(marker, 'mouseout', function () {
+                        infowindow.close();
                     });
                 })(marker, places[i])
             }
-
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapState.setBounds(bounds);
             mapState.setLevel(mapState.getLevel() + 1);
@@ -459,30 +448,67 @@ const Map = () => {
 
     function addDBMarker(position: () => {}, title: string) {
         if (mapState !== undefined) {
-            //마커 이미지 URL
-            let imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-                //마커 크기
-                imageSize = new window.kakao.maps.Size(45, 47),
-                // 마커이미지의 옵션, 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정
-                imageOption = {offset: new window.kakao.maps.Point(27, 69)};
-
-            // 마커의 이미지정보를 가지고 있는 마커이미지를 생성
-            var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-
             // 마커 생성
             var marker = new window.kakao.maps.Marker({
                 position: position,
-                image: markerImage, // 마커이미지 설정
+                image: filterMarkerImg, // 마커이미지 설정
                 title: title
             });
 
             // 마커가 지도 위에 표시되도록 설정
             marker.setMap(mapState);
-            markers.push(marker);
-
+            //setMarkers([...markers,marker]);
+            console.log(markers)
+            // markers.push(marker);
             return marker;
         }
     }
+    /*============================================== [ END ] DB 검색 관련 ============================================*/
+    /*=========================================================================================================*/
+
+    /*=========================================================================================================*/
+    /*============================================== 위치 관련 START ==============================================*/
+
+    // 현재위치로 이동시키는 함수
+    const currentLocation = () => {
+        if (navigator.geolocation) {
+            //Gelocation으로 현재 위치 얻기
+            navigator.geolocation.getCurrentPosition((position) => {
+                var currentLat = position.coords.latitude,
+                    currentLng = position.coords.longitude;
+                if (mapState !== undefined) mapState.setCenter(new window.kakao.maps.LatLng(currentLat, currentLng))
+            }, () => {
+                window.alert("브라우저 위치 설정을 허용해 주세요.")
+            })
+        }
+    }
+    //카페등록 후 등록한 위치로 이동시키는 함수
+    function moveMapAfterPost(x: number, y:number){
+        var moveLatLng = new window.kakao.maps.LatLng(x, y);
+        mapState.setCenter(moveLatLng);
+    }
+
+    /*============================================== [ END ] 위치 관련 ============================================*/
+    /*=========================================================================================================*/
+
+
+
+    // 카페 추가 버튼 클릭 이벤트
+    const onPostCafeBtnClick = () => {
+        // removeMarker();
+        // 로그인 되어있을 시 카페추가 창 열기
+        if (isLoggedin) {
+            setClickMarkerCafeInfo({});
+            dispatch(setIsOpenedCafeInfo(false));
+            dispatch(setIsOpenedPostCafe(true));
+            removeMarker();
+        } else {
+            // 로그인되어있지 않으 시 로그인 모달창 열기
+            dispatch(setIsOpenedLoginModal(true));
+        }
+    }
+
+
 
     return (
         <Base>
@@ -493,7 +519,7 @@ const Map = () => {
             ) : (
                 <>
                 <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
-                                  setConfirmCafeInfo={setConfirmCafeInfo} removeMarker={removeMarker}/>
+                                  removeMarker={removeMarker} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
                 <CurrentLocationBtn onClick={currentLocation}>
                     <Icon className="material-symbols-rounded">my_location</Icon>
                 </CurrentLocationBtn>
@@ -507,7 +533,7 @@ const Map = () => {
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
                                   searchPlaces={searchPlaces}
                                   removeMarker={removeMarker}
-                                  panToMap={panToMap}
+                                  moveMapAfterPost={moveMapAfterPost}
                     />
                 )
             }
@@ -523,4 +549,4 @@ const Map = () => {
     )
 }
 
-export default Map;
+export default KakaoMap;
