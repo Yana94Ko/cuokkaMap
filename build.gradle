@@ -30,56 +30,65 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	implementation 'org.json:json:20211205'
 	implementation 'com.google.code.gson:gson:2.8.5'
-//	// TODO(BE) : p6spy의 경우 운영서버에서는 성능저하를 일으킬 수 있으니, 추후 제거할 것.
-//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
-//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
 
 
-//def reactAppDir = "$projectDir/src/main/webapp"
-//
-//sourceSets {
-//	main {
-//		resources {
-//			srcDirs = ["$projectDir/src/main/resources"]
-//		}
-//	}
-//}
-//
-//processResources {
-//	dependsOn "copyReactFile"
-//}
-//
-//task installReact(type: Exec) {
-//	workingDir "$reactAppDir"
-//	inputs.dir "$reactAppDir"
-//	group = BasePlugin.BUILD_GROUP
-//	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
-//		commandLine "npm.cmd", "audit", "fix"
-//		commandLine 'npm.cmd', 'install'
-//	} else {
-//		commandLine "npm", "audit", "fix"
-//		commandLine 'npm', 'install'
-//	}
-//}
-//
-//task "buildReact"(type: Exec) {
-//	dependsOn "installReact"
-//	workingDir "$reactAppDir"
-//	inputs.dir "$reactAppDir"
-//	group = BasePlugin.BUILD_GROUP
-//	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-//		commandLine "npm.cmd", "run-script", "build"
-//	} else {
-//		commandLine "npm", "run-script", "build"
-//	}
-//}
-//
-//task copyReactFile(type: Copy) {
-//	dependsOn "buildReact"
-//	from "$reactAppDir/build"
-//	into "$buildDir/resources/main/static"
-//}
+def reactAppDir = "$projectDir/src/main/webapp"
+
+sourceSets {
+	main {
+		resources {
+			srcDirs = ["$projectDir/src/main/resources"]
+		}
+	}
+}
+
+processResources {
+	dependsOn "copyReactFile"
+}
+
+task installReact(type: Exec) {
+	workingDir "$reactAppDir"
+	inputs.dir "$reactAppDir"
+	group = BasePlugin.BUILD_GROUP
+	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
+		commandLine "npm.cmd", "audit", "fix"
+		commandLine 'npm.cmd', 'install'
+	} else {
+		commandLine "npm", "audit", "fix"
+		commandLine 'npm', 'install'
+	}
+}
+
+task "buildReact"(type: Exec) {
+	dependsOn "installReact"
+	workingDir "$reactAppDir"
+	inputs.dir "$reactAppDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "run-script", "build"
+	} else {
+		commandLine "npm", "run-script", "build"
+	}
+}
+
+task copyReactFile(type: Copy) {
+	dependsOn "buildReact"
+	from "$reactAppDir/build"
+	into "$buildDir/resources/main/static"
+}
+jar {
+	manifest {
+		attributes 'Main-Class': 'com.bside.cuokkamap.CuokkaMapApplication'
+	}
+	from {
+		configurations.runtimeClasspath.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
+	duplicatesStrategy = 'include'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
