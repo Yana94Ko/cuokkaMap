@@ -1,10 +1,127 @@
+buildscript {
+	ext {
+		springBootVersion = '2.7.5.10'
+		mooworkVersion = '3.5.1'
+	}
+
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+		gradlePluginPortal()
+	}
+
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		//classpath("com.moowork.gradle:gradle-node-plugin:${mooworkVersion}")
+		//classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
+	}
+}
+
+
+
 plugins {
 	id 'java'
 //	id 'org.springframework.boot' version '3.0.4'
 	id 'org.springframework.boot' version '2.7.10'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id "com.github.node-gradle.node" version "3.5.0"
 }
 
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.github.node-gradle.node'
+apply plugin: 'application'
+node {
+	// Whether to download and install a specific Node.js version or not
+	// If false, it will use the globally installed Node.js
+	// If true, it will download node using above parameters
+	// Note that npm is bundled with Node.js
+	download = true
+
+	// Version of node to download and install (only used if download is true)
+	// It will be unpacked in the workDir
+	version = "16.14.0"
+
+	// Version of npm to use
+	// If specified, installs it in the npmWorkDir
+	// If empty, the plugin will use the npm command bundled with Node.js
+	npmVersion = ""
+
+	// Version of Yarn to use
+	// Any Yarn task first installs Yarn in the yarnWorkDir
+	// It uses the specified version if defined and the latest version otherwise (by default)
+	yarnVersion = ""
+
+	// Base URL for fetching node distributions
+	// Only used if download is true
+	// Change it if you want to use a mirror
+	// Or set to null if you want to add the repository on your own.
+	distBaseUrl = "https://nodejs.org/dist"
+
+	// Specifies whether it is acceptable to communicate with the Node.js repository over an insecure HTTP connection.
+	// Only used if download is true
+	// Change it to true if you use a mirror that uses HTTP rather than HTTPS
+	// Or set to null if you want to use Gradle's default behaviour.
+	allowInsecureProtocol = null
+
+	// The npm command executed by the npmInstall task
+	// By default it is install but it can be changed to ci
+	npmInstallCommand = "install"
+
+	// The directory where Node.js is unpacked (when download is true)
+	workDir = file("${project.projectDir}/.gradle/nodejs")
+
+	// The directory where npm is installed (when a specific version is defined)
+	npmWorkDir = file("${project.projectDir}/.gradle/npm")
+
+	// The directory where yarn is installed (when a Yarn task is used)
+	yarnWorkDir = file("${project.projectDir}/.gradle/yarn")
+
+	// The Node.js project directory location
+	// This is where the package.json file and node_modules directory are located
+	// By default it is at the root of the current project
+	nodeProjectDir = file("${project.projectDir}/src/main/resources/static")
+
+	// Whether the plugin automatically should add the proxy configuration to npm and yarn commands
+	// according the proxy configuration defined for Gradle
+	// Disable this option if you want to configure the proxy for npm or yarn on your own
+	// (in the .npmrc file for instance)
+	nodeProxySettings = ProxySettings.SMART
+}
+// build.gralde
+//configure(cuokkaMap) {
+//	// gradle에서 node명령을 사용하게 해주는 플러그인 사용을 추가합니다.
+//	apply plugin: 'com.moowork.node'
+//
+//	node {
+//		version = '10.15.1' // 설치할 node 버전
+//		yarnVersion = '1.13.0' // 설치할 yarn 버전
+//		download = true
+//		distBaseUrl = 'https://nodejs.org/dist' // node를 다운받을 수 있는 주소
+//		workDir = file("${project.rootDir}/nodejs") // node를 설치할 폴더를 설정
+//		yarnWorkDir = file("${project.rootDir}/yarn") // yarn을 설치할 폴더를 설정
+//	}
+//
+//	// yarn install 즉 package.json에 추가된 의존 모듈을 설치하는 명령을 설정
+//	task yarnInstallProduction(type: YarnTask) {
+//		args = ['install']
+//	}
+//
+//	// node와 yarn을 설치하고 yarn install 명령을 하나의 테스크로 묶었다.
+//	task nodeModuleInstall {
+//		doLast {
+//			nodeSetup.execute() // node를 설치
+//			yarnSetup.execute() // yarn을 설치
+//			yarnInstallProduction.execute() // package.json에 추가된 의존 모듈을 설치(yarn install)
+//		}
+//	}
+//}
+
+mainClassName = 'com.bside.cuokkamap.CuokkaMapApplication'
 group = 'com.bside'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
@@ -33,62 +150,93 @@ dependencies {
 }
 
 
-def reactAppDir = "$projectDir/src/main/webapp"
+def webappDir = "$projectDir/src/main/webapp"
 
-sourceSets {
-	main {
-		resources {
-			srcDirs = ["$projectDir/src/main/resources"]
-		}
-	}
-}
 
-processResources {
-	dependsOn "copyReactFile"
+node {
+	version = '18.12.1'
+	download=true
+	workDir = file("${project.buildDir}/nodejs")
+	npmWorkDir=file("${project.buildDir}/npm")
 }
 
-task installReact(type: Exec) {
-	workingDir "$reactAppDir"
-	inputs.dir "$reactAppDir"
-	group = BasePlugin.BUILD_GROUP
-	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
-		commandLine "npm.cmd", "audit", "fix"
-		commandLine 'npm.cmd', 'install'
-	} else {
-		commandLine "npm", "audit", "fix"
-		commandLine 'npm', 'install'
-	}
+task appNpmInstall(type: NpmTask) {
+	workingDir = file("${project.projectDir}/src/main/webapp")
+	args = ["install"]
 }
 
-task "buildReact"(type: Exec) {
-	dependsOn "installReact"
-	workingDir "$reactAppDir"
-	inputs.dir "$reactAppDir"
-	group = BasePlugin.BUILD_GROUP
-	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-		commandLine "npm.cmd", "run-script", "build"
-	} else {
-		commandLine "npm", "run-script", "build"
-	}
+task appNpmBuild(type: NpmTask) {
+	workingDir = file("${project.projectDir}/src/main/webapp")
+	args = ['run', 'build']
 }
 
-task copyReactFile(type: Copy) {
-	dependsOn "buildReact"
-	from "$reactAppDir/build"
-	into "$buildDir/resources/main/static"
+task copyWebApp(type: Copy) {
+	from "src/main/webapp/build"
+	into 'build/resources/main/static/.'
 }
-jar {
-	manifest {
-		attributes 'Main-Class': 'com.bside.cuokkamap.CuokkaMapApplication'
-	}
-	from {
-		configurations.runtimeClasspath.collect {
-			it.isDirectory() ? it : zipTree(it)
-		}
-	}
-	duplicatesStrategy = 'include'
-}
+
+appNpmBuild.dependsOn appNpmInstall
+copyWebApp.dependsOn appNpmBuild
+compileJava.dependsOn copyWebApp
+
+
+//def reactAppDir = "$projectDir/src/main/webapp"
+//
+//sourceSets {
+//	main {
+//		resources {
+//			srcDirs = ["$projectDir/src/main/resources"]
+//		}
+//	}
+//}
+//
+//processResources {
+//	dependsOn "copyReactFile"
+//}
+//
+//task installReact(type: Exec) {
+//	workingDir "$reactAppDir"
+//	inputs.dir "$reactAppDir"
+//	group = BasePlugin.BUILD_GROUP
+//	if(System.getProperty("os.name").toLowerCase(Locale.ROOT)contains('windows')){
+//		commandLine "npm.cmd", "audit", "fix"
+//		commandLine 'npm.cmd', 'install'
+//	} else {
+//		commandLine "npm", "audit", "fix"
+//		commandLine 'npm', 'install'
+//	}
+//}
+//
+//task "buildReact"(type: Exec) {
+//	dependsOn "installReact"
+//	workingDir "$reactAppDir"
+//	inputs.dir "$reactAppDir"
+//	group = BasePlugin.BUILD_GROUP
+//	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+//		commandLine "npm.cmd", "run-script", "build"
+//	} else {
+//		commandLine "npm", "run-script", "build"
+//	}
+//}
+//
+//task copyReactFile(type: Copy) {
+//	dependsOn "buildReact"
+//	from "$reactAppDir/build"
+//	into "$buildDir/resources/main/static"
+//}
+//jar {
+//	manifest {
+//		attributes 'Main-Class': 'com.bside.cuokkamap.CuokkaMapApplication'
+//	}
+//	from {
+//		configurations.runtimeClasspath.collect {
+//			it.isDirectory() ? it : zipTree(it)
+//		}
+//	}
+//	duplicatesStrategy = 'include'
+//}
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+processResources.dependsOn('npmInstall')
