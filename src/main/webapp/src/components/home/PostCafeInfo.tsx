@@ -96,8 +96,12 @@ interface FnProps {
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
     removeMarker: () => void;
-    panToMap:(x:number, y:number) => void;
-
+    moveMapAfterPost:(x:number, y:number) => void;
+    displayDBPlaces:(data:any[], filter:any[]) => void;
+    dbData: any[];
+    dbFilterData: any[];
+    removeMarkerAPI: () => void;
+    setNeedToRemove:React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -105,7 +109,10 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          panToMap
+                          moveMapAfterPost,
+    displayDBPlaces, dbData, dbFilterData,
+                          removeMarkerAPI,
+                          setNeedToRemove
                       }: FnProps) => {
     const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
@@ -144,8 +151,23 @@ const PostCafeInfo = ({
         }
     };
 
-    //제출한 검색어 state에 담아주는 함수
+    //카페찾기 input에 enter 이벤트
+    const activeEnter = (e:React.KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === "Enter") {
+            if (searchCafeInfo === "") {
+                alert("검색어를 입력해주세요");
+            } else {
+                setSearchedListCheck(true);
+                setKeyword(searchCafeInfo);
+                setNeedToSearch(true);
+                setSearchCafeInfo("")
+            }
+        }
+    }
+
+    //카페찾기 돋보기 클릭 시 검색어 state에 담아주는 함수
     const submitKeyword = (e: React.MouseEvent<HTMLButtonElement>) => {
+        setNeedToRemove(!setNeedToRemove)
         e.preventDefault();
         if (searchCafeInfo === "") {
             alert("검색어를 입력해주세요");
@@ -157,10 +179,12 @@ const PostCafeInfo = ({
         }
     }
     useEffect(() => {
+        removeMarkerAPI(); //살아았어야함
         searchPlaces();
         setNeedToSearch(false);
     }, [needToSearch])
 
+    //클릭한 마커가 db에 있는 정보인지아닌지 판별하는 useEffect
     useEffect(() => {
         if (Object.keys(clickMarkerCafeInfo).length > 0) {
             setSearchedListCheck(false)
@@ -213,20 +237,25 @@ const PostCafeInfo = ({
                     alert("카페등록이 완료되었습니다.")
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
-                    panToMap(placeInfo.y, placeInfo.x);
+                    moveMapAfterPost(placeInfo.y, placeInfo.x);
                 });
         }
     }
     const closePostCafe = () => {
         dispatch(setIsOpenedPostCafe(false));
         removeMarker();
+        removeMarkerAPI();
         setKeyword("");
+        displayDBPlaces(dbData, dbFilterData);
     }
+
     const onInputClick = () => {
         if (Object.keys(copiedClickedInfo).length === 0) {
             alert("카페찾기를 먼저 완료해 주세요.");
         }
     }
+
+
     return (
         <Base>
             <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
@@ -241,6 +270,7 @@ const PostCafeInfo = ({
                             onChange={onChange}
                             autoComplete="off"
                             placeholder="카페 이름으로 검색해주세요."
+                            onKeyDown={activeEnter}
                         >
                         </SearchInput>
                         <SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>

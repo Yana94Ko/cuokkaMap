@@ -54,16 +54,20 @@ const FilterTag = styled(Tag)`
       border-radius: 50%;
       margin-right: 10px;
     }
-
   `}
 `;
+
 
 type filterContentType = {
     name: string,
     id: string
 }[]
 
-const FilterContainer = () => {
+type FilterContainerProps={
+    setDBData:React.Dispatch<React.SetStateAction<any[]>>;
+    setSearchDBKeyword:React.Dispatch<React.SetStateAction<string>>;
+}
+const FilterContainer = ({setDBData, setSearchDBKeyword}:FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
@@ -92,10 +96,10 @@ const FilterContainer = () => {
         },
     ]
 
-
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(setCurrentFilter([event.currentTarget.id]))
+        setSearchDBKeyword("");
+        dispatch(setCurrentFilter([event.currentTarget.id]));
     }
 
     return (

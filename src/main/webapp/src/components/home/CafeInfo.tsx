@@ -1,10 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled from "styled-components"
 
 import {CloseBtn} from "./PostCafeInfo";
 import {Button, Icon, Tag} from "../../styles/common";
 import {useDispatch} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
+import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
+import CafeInfoReview from "./review/CafeInfoReview";
 
 const Base = styled.div`
   background-color: #fff;
@@ -12,7 +14,7 @@ const Base = styled.div`
   height: fit-content;
   position: absolute;
   z-index: 1000;
-  top: 150px;
+  top: 15vh;
   left: 50px;
   padding: 2rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -45,53 +47,57 @@ const Label = styled.label`
   display: block;
   font-size: ${props => props.theme.fontSize.base};
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 `;
 const InfoRequestBtn = styled(Button)`
   width: 100%;
-  margin-top: 4rem;
-  background-color: ${props => props.theme.color.gray};
-  color: ${props => props.theme.color.darkGray};
+  margin-top: 1rem;
 `;
 
 type CafeInfoProps = {
-    cafeInfoContainer: any;
+    cafeInfoContainer: object;
 }
+
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
+    let dataObject:any = {};
+    dataObject = Object.assign({},cafeInfoContainer);
+    const filterArr = dataObject.filter.split(", ");
+    console.log(filterArr);
+
     const dispatch = useDispatch();
-    const clickedData = {...cafeInfoContainer};
 
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
     }
-    // TODO(FE): 카페상세정보 DB요청한 후 받은 데이터로 렌더링하기
     // 카페 상세정보 DB 완성되면 진행하면 됩니다
     // assignees: hwanyb, SeongSilver
     return (
         <Base>
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             {
-                clickedData !== undefined && (
+                cafeInfoContainer !== undefined && (
 
                     <CafeInfoWrapper>
-                        {/*    /!*클릭한 카페 이름*!/*/}
-                        <PlaceName>{clickedData.name}</PlaceName>
+                            {/*클릭한 카페 이름*/}
+                        <PlaceName>{dataObject.data.place_name}</PlaceName>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
                             {/*클릭한 카페 주소*/}
-                            <Info>{clickedData.address}</Info>
+                            <Info>{dataObject.data.road_address_name}</Info>
                         </Item>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">phone_enabled</LabelIcon>
                             {/*클릭한 카페 전화번호*/}
-                            <Info>{clickedData.phone}</Info>
+                            {dataObject.data.phone ? (<Info>{dataObject.data.phone}</Info>) : (<p>연락처 미등록</p>)}
                         </Item>
-                        {/*<Label>옵션</Label>*/}
-                        {/*{*/}
-                        {/*    clickedData.tag.map((tag: string) => (*/}
-                        {/*        <Tag clickable={false} active={true}>{tag}</Tag>*/}
-                        {/*    ))*/}
-                        {/*}*/}
+                        <Label>옵션</Label>
+                        {
+                            filterArr.map((tag: string) => (
+                                <Tag clickable={false} active={true}>{
+                                    tag === "decaf" ? "디카페인" : tag === "lactos" ? "락토프리 우유" : tag === "soy" ? "두유" : tag  === "oat" ? "오트밀크" : tag === "zero" ? "제로시럽" : ""
+                                }</Tag>
+                            ))
+                        }
 
                         <InfoRequestBtn>정보수정요청</InfoRequestBtn>
                     </CafeInfoWrapper>
@@ -99,7 +105,8 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
                 ) //ddd
             }
-
+            {/*<CafeInfoPhotoReview/>*/}
+            {/*<CafeInfoReview/>*/}
         </Base>
     )
 }
