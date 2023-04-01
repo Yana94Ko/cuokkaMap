@@ -9,7 +9,7 @@ const Base = styled.div`
   bottom: 50px;
   right: 50px;
   border-radius: 10px;
-  width: 300px;
+  width: 350px;
   height: 150px;
   overflow: hidden;
   z-index:200;
@@ -19,8 +19,9 @@ const CloseBtn = styled(Icon)`
     position: absolute;
     top: 10px;
     right: 10px;
-    color: ${props => props.theme.color.primary};
+    color: white;
     display: block;
+    z-index: 100;
 `;
 
 type BannerProps = {
@@ -39,7 +40,7 @@ const Banner = ({setOpenBanner}: BannerProps) => {
             {/*TODO(hwanyb): 구글 설문조사 배너*/}
             {/*- 이미지 src 채워야 함*/}
             {/*assignees: hwanyb*/}
-            <a href="https://forms.gle/HHW9noC2oHbwziV49" target="_blank"><BannerImg alt="구글 설문조사 배너"/></a>
+            <a href="https://forms.gle/HHW9noC2oHbwziV49" target="_blank"><BannerImg src={process.env.PUBLIC_URL + "/assets/images/survey/survey.png"} alt="구글 설문조사 배너"/></a>
         </Base>
     )
 }

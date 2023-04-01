@@ -87,7 +87,7 @@ interface PropsToKaKaoMap {
     setDBData:React.Dispatch<React.SetStateAction<any[]>>;
     setSearchDBKeyword:React.Dispatch<React.SetStateAction<string>>;
 }
-const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, setSearchDBKeyword}: PropsToKaKaoMap) => {
+const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker, setDBData, setSearchDBKeyword}: PropsToKaKaoMap) => {
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
 
     const dispatch = useDispatch();
@@ -112,8 +112,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, se
         dispatch(setCurrentFilter([]));
         setSearchDBKeyword(searchValue);
         setSearchedPlaceInfoInNav([]);
-        // TODO(FE): DB 결과 없을 시 알림
-        // assignees: hwanyb
+
 
         setSearchValue("")
     }
@@ -124,11 +123,29 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, se
         setIsMypage(false);
     }
 
+    //카페찾기 input에 enter 이벤트
+    const activeEnter = (e:React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            removeMarker();
+
+            if (searchValue === "") {
+                alert("검색어가 입력되지 않았습니다");
+                return;
+            }
+            dispatch(setCurrentFilter([]));
+            setSearchDBKeyword(searchValue);
+            setSearchedPlaceInfoInNav([]);
+
+            setSearchValue("")
+        }
+    }
+
     return (
         <Base>
             <InputWrapper>
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
                 <SearchInput autoComplete="off" type="text" id="search" value={searchValue}
+                             onKeyDown={activeEnter}
                              onChange={searchInputChangeHandler}/>
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>

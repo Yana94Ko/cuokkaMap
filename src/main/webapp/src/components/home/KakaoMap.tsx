@@ -8,7 +8,6 @@ import {setIsOpenedLoginModal} from "../../modules/userReducer";
 import {setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
-import Loading from "./header/Laoding";
 
 const Base = styled.div``;
 const MapContainer = styled.div`
@@ -84,8 +83,9 @@ type KakaoMapProps = {
     markers: any[];
     setMarkers:React.Dispatch<SetStateAction<any[]>>;
     removeMarker:()=>void;
+    dbFilterData:any[];
 }
-const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, removeMarker}:KakaoMapProps) => {
+const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMarker, dbFilterData}:KakaoMapProps) => {
 
     const dispatch = useDispatch();
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
@@ -107,7 +107,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
     /*------------------------------------------- 지도, 마커 등 맵 관련 START -------------------------------------------*/
     const [mapState, setMapState] = useState<any>();
 
-    //var markers: any[] = [];
+    var markersTmp: any[] = [];
     var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
@@ -152,7 +152,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
 
         setMapState(map);
     }, []);
-
     //장소 검색 객체 생성
     var placeSearch = new window.kakao.maps.services.Places();
 
@@ -193,7 +192,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
             //keywordSearch() : 입력한 키워드로 검색하는 함수 options 활용 필요
             //https://apis.map.kakao.com/web/documentation/#services_Places_keywordSearch
             placeSearch.keywordSearch(keyword, placesSearchCB, {
-                code: "CE7", // 카페만 검색 코드 추가
+                category_group_code: "CE7", // 카페만 검색 코드 추가
                 location: mapState.getCenter(),
                 size: 10,
                 page: 1,
@@ -202,6 +201,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
         }
         removeMarker();
     }
+
 //장소검색 완료시 호출하는 콜백함수
     function placesSearchCB(data: any, status: any) {
         if (mapState !== undefined) {
@@ -239,7 +239,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
                     marker = addMarker(placePosition, i, undefined),
                     itemEl: HTMLElement | undefined = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성
-
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
                 bounds.extend(placePosition);
@@ -345,10 +344,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 });
 
             marker.setMap(mapState);
-            // setMarkers((markers:any[]) => {
-            //     [...markers, marker];
-            // })
-            // markers.push(marker);
+            markersTmp.push(marker);
 
             return marker;
         }
@@ -372,7 +368,9 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
             //총 3번돌음
 
             //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
-            displayDBPlaces(dbData);
+            displayDBPlaces(dbData, dbFilterData);
+            console.log(dbData.length);
+            const dbDataCenter = new window.kakao.maps.LatLng(dbData[0].y, dbData[0].x);
         }
     }, [mapState, dbData]);
 
@@ -404,7 +402,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
             }).catch(err => console.log("에러", err));
     }
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
-    function displayDBPlaces(places: any[]) {
+    function displayDBPlaces(places: any[], displayDBPlaces?:any[]) {
         if (mapState !== undefined) {
             const bounds = new window.kakao.maps.LatLngBounds();
 
@@ -424,12 +422,13 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                 // 마커와 검색결과 항목에 mouseover 했을때
                 // 해당 장소에 인포윈도우에 장소명을 표시
                 // mouseout 했을 때는 인포윈도우를 닫기
-                (function (marker: any, data: any) {
+                (function (marker: any, data: any, filter?: any) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
-                        setCafeInfoContainer(data);
-                        dispatch(setIsOpenedCafeInfo(true));
-                        loadClickMarkerData(data.place_name);
                         console.log(data);
+                        setCafeInfoContainer({data:data, filter:filter});
+                        dispatch(setIsOpenedCafeInfo(true));
+                        moveMapAfterPost(data.y, data.x);
+
                     });
                     window.kakao.maps.event.addListener(marker, 'mouseover', function () {
                         displayInfowindow(marker, data.place_name);
@@ -438,7 +437,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                     window.kakao.maps.event.addListener(marker, 'mouseout', function () {
                         infowindow.close();
                     });
-                })(marker, places[i])
+                })(marker, places[i], displayDBPlaces[i])
+                setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapState.setBounds(bounds);
@@ -457,9 +457,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
 
             // 마커가 지도 위에 표시되도록 설정
             marker.setMap(mapState);
-            //setMarkers([...markers,marker]);
-            console.log(markers)
-            // markers.push(marker);
+            markersTmp.push(marker);
             return marker;
         }
     }
@@ -486,6 +484,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
     function moveMapAfterPost(x: number, y:number){
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
         mapState.setCenter(moveLatLng);
+        mapState.setLevel(4);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
@@ -513,7 +512,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
     return (
         <Base>
             <MapContainer id="map">
-            </MapContainer>
                 <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                                   removeMarker={removeMarker} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
                 <CurrentLocationBtn onClick={currentLocation}>
@@ -523,19 +521,18 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword,markers, setMarkers, re
                     <Icon className="material-symbols-rounded">add</Icon>
                     카페추가
                 </AddCafeButton>
-
+            </MapContainer>
             {
                 isOpenedPostCafe && (
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
-                                  searchPlaces={searchPlaces}
-                                  removeMarker={removeMarker}
-                                  moveMapAfterPost={moveMapAfterPost}
+                                  searchPlaces={searchPlaces} removeMarker={removeMarker}  moveMapAfterPost={moveMapAfterPost}
+                                  displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                     />
                 )
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo cafeInfoContainer={cafeInfoContainer}/>
+                    <CafeInfo cafeInfoContainer={cafeInfoContainer} />
                 )
             }
         </Base>

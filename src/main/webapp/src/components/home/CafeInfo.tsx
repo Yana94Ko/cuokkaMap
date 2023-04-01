@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled from "styled-components"
 
 import {CloseBtn} from "./PostCafeInfo";
@@ -11,7 +11,7 @@ import CafeInfoReview from "./review/CafeInfoReview";
 const Base = styled.div`
   background-color: #fff;
   width: 400px;
-  height: 330px;
+  height: fit-content;
   position: absolute;
   z-index: 1000;
   top: 15vh;
@@ -47,21 +47,23 @@ const Label = styled.label`
   display: block;
   font-size: ${props => props.theme.fontSize.base};
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 `;
 const InfoRequestBtn = styled(Button)`
   width: 100%;
-  margin-top: 4rem;
-  background-color: ${props => props.theme.color.gray};
-  color: ${props => props.theme.color.darkGray};
+  margin-top: 1rem;
 `;
 
 type CafeInfoProps = {
     cafeInfoContainer: object;
 }
+
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
-    //6:번호 7:이름, 9:도로명주소,
-    const infoAff = Object.values(cafeInfoContainer);
+    let dataObject:any = {};
+    dataObject = Object.assign({},cafeInfoContainer);
+    const filterArr = dataObject.filter.split(", ");
+    console.log(filterArr);
+
     const dispatch = useDispatch();
 
     const closeCafeInfo = () => {
@@ -77,23 +79,25 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
                     <CafeInfoWrapper>
                             {/*클릭한 카페 이름*/}
-                        <PlaceName>{infoAff[7]}</PlaceName>
+                        <PlaceName>{dataObject.data.place_name}</PlaceName>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
                             {/*클릭한 카페 주소*/}
-                            <Info>{infoAff[9]}</Info>
+                            <Info>{dataObject.data.road_address_name}</Info>
                         </Item>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">phone_enabled</LabelIcon>
                             {/*클릭한 카페 전화번호*/}
-                            <Info>{infoAff[6]}</Info>
+                            {dataObject.data.phone ? (<Info>{dataObject.data.phone}</Info>) : (<p>연락처 미등록</p>)}
                         </Item>
-                        {/*<Label>옵션</Label>*/}
-                        {/*{*/}
-                        {/*    clickedData.tag.map((tag: string) => (*/}
-                        {/*        <Tag clickable={false} active={true}>{tag}</Tag>*/}
-                        {/*    ))*/}
-                        {/*}*/}
+                        <Label>옵션</Label>
+                        {
+                            filterArr.map((tag: string) => (
+                                <Tag clickable={false} active={true}>{
+                                    tag === "decaf" ? "디카페인" : tag === "lactos" ? "락토프리 우유" : tag === "soy" ? "두유" : tag  === "oat" ? "오트밀크" : tag === "zero" ? "제로시럽" : ""
+                                }</Tag>
+                            ))
+                        }
 
                         <InfoRequestBtn>정보수정요청</InfoRequestBtn>
                     </CafeInfoWrapper>
@@ -101,8 +105,8 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
                 ) //ddd
             }
-            <CafeInfoPhotoReview/>
-            <CafeInfoReview/>
+            {/*<CafeInfoPhotoReview/>*/}
+            {/*<CafeInfoReview/>*/}
         </Base>
     )
 }

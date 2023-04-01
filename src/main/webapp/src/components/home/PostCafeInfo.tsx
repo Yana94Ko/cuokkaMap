@@ -97,7 +97,9 @@ interface FnProps {
     searchPlaces: () => void;
     removeMarker: () => void;
     moveMapAfterPost:(x:number, y:number) => void;
-
+    displayDBPlaces:(data:any[], filter:any[]) => void;
+    dbData: any[];
+    dbFilterData: any[];
 }
 
 const PostCafeInfo = ({
@@ -105,7 +107,8 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          moveMapAfterPost
+                          moveMapAfterPost,
+    displayDBPlaces, dbData, dbFilterData
                       }: FnProps) => {
     const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
@@ -146,7 +149,6 @@ const PostCafeInfo = ({
 
     //카페찾기 input에 enter 이벤트
     const activeEnter = (e:React.KeyboardEvent<HTMLInputElement>) => {
-        removeMarker();
         if(e.key === "Enter") {
             if (searchCafeInfo === "") {
                 alert("검색어를 입력해주세요");
@@ -238,6 +240,7 @@ const PostCafeInfo = ({
         dispatch(setIsOpenedPostCafe(false));
         removeMarker();
         setKeyword("");
+        displayDBPlaces(dbData, dbFilterData);
     }
 
     const onInputClick = () => {
