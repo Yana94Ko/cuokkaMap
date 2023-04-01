@@ -100,6 +100,8 @@ interface FnProps {
     displayDBPlaces:(data:any[], filter:any[]) => void;
     dbData: any[];
     dbFilterData: any[];
+    removeMarkerAPI: () => void;
+    setNeedToRemove:React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -108,7 +110,9 @@ const PostCafeInfo = ({
                           searchPlaces,
                           removeMarker,
                           moveMapAfterPost,
-    displayDBPlaces, dbData, dbFilterData
+    displayDBPlaces, dbData, dbFilterData,
+                          removeMarkerAPI,
+                          setNeedToRemove
                       }: FnProps) => {
     const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
@@ -163,7 +167,7 @@ const PostCafeInfo = ({
 
     //카페찾기 돋보기 클릭 시 검색어 state에 담아주는 함수
     const submitKeyword = (e: React.MouseEvent<HTMLButtonElement>) => {
-        removeMarker();
+        setNeedToRemove(!setNeedToRemove)
         e.preventDefault();
         if (searchCafeInfo === "") {
             alert("검색어를 입력해주세요");
@@ -175,6 +179,7 @@ const PostCafeInfo = ({
         }
     }
     useEffect(() => {
+        removeMarkerAPI(); //살아았어야함
         searchPlaces();
         setNeedToSearch(false);
     }, [needToSearch])
@@ -239,6 +244,7 @@ const PostCafeInfo = ({
     const closePostCafe = () => {
         dispatch(setIsOpenedPostCafe(false));
         removeMarker();
+        removeMarkerAPI();
         setKeyword("");
         displayDBPlaces(dbData, dbFilterData);
     }

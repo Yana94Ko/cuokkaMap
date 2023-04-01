@@ -53,7 +53,7 @@ function HomePage() {
                     alert("검색어가 존재하지 않습니다");
                 }else{
                     setDBFilterData(JSON.parse(data).map((filter:any) => filter.filter_type));
-                    setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)).splice(0,20));
+                    setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
                 }
             })
             .catch(err => console.log("에러", err));

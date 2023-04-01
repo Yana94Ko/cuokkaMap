@@ -62,20 +62,6 @@ declare global {
     }
 }
 
-type markerInfo = {
-    address_name: string,
-    category_group_code: string,
-    category_group_name: string,
-    distance: string,
-    id: string,
-    phone?: string,
-    place_name: string,
-    place_url?: string,
-    road_address_name?: string,
-    x: number,
-    y: number
-};
-
 type KakaoMapProps = {
     dbData: any[];
     setDBData: React.Dispatch<SetStateAction<any[]>>;
@@ -85,7 +71,7 @@ type KakaoMapProps = {
     removeMarker:()=>void;
     dbFilterData:any[];
 }
-const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMarker, dbFilterData}:KakaoMapProps) => {
+const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, removeMarker, dbFilterData}:KakaoMapProps) => {
 
     const dispatch = useDispatch();
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
@@ -108,6 +94,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
     const [mapState, setMapState] = useState<any>();
 
     var markersTmp: any[] = [];
+    var markerAPI: any[] = [];
     var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
@@ -162,14 +149,24 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
 
         /*====================================== 마커 공통 START =====================================*/
     //모든 마커를 제거하는 함수
-    // function removeMarker() {
-    //     console.log("마커지우러 왔어요" ,markers.length)
-    //     //DB검색한 것이 있을때
-    //     for (var i = 0; i < markers.length; i++) {
-    //         markers[i].setMap(null);
-    //     }
-    //     markers = [];
-    // }
+    const [needToRemove,setNeedToRemove] = useState(false);
+    useEffect(()=>{
+        if (mapState !== undefined) {
+            removeMarkerAPI();
+        }
+    },[needToRemove])
+
+    function removeMarkerAPI() {
+        console.log("API마커지우러 왔어요" ,markers.length)
+        //DB검색한 것이 있을때
+        if(markers !== undefined && markers.length > 0) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+        }
+        // markers = [];
+        setMarkers([]);
+    }
         /*====================================== [ END ] 마커 공통 =====================================*/
 
 
@@ -231,7 +228,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
             listEl && removeAllChildNods(listEl);
 
             // 지도에 표시되고 있는 마커를 제거
-            removeMarker();
+            removeMarkerAPI();
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
             for (let i = 0; i < places.length; i++) {
@@ -283,6 +280,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapState.setBounds(bounds);
         }
+
     }
 
     //검색결과 항목을 Element로 반환하는 함수
@@ -344,7 +342,9 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
                 });
 
             marker.setMap(mapState);
-            markersTmp.push(marker);
+            markersTmp.push(marker)
+            setMarkers(markersTmp);
+            //console.log(markersTmp)
 
             return marker;
         }
@@ -369,6 +369,8 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
 
             //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
             displayDBPlaces(dbData, dbFilterData);
+            mapState.setLevel(5);
+            mapState.setCenter(new window.kakao.maps.LatLng(37.56667, 126.97806));
             console.log(dbData.length);
             const dbDataCenter = new window.kakao.maps.LatLng(dbData[0].y, dbData[0].x);
         }
@@ -475,6 +477,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
                 var currentLat = position.coords.latitude,
                     currentLng = position.coords.longitude;
                 if (mapState !== undefined) mapState.setCenter(new window.kakao.maps.LatLng(currentLat, currentLng))
+                mapState.setLevel(4);
             }, () => {
                 window.alert("브라우저 위치 설정을 허용해 주세요.")
             })
@@ -525,7 +528,11 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, setMarkers, removeMark
             {
                 isOpenedPostCafe && (
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
-                                  searchPlaces={searchPlaces} removeMarker={removeMarker}  moveMapAfterPost={moveMapAfterPost}
+                                  searchPlaces={searchPlaces}
+                                  removeMarker={removeMarker}
+                                  moveMapAfterPost={moveMapAfterPost}
+                                  removeMarkerAPI={removeMarkerAPI}
+                                  setNeedToRemove={setNeedToRemove}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                     />
                 )
