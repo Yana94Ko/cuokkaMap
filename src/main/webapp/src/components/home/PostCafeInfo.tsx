@@ -97,7 +97,8 @@ interface FnProps {
     searchPlaces: () => void;
     removeMarker: () => void;
     moveMapAfterPost:(x:number, y:number) => void;
-
+    removeMarkerAPI: () => void;
+    setNeedToRemove:React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -105,7 +106,9 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          moveMapAfterPost
+                          moveMapAfterPost,
+                          removeMarkerAPI,
+                          setNeedToRemove
                       }: FnProps) => {
     const dispatch = useDispatch();
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
@@ -146,7 +149,6 @@ const PostCafeInfo = ({
 
     //카페찾기 input에 enter 이벤트
     const activeEnter = (e:React.KeyboardEvent<HTMLInputElement>) => {
-        removeMarker();
         if(e.key === "Enter") {
             if (searchCafeInfo === "") {
                 alert("검색어를 입력해주세요");
@@ -161,7 +163,7 @@ const PostCafeInfo = ({
 
     //카페찾기 돋보기 클릭 시 검색어 state에 담아주는 함수
     const submitKeyword = (e: React.MouseEvent<HTMLButtonElement>) => {
-        removeMarker();
+        setNeedToRemove(!setNeedToRemove)
         e.preventDefault();
         if (searchCafeInfo === "") {
             alert("검색어를 입력해주세요");
@@ -173,6 +175,7 @@ const PostCafeInfo = ({
         }
     }
     useEffect(() => {
+        removeMarkerAPI(); //살아았어야함
         searchPlaces();
         setNeedToSearch(false);
     }, [needToSearch])
@@ -237,6 +240,7 @@ const PostCafeInfo = ({
     const closePostCafe = () => {
         dispatch(setIsOpenedPostCafe(false));
         removeMarker();
+        //removeMarkerAPI();
         setKeyword("");
     }
 
