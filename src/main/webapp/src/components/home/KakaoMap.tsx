@@ -163,7 +163,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     },[needToRemove])
 
     function removeMarkerAPI() {
-        console.log("API마커지우러 왔어요" ,markers.length)
         //DB검색한 것이 있을때
         if(markers !== undefined && markers.length > 0) {
             for (var i = 0; i < markers.length; i++) {
@@ -374,17 +373,11 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     //처음 맵이 로딩되고 mpaState가 있을 때 데이터에 있는 모든 카페를 뿌려주는 useEffect
     useEffect(() => {
         if(mapState !== undefined){
-            //처음 렌더링 될 때 mapState가 있으면
-            //DB에 있는 모든 카페 뿌려주기.
-            //의존성 배열에는 위 useEffedct에 setMapState가 되어서 널이 아니면 한번 더 렌더링
-            //총 3번돌음
-
             //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
             displayDBPlaces(dbData, dbFilterData);
-            mapState.setLevel(5);
-            mapState.setCenter(new window.kakao.maps.LatLng(37.56667, 126.97806));
-            console.log(dbData.length);
-            const dbDataCenter = new window.kakao.maps.LatLng(dbData[0].y, dbData[0].x);
+            mapState.setLevel(7);
+            console.log("db변함?");
+
         }
     }, [mapState, dbData]);
 
@@ -416,7 +409,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
             }).catch(err => console.log("에러", err));
     }
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
-    function displayDBPlaces(places: any[], displayDBPlaces?:any[]) {
+    function displayDBPlaces(places: any[], filterData?:any[]) {
         if (mapState !== undefined) {
             const bounds = new window.kakao.maps.LatLngBounds();
 
@@ -424,7 +417,6 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
             for (var i = 0; i < places.length; i++) {
-                //console.log(places[i].x)
                 // 마커를 생성하고 지도에 표시
                 let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
                     marker = addDBMarker(placePosition, places[i].place_name);
@@ -451,7 +443,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
                     window.kakao.maps.event.addListener(marker, 'mouseout', function () {
                         infowindow.close();
                     });
-                })(marker, places[i], displayDBPlaces[i])
+                })(marker, places[i], filterData[i])
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
@@ -499,7 +491,7 @@ const KakaoMap = ({dbData, setDBData, setSearchDBKeyword, markers, setMarkers, r
     function moveMapAfterPost(x: number, y:number){
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
         mapState.setCenter(moveLatLng);
-        mapState.setLevel(4);
+        mapState.setLevel(3);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/

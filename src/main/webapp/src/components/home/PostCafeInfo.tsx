@@ -4,7 +4,6 @@ import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
 import {useDispatch} from "react-redux";
 import {setIsOpenedPostCafe} from "../../modules/viewReducer";
-import intervalCall from "interval-call";
 
 
 const Base = styled.div`
@@ -238,12 +237,14 @@ const PostCafeInfo = ({
                 .then((data) =>  {
                     const loadData = JSON.parse(data);
                     const placeInfo = JSON.parse(loadData.place_info);
-                    console.log(placeInfo);
-                    alert("카페등록이 완료되었습니다.")
+                    alert("카페등록이 완료되었습니다.");
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
-                });
+                    window.location.reload();
+                })
+
+            ;
         }
     }
     const closePostCafe = () => {
