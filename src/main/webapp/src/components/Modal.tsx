@@ -9,7 +9,7 @@ import styled from "styled-components";
 const Base = styled.div`
   position: fixed;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   z-index: 9999;
   left: 0;
   top: 0;
@@ -18,6 +18,13 @@ const Base = styled.div`
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.1);
+  @media ${props => props.theme.windowSize.mobile} {
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
+    }
+  }
 `;
 
 type Props = {

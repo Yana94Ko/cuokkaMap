@@ -1,11 +1,10 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useRef, useState} from 'react';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
 
 import FilterContainer from "./FilterContainer";
-import data from "../../../cafeDummy.json";
-import {Button, Tag, Icon, Input} from "../../../styles/common";
+import {Button, Icon, Input} from "../../../styles/common";
 import MyPageList from "../MyPageList";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
@@ -28,7 +27,7 @@ const Base = styled.div`
   }
 `;
 const InputWrapper = styled.div`
-  width: 400px;
+  width: 350px;
   display: flex;
   align-items: center;
   background-color: ${props => props.theme.color.white};
@@ -64,7 +63,9 @@ const SearchInput = styled(Input)`
     padding: 0 1.5rem;
   }
 `;
-const NavLoginOrMyPage = styled.div``;
+const NavLoginOrMyPage = styled.div`
+  position: relative;
+`;
 const NavBtn = styled(Button)`
   background-color: ${props => props.theme.color.white};
   padding: 0.5rem;
@@ -84,19 +85,26 @@ const NavIcon = styled(Icon)`
 interface PropsToKaKaoMap {
     setSearchedPlaceInfoInNav: React.Dispatch<React.SetStateAction<object[] | null>>;
     removeMarker: () => void;
-    setDBData:React.Dispatch<React.SetStateAction<any[]>>;
-    setSearchDBKeyword:React.Dispatch<React.SetStateAction<string>>;
+    setDBData: React.Dispatch<React.SetStateAction<any[]>>;
+    setSearchDBKeyword: React.Dispatch<React.SetStateAction<string>>;
 }
-const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, setSearchDBKeyword}: PropsToKaKaoMap) => {
+
+const MapNavigationBar = ({
+                              setSearchedPlaceInfoInNav,
+                              removeMarker,
+                              setDBData,
+                              setSearchDBKeyword
+                          }: PropsToKaKaoMap) => {
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
 
     const dispatch = useDispatch();
+
+    const searchInput = useRef<HTMLInputElement>(null);
 
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
     //마이페이지 마우스 호버 여부
     const [isMypage, setIsMypage] = useState<boolean>(false);
-    const [tag, setTag] = useState<any>();
     const searchInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
     }
@@ -112,8 +120,7 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, se
         dispatch(setCurrentFilter([]));
         setSearchDBKeyword(searchValue);
         setSearchedPlaceInfoInNav([]);
-        // TODO(FE): DB 결과 없을 시 알림
-        // assignees: hwanyb
+
 
         setSearchValue("")
     }
@@ -124,15 +131,36 @@ const MapNavigationBar = ({setSearchedPlaceInfoInNav, removeMarker,setDBData, se
         setIsMypage(false);
     }
 
+    //카페찾기 input에 enter 이벤트
+    const activeEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            removeMarker();
+
+            if (searchValue === "") {
+                alert("검색어가 입력되지 않았습니다");
+                return;
+            }
+            dispatch(setCurrentFilter([]));
+            setSearchDBKeyword(searchValue);
+            setSearchedPlaceInfoInNav([]);
+
+            setSearchValue("")
+
+            // 모바일에서 엔터키로 검색 시 키보드창이 닫기지 않는 이슈 해결하기 위한 코드
+            searchInput.current.blur();
+        }
+    }
+
     return (
         <Base>
             <InputWrapper>
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
-                <SearchInput autoComplete="off" type="text" id="search" value={searchValue}
+                <SearchInput autoComplete="off" type="text" id="search" value={searchValue} ref={searchInput}
+                             onKeyPress={activeEnter}
                              onChange={searchInputChangeHandler}/>
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
-            <FilterContainer setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}/>
+            <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>
                 {
                     isLoggedin ? (
