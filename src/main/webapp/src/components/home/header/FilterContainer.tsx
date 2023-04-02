@@ -29,14 +29,12 @@ const Base = styled.div`
     top: 7rem;
     padding: 0 2rem;
   }
-  //&:last-child{
-  //  margin-right: 0;
-  //}
   & > button:last-child {
     margin-right: 0;
   }
 `;
 const FilterTag = styled(Tag)`
+  color: #000;
   white-space: nowrap;
   margin-bottom: 0;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -63,11 +61,10 @@ type filterContentType = {
     id: string
 }[]
 
-type FilterContainerProps={
-    setDBData:React.Dispatch<React.SetStateAction<any[]>>;
-    setSearchDBKeyword:React.Dispatch<React.SetStateAction<string>>;
+type FilterContainerProps = {
+    setSearchDBKeyword: React.Dispatch<React.SetStateAction<string>>;
 }
-const FilterContainer = ({setDBData, setSearchDBKeyword}:FilterContainerProps) => {
+const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
@@ -98,8 +95,12 @@ const FilterContainer = ({setDBData, setSearchDBKeyword}:FilterContainerProps) =
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setSearchDBKeyword("");
-        dispatch(setCurrentFilter([event.currentTarget.id]));
+        if (event.currentTarget.id === currentFilter[0]) {
+            dispatch(setCurrentFilter([]));
+        } else {
+            setSearchDBKeyword("");
+            dispatch(setCurrentFilter([event.currentTarget.id]));
+        }
     }
 
     return (

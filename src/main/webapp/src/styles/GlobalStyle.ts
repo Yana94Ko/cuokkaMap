@@ -15,6 +15,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   html {
+    color: #000;
     font-family: 'Noto Sans KR', sans-serif;
     font-size: 15px;
     @media ${(props) => props.theme.windowSize.tablet} {
