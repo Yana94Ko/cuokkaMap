@@ -6,22 +6,27 @@ import {Icon} from "../../styles/common";
 const Base = styled.div`
   background-color: #fff;
   position: fixed;
-  bottom: 50px;
-  right: 50px;
-  border-radius: 10px;
+  bottom: 3rem;
+  right: 3rem;
+  border-radius: 1rem;
   width: 350px;
   height: 150px;
   overflow: hidden;
-  z-index:200;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  z-index: 200;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  @media ${props => props.theme.windowSize.laptop} {
+    bottom: 8rem;
+    right: 50%;
+    transform: translateX(50%);
+  }
 `;
-const CloseBtn = styled(Icon)` 
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: white;
-    display: block;
-    z-index: 100;
+const CloseBtn = styled(Icon)`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: white;
+  display: block;
+  z-index: 100;
 `;
 
 type BannerProps = {
@@ -37,10 +42,8 @@ const Banner = ({setOpenBanner}: BannerProps) => {
     return (
         <Base>
             <CloseBtn onClick={closeBanner} className="material-symbols-rounded">close</CloseBtn>
-            {/*TODO(hwanyb): 구글 설문조사 배너*/}
-            {/*- 이미지 src 채워야 함*/}
-            {/*assignees: hwanyb*/}
-            <a href="https://forms.gle/HHW9noC2oHbwziV49" target="_blank"><BannerImg src={process.env.PUBLIC_URL + "/assets/images/survey/survey.png"} alt="구글 설문조사 배너"/></a>
+            <a href="https://forms.gle/HHW9noC2oHbwziV49" target="_blank"><BannerImg
+                src={process.env.PUBLIC_URL + "/assets/images/survey/survey.png"} alt="구글 설문조사 배너"/></a>
         </Base>
     )
 }

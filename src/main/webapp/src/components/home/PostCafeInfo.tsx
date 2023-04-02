@@ -1,12 +1,12 @@
-import React, {FormEvent, SetStateAction, useEffect, useState} from 'react';
-import styled from "styled-components";
+import React, {FormEvent, SetStateAction, useEffect, useRef, useState} from 'react';
+import styled, {css} from "styled-components";
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedPostCafe} from "../../modules/viewReducer";
+import {RootState} from "../../modules";
 
-
-const Base = styled.div`
+const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   background-color: #fff;
   width: 400px;
   height: 100vh;
@@ -19,6 +19,33 @@ const Base = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: all 0.5s 1s ease-in-out;
+
+  ${props => props.isOpenedPostCafe ? css`
+    opacity: 1;
+    @media ${props => props.theme.windowSize.mobile} {
+      width: 100%;
+      height: 300px;
+      bottom: 0;
+      overflow-y: auto;
+      padding: 2rem;
+      justify-content: start;
+      border-radius: 1.5rem 1.5rem 0 0;
+    top:calc(100% - 300px);
+    }
+  ` : css`
+    opacity: 0;
+  `}
+
+
+
+  @media ${props => props.theme.windowSize.mobile} {
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
+    }
+  }
 `;
 export const CloseBtn = styled(Icon)`
   position: absolute;
@@ -49,6 +76,11 @@ const CafeInfoWrapper = styled.div`
   height: 100%;
 `;
 const CafeInfoItem = styled.div`
+  @media ${props => props.theme.windowSize.mobile} {
+    height: fit-content;
+    justify-content: start;
+    margin-bottom: 20px;
+  }
 `;
 
 const Label = styled.label`
@@ -58,16 +90,25 @@ const Label = styled.label`
 const TagWrapper = styled.ul`
   display: flex;
   flex-wrap: wrap;
+  @media ${props => props.theme.windowSize.mobile} {
+    margin-bottom: 20px;
+  }
 `;
 
 
 const SearchInput = styled(Input)``;
 const SearchInputWrapper = styled.div`
   position: relative;
+  
 `;
 const AddCafeBtn = styled(Button)`
   width: 100%;
   margin-top: 3rem;
+  position: relative;
+  @media ${props => props.theme.windowSize.mobile} {
+  margin-bottom: 50px;
+  }
+  
 `;
 
 const SearchIcon = styled(Icon)`
@@ -97,14 +138,14 @@ interface FnProps {
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
     removeMarker: () => void;
-    moveMapAfterPost:(x:number, y:number) => void;
-    displayDBPlaces:(data:any[], filter:any[]) => void;
+    moveMapAfterPost: (x: number, y: number) => void;
+    displayDBPlaces: (data: any[], filter: any[]) => void;
     dbData: any[];
     dbFilterData: any[];
     removeMarkerAPI: () => void;
-    setNeedToRemove:React.Dispatch<SetStateAction<boolean>>;
-    searchCafeInfo:string;
-    setSearchCafeInfo : React.Dispatch<SetStateAction<string>>;
+    setNeedToRemove: React.Dispatch<SetStateAction<boolean>>;
+    searchCafeInfo: string;
+    setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
 }
 
 const PostCafeInfo = ({
@@ -113,22 +154,24 @@ const PostCafeInfo = ({
                           searchPlaces,
                           removeMarker,
                           moveMapAfterPost,
-    displayDBPlaces, dbData, dbFilterData,
+                          displayDBPlaces, dbData, dbFilterData,
                           removeMarkerAPI,
                           setNeedToRemove,
                           searchCafeInfo,
                           setSearchCafeInfo,
                       }: FnProps) => {
     const dispatch = useDispatch();
-    const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
-    //***************03.27.2시 30분 추가
-    //입력 폼 변화 감지하여 입력 값 관리
 
+    const PostCafeInput = useRef<HTMLInputElement>(null);
+
+    const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
+
+    const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
     const [searchedListCheck, setSearchedListCheck] = useState<boolean>(false);
     const [tag, setTag] = useState<string[]>([]);
     const [needToSearch, setNeedToSearch] = useState<boolean>(false);
 
-    function onChange (e: React.ChangeEvent<HTMLInputElement>) {
+    function onChange(e: React.ChangeEvent<HTMLInputElement>) {
         const {target: {name, value},} = e;
         if (name === "search") {
             setSearchCafeInfo(value);
@@ -157,15 +200,15 @@ const PostCafeInfo = ({
     };
 
     //카페찾기 input에 enter 이벤트
-    function activeEnter (e:React.KeyboardEvent<HTMLInputElement>) {
-        if(e.key === "Enter") {
-            console.log(searchCafeInfo)
+    function activeEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === "Enter") {
             if (searchCafeInfo === "") {
                 alert("검색어를 입력해주세요");
             } else {
                 setSearchedListCheck(true);
                 setKeyword(searchCafeInfo);
                 setNeedToSearch(true);
+                PostCafeInput.current.blur();
             }
         }
     }
@@ -183,9 +226,11 @@ const PostCafeInfo = ({
         }
     }
     useEffect(() => {
-        removeMarkerAPI(); //살아았어야함
-        searchPlaces();
-        setNeedToSearch(false);
+        if (needToSearch) {
+            removeMarkerAPI(); //살아았어야함
+            searchPlaces();
+            setNeedToSearch(false);
+        }
     }, [needToSearch])
 
     //클릭한 마커가 db에 있는 정보인지아닌지 판별하는 useEffect
@@ -234,17 +279,15 @@ const PostCafeInfo = ({
                 body: JSON.stringify(dataToSave),
             })
                 .then(response => response.text())
-                .then((data) =>  {
+                .then((data) => {
                     const loadData = JSON.parse(data);
                     const placeInfo = JSON.parse(loadData.place_info);
-                    alert("카페등록이 완료되었습니다.");
+                    alert("카페등록이 완료되었습니다.")
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
                     window.location.reload();
-                })
-
-            ;
+                });
         }
     }
     const closePostCafe = () => {
@@ -263,7 +306,7 @@ const PostCafeInfo = ({
 
 
     return (
-        <Base>
+        <Base isOpenedPostCafe={isOpenedPostCafe}>
             <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
             <Title>카페 추가</Title>
             <Form onSubmit={AddCafeInfo}>
@@ -271,7 +314,8 @@ const PostCafeInfo = ({
                     <Label>카페찾기</Label>
                     <SearchInputWrapper>
                         <SearchInput
-                            value={searchCafeInfo}
+                            ref={PostCafeInput}
+                            value={searchCafeInfo || ""}
                             name="search"
                             onChange={onChange}
                             autoComplete="off"
@@ -287,7 +331,7 @@ const PostCafeInfo = ({
                     <CafeInfoItem onClick={onInputClick}>
                         <Label>카페명*</Label>
                         <Input
-                            value={copiedClickedInfo.place_name}
+                            value={copiedClickedInfo.place_name || ""}
                             placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
                             disabled={true}
                             onChange={onChange}
@@ -297,7 +341,7 @@ const PostCafeInfo = ({
                     <CafeInfoItem onClick={onInputClick}>
                         <Label>주소*</Label>
                         <Input
-                            value={copiedClickedInfo.address_name}
+                            value={copiedClickedInfo.address_name || ""}
                             placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
                             disabled={true}
                             onChange={onChange}
@@ -338,7 +382,8 @@ const PostCafeInfo = ({
                     <CafeInfoItem onClick={onInputClick}>
                         <Label>연락처</Label>
                         <Input
-                            defaultValue={copiedClickedInfo.phone}
+                            ref={PostCafeInput}
+                            defaultValue={copiedClickedInfo.phone || ""}
                             name="contact"
                             onChange={onChange}
                             placeholder="카페 연락처를 입력해 주세요."
@@ -349,10 +394,11 @@ const PostCafeInfo = ({
                     <CafeInfoItem onClick={onInputClick}>
                         <Label>인스타그램</Label>
                         <Input
+                            ref={PostCafeInput}
                             // type=url 설정함으로 인해서 값 입력시 url 형태인지 자동으로 유효성검사
                             // 값 입력되어있지 않을 시 유효성검사 안함
                             type="url"
-                            value={copiedClickedInfo.insta}
+                            value={copiedClickedInfo.insta || ""}
                             name="insta"
                             onChange={onChange}
                             placeholder="카페 인스타그램 URL을 입력해 주세요."
@@ -360,14 +406,15 @@ const PostCafeInfo = ({
                             onClick={onInputClick}
                         />
                     </CafeInfoItem>
+                    {/*cafeInfo의 name, address, tag 값이 하나라도 "" 일때 버튼 비활성화*/}
+                    <AddCafeBtn type="submit"
+                                disabled={copiedClickedInfo.place_name === ""
+                                    || copiedClickedInfo.address_name === ""
+                                    || tag?.length < 1}
+                    >카페 등록
+                    </AddCafeBtn>
                 </CafeInfoWrapper>
-                {/*cafeInfo의 name, address, tag 값이 하나라도 "" 일때 버튼 비활성화*/}
-                <AddCafeBtn type="submit"
-                            disabled={copiedClickedInfo.place_name === ""
-                                || copiedClickedInfo.address_name === ""
-                                || tag?.length < 1}
-                >카페 등록
-                </AddCafeBtn>
+
             </Form>
         </Base>
     )

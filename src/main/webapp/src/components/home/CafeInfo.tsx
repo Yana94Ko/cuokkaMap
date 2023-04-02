@@ -1,27 +1,51 @@
 import React from 'react';
-import styled from "styled-components"
+import styled, {css} from "styled-components"
 
 import {CloseBtn} from "./PostCafeInfo";
 import {Button, Icon, Tag} from "../../styles/common";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
+import {RootState} from "../../modules";
 
-const Base = styled.div`
+const Base = styled.div<{ isOpenedCafeInfo: boolean }>`
   background-color: #fff;
   width: 400px;
   height: fit-content;
   position: absolute;
   z-index: 1000;
-  top: 15vh;
+  top: 20vh;
   left: 50px;
   padding: 2rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-radius: 2rem;
+  border-radius: 1.5rem;
+  transition: all 0.5s 1s ease-in-out;
+  
+  ${props => props.isOpenedCafeInfo ? css`
+    opacity: 1;
+    
+    @media ${props => props.theme.windowSize.mobile} {
+      width: 100%;
+      top: 50%;
+      //bottom: 0;
+      left:50%;
+      transform: translateX(-50%);
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    }
+  ` : css`
+    opacity: 0;
+    
+    @media ${props => props.theme.windowSize.mobile} {
+      top: 100%;
+      bottom: 0;
+    }
+  `}
+  
+  
 `;
 const CafeInfoWrapper = styled.div`
   a{
@@ -74,15 +98,34 @@ const InfoRequestBtn = styled(Button)`
   }
 `;
 
+const TagWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  @media ${props => props.theme.windowSize.mobile}{
+    flex-wrap: nowrap;
+    width: 100vw;
+    overflow-x: auto;
+  }
+  
+`;
+
+const StyledTag = styled(Tag)`
+  white-space: nowrap;
+  &:last-child {
+    margin-right: 0;
+  }
+`;
+
 type CafeInfoProps = {
     cafeInfoContainer: object;
 }
 
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
+    const isOpenedCafeInfo = useSelector((state: RootState) => state.viewReducer.isOpenedCafeInfo);
+
     let dataObject:any = {};
     dataObject = Object.assign({},cafeInfoContainer);
     const filterArr = dataObject.filter.split(", ");
-    console.log(filterArr);
 
     const dispatch = useDispatch();
 
@@ -92,7 +135,7 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
     // 카페 상세정보 DB 완성되면 진행하면 됩니다
     // assignees: hwanyb, SeongSilver
     return (
-        <Base>
+        <Base isOpenedCafeInfo={isOpenedCafeInfo}>
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             {
                 cafeInfoContainer !== undefined && (
@@ -122,19 +165,20 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
                             {dataObject.data.phone ? (<Info>{dataObject.data.phone}</Info>) : (<p>연락처 미등록</p>)}
                         </Item>
                         <Label>옵션</Label>
+                        <TagWrapper>
                         {
-                            filterArr.map((tag: string) => (
-                                <Tag clickable={false} active={true}>{
+                            filterArr.map((tag: string, idx: number) => (
+                                <StyledTag key={idx} clickable={false} active={false} style={{borderColor:"#3386FF"}}>{
                                     tag === "decaf" ? "디카페인" : tag === "lactos" ? "락토프리 우유" : tag === "soy" ? "두유" : tag  === "oat" ? "오트밀크" : tag === "zero" ? "제로시럽" : ""
-                                }</Tag>
+                                }</StyledTag>
                             ))
                         }
-
+                        </TagWrapper>
                         <a href="https://forms.gle/H3M3YwCPgqgHVoRn7" target="_blank"><InfoRequestBtn>정보수정요청</InfoRequestBtn></a>
                     </CafeInfoWrapper>
 
 
-                ) //ddd
+                )
             }
             {/*<CafeInfoPhotoReview/>*/}
             {/*<CafeInfoReview/>*/}
