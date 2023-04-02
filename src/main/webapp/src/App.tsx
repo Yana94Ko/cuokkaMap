@@ -12,13 +12,14 @@ function App() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-     if(sessionStorage.getItem("id") !== null){
-         dispatch(setIsLoggedin(true));
-         dispatch(setUserId(sessionStorage.getItem("id")));
-     }else {
-         dispatch(setIsLoggedin(false));
-         dispatch(setUserId(""));
-     }
+         if(sessionStorage.getItem("id") !== null){
+             dispatch(setIsLoggedin(true));
+             dispatch(setUserId(sessionStorage.getItem("id")));
+         }
+         // else {
+         //     dispatch(setIsLoggedin(false));
+         //     dispatch(setUserId(""));
+         // }
     });
 
     //배너를 띄워주기 위한 state
@@ -26,6 +27,7 @@ function App() {
 
     useEffect(() => {
         setOpenBanner(true);
+        sessionStorage.setItem("id", "2");
     },[])
 
     return (

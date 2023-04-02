@@ -49,6 +49,7 @@ const MyPageList: React.FC = () => {
             {/*    <Item onClick={onLogoutClick}>로그아웃</Item>*/}
             {/*</List>*/}
             <p style={{wordBreak: "keep-all", textAlign: "center"}}>마이페이지 서비스 준비중입니다 😊</p>
+            <p>카카오 로그인/회원가입이 Spring-React (Typescript) 동시빌드 관련 이슈로 2023/04/07 업데이트 예정입니다..!</p>
         </Base>
     )
 }

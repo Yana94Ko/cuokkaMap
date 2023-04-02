@@ -73,9 +73,10 @@ const MyPageContent = styled.div`
 const Notice = styled.h1`
   position: absolute;
   text-align: center;
-  width: 100vw;
+  width: 70vw;
   top: 50%;
-  left:0;
+  left:50%;
+  transform: translateX(-50%);
   font-size: ${props => props.theme.fontSize.lg};
   word-break: keep-all;
 `;
@@ -134,7 +135,11 @@ const MyPage = () => {
             {/*        : currentMyPageView === "review" ? <Review/>*/}
             {/*            : <Bookmark/>}*/}
             {/*</MyPageContent>*/}
-            <Notice>마이페이지 서비스 준비중입니다 😊</Notice>
+            <Notice><p>마이페이지 서비스 준비중입니다 😊<br/></p>
+                <p>현재는 사용자 전원 로그인 처리된 상황입니다!</p>
+                <p>카카오 로그인의 경우, Spring-React(Type script)</p>
+                <p>동시 빌드 관련 이슈로.. 2023/4/7일까지 업데이트 될 예정입니다..!<br/></p>
+                <p>임시 아이디로 기능 사용해보시면서 조금만 기다려주세요!</p></Notice>
         </Base>
     )
 }
