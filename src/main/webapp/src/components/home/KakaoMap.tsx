@@ -18,7 +18,7 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
   width: 100vw;
   min-height: 100vh;
   ${props => props.isOpenedPostCafe && css`
-    width: calc(100vw - 400px);
+    width: calc(100vw - 200px);
 
     @media ${props => props.theme.windowSize.mobile} {
       width: 100vw;
@@ -147,15 +147,14 @@ const KakaoMap = ({
         if (mapState === undefined) {
             var options = { //지도를 생성할 때 필요한 기본 옵션
                 center: new window.kakao.maps.LatLng(37.56667, 126.97806), //지도의 중심좌표.
-                level: 4 //지도의 레벨(확대, 축소 정도)
+                level: 3 //지도의 레벨(확대, 축소 정도)
             };
         } else {
             options = {
                 center: new window.kakao.maps.LatLng(mapState.getCenter().getLat(), mapState.getCenter().getLng()),
-                level: 4,
+                level: 3,
             };
         }
-
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 
         setMapState(map);
@@ -202,6 +201,7 @@ const KakaoMap = ({
     // 카카오맵 api를 이용하여 키워드 검색을 요청하는 함수
     function searchPlaces() {
         if (mapState !== undefined) {
+            //mapState.setLevel(5);
             //장소 검색 객체를 통해 키워드로 장소검색을 요청합니다.
             placeSearch.keywordSearch(keyword, placesSearchCB, {
                 category_group_code: "CE7", // 카페만 검색 코드 추가
@@ -382,12 +382,17 @@ const KakaoMap = ({
         if(mapState !== undefined){
             //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
             displayDBPlaces(dbData, dbFilterData);
-            mapState.setLevel(7);
+            //mapState.setLevel(7);
             console.log("db변함?");
 
-            mapState.setLevel(5);
-            mapState.setCenter(new window.kakao.maps.LatLng(37.56667, 126.97806));
-            const dbDataCenter = new window.kakao.maps.LatLng(dbData[0].y, dbData[0].x);
+            if(keyword === "" && currentFilter.length > 0){
+                mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
+
+            } else if(keyword !== "" && currentFilter.length === 0) {
+                mapState.setLevel(2);
+            }
+            //mapState.setCenter(new window.kakao.maps.LatLng(37.56667, 126.97806));
+            //const dbDataCenter = new window.kakao.maps.LatLng(dbData[0].y, dbData[0].x);
         }
     }, [mapState, dbData]);
 
@@ -458,7 +463,15 @@ const KakaoMap = ({
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             mapState.setBounds(bounds);
-            mapState.setLevel(mapState.getLevel() + 1);
+            // if(keyword === "" && currentFilter.length > 0){
+            //     mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
+            //
+            // } else
+            if(keyword !== "" && currentFilter.length === 0) {
+                mapState.setLevel(mapState.getLevel() + 1);
+
+            }
+
         }
     }
 
