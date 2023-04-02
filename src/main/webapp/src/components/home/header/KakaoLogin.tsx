@@ -4,6 +4,7 @@ import Modal from "../../Modal";
 import {Icon} from "../../../styles/common";
 import {useDispatch} from "react-redux";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
+import {Link} from "react-router-dom";
 
 const Base = styled.div`
   position: relative;
@@ -83,10 +84,14 @@ const KakaoLogin: React.FC = () => {
                 }>close</CloseBtn>
 
                 <SymbolImg src={process.env.PUBLIC_URL + '/assets/images/logo/symbol.png'} alt="로고"/>
-                <a href={`https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_LOGIN_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`}>
+                <Link to="/login/callback">
                     <LoginImg src={process.env.PUBLIC_URL + '/assets/images/kakaologin/kakao_login_medium_wide.png'}
                               alt="카카오로그인"/>
-                </a>
+                </Link>
+                {/*<a href={`https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_LOGIN_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`}>*/}
+                {/*    <LoginImg src={process.env.PUBLIC_URL + '/assets/images/kakaologin/kakao_login_medium_wide.png'}*/}
+                {/*              alt="카카오로그인"/>*/}
+                {/*</a>*/}
                 <NoticeWrapper>
                     <NoticeLink href="https://tough-dietician-fdf.notion.site/95cba12f0f8c41d896270c0357dc7655"
                                 target="_blank">개인정보처리방침</NoticeLink>
