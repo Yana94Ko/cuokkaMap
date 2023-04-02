@@ -156,7 +156,7 @@ const MapNavigationBar = ({
             <InputWrapper>
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
                 <SearchInput autoComplete="off" type="text" id="search" value={searchValue} ref={searchInput}
-                             onKeyDown={activeEnter}
+                             onKeyPress={activeEnter}
                              onChange={searchInputChangeHandler}/>
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
