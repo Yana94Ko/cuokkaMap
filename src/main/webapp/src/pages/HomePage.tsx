@@ -71,7 +71,7 @@ function HomePage() {
                     </Modal>
                 )
             }
-            {dbData && <KakaoMap dbData={dbData} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword} markers={markers} setMarkers={setMarkers} removeMarker={removeMarker} dbFilterData={dbFilterData}/>}
+            {dbData && <KakaoMap dbData={dbData} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword} markers={markers} setMarkers={setMarkers} removeMarker={removeMarker} dbFilterData={dbFilterData} searchDB={searchDB}/>}
 
         </>
     )

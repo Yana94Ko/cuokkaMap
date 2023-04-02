@@ -90,6 +90,7 @@ type KakaoMapProps = {
     setMarkers: React.Dispatch<SetStateAction<any[]>>;
     removeMarker: () => void;
     dbFilterData: any[];
+    searchDB: () => void;
 }
 const KakaoMap = ({
                       dbData,
@@ -98,7 +99,8 @@ const KakaoMap = ({
                       markers,
                       setMarkers,
                       removeMarker,
-                      dbFilterData
+                      dbFilterData,
+                      searchDB
                   }: KakaoMapProps) => {
     const dispatch = useDispatch();
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
@@ -514,7 +516,7 @@ const KakaoMap = ({
     function moveMapAfterPost(x: number, y: number) {
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
         mapState.setCenter(moveLatLng);
-        mapState.setLevel(3);
+        mapState.setLevel(4);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
@@ -566,6 +568,10 @@ const KakaoMap = ({
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                                   searchCafeInfo={searchCafeInfo}
                                   setSearchCafeInfo={setSearchCafeInfo}
+                                  mapState={mapState}
+                                  markersTmp={markersTmp}
+
+                                  setDBData={setDBData}
                     />
                 )
             }

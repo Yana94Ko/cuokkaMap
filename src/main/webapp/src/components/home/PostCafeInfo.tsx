@@ -139,13 +139,17 @@ interface FnProps {
     searchPlaces: () => void;
     removeMarker: () => void;
     moveMapAfterPost: (x: number, y: number) => void;
-    displayDBPlaces: (data: any[], filter: any[]) => void;
+    displayDBPlaces: (data: any[], filter?: any[]) => void;
     dbData: any[];
     dbFilterData: any[];
     removeMarkerAPI: () => void;
     setNeedToRemove: React.Dispatch<SetStateAction<boolean>>;
     searchCafeInfo: string;
     setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
+    mapState: any;
+    markersTmp:any[];
+
+    setDBData:React.Dispatch<SetStateAction<any[]>>;
 }
 
 const PostCafeInfo = ({
@@ -159,6 +163,9 @@ const PostCafeInfo = ({
                           setNeedToRemove,
                           searchCafeInfo,
                           setSearchCafeInfo,
+                          mapState,
+                          markersTmp,
+                          setDBData
                       }: FnProps) => {
     const dispatch = useDispatch();
 
@@ -249,7 +256,6 @@ const PostCafeInfo = ({
             })
                 .then(response => response.text())
                 .then(function (message) {
-                    console.log(message);
                     if (message === "0") {
                         setCopiedClickedInfo({
                             ...clickMarkerCafeInfo,
@@ -261,6 +267,11 @@ const PostCafeInfo = ({
                 });
         }
     }, [clickMarkerCafeInfo]);
+
+    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
+    var filterImgSize = new window.kakao.maps.Size(38, 38);
+    var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
 
     const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -282,13 +293,26 @@ const PostCafeInfo = ({
                 .then((data) => {
                     const loadData = JSON.parse(data);
                     const placeInfo = JSON.parse(loadData.place_info);
-                    alert("카페등록이 완료되었습니다.")
-                    dispatch(setIsOpenedPostCafe(false));
+                    console.log(placeInfo);
+                    alert("카페등록이 완료되었습니다.");
                     removeMarker();
+                    settingKeywordPostCafeName(placeInfo.place_name);
+                    dispatch(setIsOpenedPostCafe(false));
+
+                    // var markerPosition = new window.kakao.maps.LatLng(placeInfo.y, placeInfo.x);
+                    // var marker = new window.kakao.maps.Markers({
+                    //     image:filterMarkerImg,
+                    //     position:markerPosition,
+                    //     title:placeInfo.place_name
+                    // });
+                    // marker.setMap(mapState);
+                    settingKeywordPostCafeName(placeInfo);
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
-                    window.location.reload();
                 });
         }
+    }
+    const settingKeywordPostCafeName = (placeInfo: any) => {
+        setDBData(() => [...dbData, placeInfo])
     }
     const closePostCafe = () => {
         dispatch(setIsOpenedPostCafe(false));
