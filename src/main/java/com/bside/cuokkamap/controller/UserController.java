@@ -5,6 +5,7 @@ import com.bside.cuokkamap.service.UserService;
 import com.bside.cuokkamap.vo.UserVO;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -55,7 +56,8 @@ public class UserController {
         // - 현재 상황으론 의미있는 정보가 없기때문에 그냥 보내주고 다른 작업들을 시작하지만,
         //   개인정보 보호를 위해 모든 유저정보는 토큰으로 전달하고,
         // - Auth 작업도 추가 가능하면 추가하고싶습니다.
-
-        return new ResponseEntity(userInfo, HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "http://localhost:3000/login/callback?refresh=true");
+        return new ResponseEntity(userInfo, headers, HttpStatus.OK);
     }
 }
