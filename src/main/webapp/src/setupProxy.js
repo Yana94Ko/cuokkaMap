@@ -5,7 +5,7 @@ module.exports = function(app) {
     app.use(
         '/api',
         createProxyMiddleware({
-            target: 'http://localhost:8021',
+            target: 'http://cuokkamap.com/:8021',
             changeOrigin: true,
         })
     );

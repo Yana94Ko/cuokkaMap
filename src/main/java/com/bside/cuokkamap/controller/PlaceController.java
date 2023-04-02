@@ -24,7 +24,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/api/place/")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "http://cuokkamap.com:3000", allowedHeaders = "*")
 public class PlaceController {
 
     @Autowired

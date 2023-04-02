@@ -16,22 +16,42 @@ const Base = styled.div`
   border-radius: 2rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   gap: 3rem;
+  @media ${props => props.theme.windowSize.mobile}{
+    padding: 2rem;
+  }
 `;
 
 const CloseBtn = styled(Icon)`
+  color: ${props => props.theme.color.primary};
   position: absolute;
   right: 3rem;
   top: 3rem;
-`;
-const Title = styled.h2`
-  color: ${props => props.theme.color.primary};
-  font-size: ${props => props.theme.fontSize.md};
-`;
-const SymbolImg = styled.img`
-  width: 200px;
+  @media ${props => props.theme.windowSize.mobile}{
+    right: 2rem;
+    top: 2rem;
+  }
 `;
 
-const LoginImg = styled.img``;
+const Title = styled.h2`
+  color: ${props => props.theme.color.primary};
+  font-size: ${props => props.theme.fontSize.base};
+  font-weight: 700;
+`;
+
+const SymbolImg = styled.img`
+  width: 200px;
+  @media ${props => props.theme.windowSize.mobile}{
+    width: 150px;
+  }
+`;
+
+const LoginImg = styled.img`
+  width: 250px;
+  @media ${props => props.theme.windowSize.mobile}{
+    width: 200px;
+  }
+`;
+
 const NoticeWrapper = styled.div`
   display: flex;
 `;
