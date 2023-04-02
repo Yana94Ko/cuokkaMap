@@ -167,8 +167,6 @@ const PostCafeInfo = ({
     const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
 
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
-    //***************03.27.2시 30분 추가
-    //입력 폼 변화 감지하여 입력 값 관리
     const [searchedListCheck, setSearchedListCheck] = useState<boolean>(false);
     const [tag, setTag] = useState<string[]>([]);
     const [needToSearch, setNeedToSearch] = useState<boolean>(false);
@@ -227,7 +225,6 @@ const PostCafeInfo = ({
             setNeedToSearch(true);
         }
     }
-
     useEffect(() => {
         if (needToSearch) {
             removeMarkerAPI(); //살아았어야함
@@ -289,6 +286,7 @@ const PostCafeInfo = ({
                     dispatch(setIsOpenedPostCafe(false));
                     removeMarker();
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
+                    window.location.reload();
                 });
         }
     }
