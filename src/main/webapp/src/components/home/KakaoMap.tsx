@@ -28,7 +28,7 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
-      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
     }
   }
 `;
@@ -43,6 +43,12 @@ const CurrentLocationBtn = styled(Button)`
 
   & span {
     color: ${props => props.theme.color.primary};
+
+    @media ${props => props.theme.windowSize.mobile} {
+      right: 2rem;
+    }
+  }
+
 `;
 
 const AddCafeButton = styled(Button)`
@@ -71,7 +77,13 @@ const AddCafeButton = styled(Button)`
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    bottom: 100px;
+    bottom: 4rem;
+  }
+  @media not all and (min-resolution: .001dpcm) {
+    @supports (-webkit-appearance:none) {
+      /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
+      bottom: 8rem;
+    }
   }
 `;
 declare global {
