@@ -310,7 +310,7 @@ const KakaoMap = ({
         if (mapState !== undefined) {
             const el = document.createElement("li");
 
-            let itemStr = `<span className="markerbg marker_${index + 1}" ></span>
+            let itemStr = `<span className="markerbg marker_${index + 1}"></span>
                                 <div className="info"><h5>${places.place_name}</h5>
                                 ${places.road_address_name
                 ? `<span>${places.road_address_name}</span>
@@ -331,8 +331,9 @@ const KakaoMap = ({
     //마커에 마우스 오버됬을 때 카드 만들 수 있는 곳
     function displayInfowindow(marker: any, title: string) {
         if (mapState !== undefined) {
-            var content = `<div style={{padding:"5px",zIndex:"1"}} >${title}</div>`
-
+            var content = `<div class="infoWindowWrapper">
+                                <div class="infoWindow">${title}</div>
+                            </div>`
             infowindow.setContent(content);
             infowindow.open(mapState, marker);
         }
