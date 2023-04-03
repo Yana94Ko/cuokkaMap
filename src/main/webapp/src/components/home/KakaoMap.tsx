@@ -24,12 +24,11 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
       width: 100vw;
 
     }
-  `}
-  @media ${props => props.theme.windowSize.mobile} {
+  `} @media ${props => props.theme.windowSize.mobile} {
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
-      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
     }
   }
 `;
@@ -72,7 +71,13 @@ const AddCafeButton = styled(Button)`
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    bottom: 2rem;
+    bottom: 4rem;
+  }
+  @media not all and (min-resolution: .001dpcm) {
+    @supports (-webkit-appearance:none) {
+      /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
+      bottom: 8rem;
+    }
   }
 `;
 declare global {
@@ -188,7 +193,8 @@ const KakaoMap = ({
         markers = [];
         //setMarkers([]);
     }
-        /*====================================== [ END ] 마커 공통 =====================================*/
+
+    /*====================================== [ END ] 마커 공통 =====================================*/
 
 
     /*============================================== [ END ] 맵 관련 ============================================*/
@@ -369,6 +375,7 @@ const KakaoMap = ({
             return marker;
         }
     }
+
     /*============================================== [ END ] API 검색 관련 ============================================*/
     /*=========================================================================================================*/
 
@@ -379,16 +386,16 @@ const KakaoMap = ({
 
     //처음 맵이 로딩되고 mpaState가 있을 때 데이터에 있는 모든 카페를 뿌려주는 useEffect
     useEffect(() => {
-        if(mapState !== undefined){
+        if (mapState !== undefined) {
             //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
             displayDBPlaces(dbData, dbFilterData);
             //mapState.setLevel(7);
             console.log("db변함?");
 
-            if(keyword === "" && currentFilter.length > 0){
+            if (keyword === "" && currentFilter.length > 0) {
                 mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
 
-            } else if(keyword !== "" && currentFilter.length === 0) {
+            } else if (keyword !== "" && currentFilter.length === 0) {
                 mapState.setLevel(2);
             }
             //mapState.setCenter(new window.kakao.maps.LatLng(37.56667, 126.97806));
@@ -423,8 +430,9 @@ const KakaoMap = ({
                 setCafeInfoContainer(responseData[0]);
             }).catch(err => console.log("에러", err));
     }
+
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
-    function displayDBPlaces(places: any[], filterData?:any[]) {
+    function displayDBPlaces(places: any[], filterData?: any[]) {
         if (mapState !== undefined) {
             const bounds = new window.kakao.maps.LatLngBounds();
 
@@ -467,7 +475,7 @@ const KakaoMap = ({
             //     mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
             //
             // } else
-            if(keyword !== "" && currentFilter.length === 0) {
+            if (keyword !== "" && currentFilter.length === 0) {
                 mapState.setLevel(mapState.getLevel() + 1);
 
             }
@@ -490,6 +498,7 @@ const KakaoMap = ({
             return marker;
         }
     }
+
     /*============================================== [ END ] DB 검색 관련 ============================================*/
     /*=========================================================================================================*/
 
@@ -510,6 +519,7 @@ const KakaoMap = ({
             })
         }
     }
+
     //카페등록 후 등록한 위치로 이동시키는 함수
     function moveMapAfterPost(x: number, y: number) {
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
@@ -540,7 +550,7 @@ const KakaoMap = ({
 
     return (
         <Base>
-            <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe} />
+            <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe}/>
             <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                               removeMarker={removeMarker} setDBData={setDBData}
                               setSearchDBKeyword={setSearchDBKeyword}/>

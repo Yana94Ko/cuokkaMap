@@ -27,6 +27,7 @@ const CloseBtn = styled(Icon)`
   color: white;
   display: block;
   z-index: 100;
+  padding: 0.5rem;
 `;
 
 type BannerProps = {
