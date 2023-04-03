@@ -8,7 +8,7 @@ import {RootState} from "../../modules";
 
 const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   background-color: #fff;
-  width: 400px;
+  width: 450px;
   height: 100vh;
   position: absolute;
   top: 0;
@@ -20,37 +20,31 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.5s 1s ease-in-out;
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 100%;
+    height: 400px;
+    overflow-y: auto;
+    padding: 2rem 2rem 5rem 2rem;
+    justify-content: start;
+    border-radius: 1.5rem 1.5rem 0 0;
+    top: calc(100% - 400px);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 
-  ${props => props.isOpenedPostCafe ? css`
-    opacity: 1;
+  }
+  @media not all and (min-resolution: .001dpcm) {
     @media ${props => props.theme.windowSize.mobile} {
-      width: 100%;
-      height: 400px;
-      overflow-y: auto;
-      padding: 2rem 2rem 5rem 2rem;
-      justify-content: start;
-      border-radius: 1.5rem 1.5rem 0 0;
-      top: calc(100% - 400px);
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-
-    }
-    @media not all and (min-resolution: .001dpcm) {
-      @media ${props => props.theme.windowSize.mobile} {
-        @supports (-webkit-appearance:none) {
-          /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
-          bottom: 8rem;
-        }
+      @supports (-webkit-appearance:none) {
+        /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
+        bottom: 8rem;
       }
     }
-  ` : css`
-    opacity: 0;
-  `}
+  }
 `;
 
 export const CloseBtn = styled(Icon)`
   position: absolute;
-  right: 1rem;
-  top: 1rem;
+  right: 2rem;
+  top: 2rem;
 `;
 
 const Title = styled.h1`
@@ -62,10 +56,13 @@ const Title = styled.h1`
 `;
 
 const Form = styled.form`
-  height: fit-content;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  @media ${props => props.theme.windowSize.mobile} {
+    height: fit-content;
+  }
 `;
 
 const SearchCafe = styled.div`

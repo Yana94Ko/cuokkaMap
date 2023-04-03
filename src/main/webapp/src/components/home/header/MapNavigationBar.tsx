@@ -27,7 +27,7 @@ const Base = styled.div`
   }
 `;
 const InputWrapper = styled.div`
-  width: 350px;
+  width: 400px;
   display: flex;
   align-items: center;
   background-color: ${props => props.theme.color.white};
