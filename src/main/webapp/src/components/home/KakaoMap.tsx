@@ -43,6 +43,12 @@ const CurrentLocationBtn = styled(Button)`
 
   & span {
     color: ${props => props.theme.color.primary};
+
+    @media ${props => props.theme.windowSize.mobile} {
+      right: 2rem;
+    }
+  }
+
 `;
 
 const AddCafeButton = styled(Button)`
