@@ -10,7 +10,7 @@ export const Icon = styled.span`
   
   @media ${props => props.theme.windowSize.mobile} {
     font-variation-settings: 'FILL' 1,
-    'wght' 500,
+    'wght' 600,
     'GRAD' 0,
     'opsz' 48;
   }
