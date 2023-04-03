@@ -32,24 +32,24 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
     }
   }
 `;
-const CurrentLocationBtn = styled(Button)`
-  position: absolute;
-  top: 20rem;
-  right: 3rem;
-  z-index: 999;
-  background-color: ${props => props.theme.color.white};
-  padding: 0.5rem;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 
-  & span {
-    color: ${props => props.theme.color.primary};
-
-    @media ${props => props.theme.windowSize.mobile} {
-      right: 2rem;
-    }
-  }
-
-`;
+// const CurrentLocationBtn = styled(Button)`
+//   position: absolute;
+//   top: 20rem;
+//   right: 3rem;
+//   z-index: 999;
+//   background-color: ${props => props.theme.color.white};
+//   padding: 0.5rem;
+//   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+//
+//   & span {
+//     color: ${props => props.theme.color.primary};
+//
+//     @media ${props => props.theme.windowSize.mobile} {
+//       right: 2rem;
+//     }
+//   }
+// `;
 
 const AddCafeButton = styled(Button)`
   transition: all 0.2s ease-in-out;
@@ -68,16 +68,20 @@ const AddCafeButton = styled(Button)`
 
   & span {
     margin-right: 10px;
+    transition: all 0.2s ease-in-out;
   }
 
   &:hover {
     background-color: ${props => props.theme.color.primary};
     color: ${props => props.theme.color.white};
 
+    & span {
+      color: ${props => props.theme.color.white};
+    }
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    bottom: 4rem;
+    bottom: 5rem;
   }
   @media not all and (min-resolution: .001dpcm) {
     @supports (-webkit-appearance:none) {
@@ -561,9 +565,10 @@ const KakaoMap = ({
             <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                               removeMarker={removeMarker} setDBData={setDBData}
                               setSearchDBKeyword={setSearchDBKeyword}/>
-            <CurrentLocationBtn onClick={currentLocation}>
-                <Icon className="material-symbols-rounded">my_location</Icon>
-            </CurrentLocationBtn>
+            {/*현재위치 기능 버튼 / https 관련 기능 추가 후 주석 해제*/}
+            {/*<CurrentLocationBtn onClick={currentLocation}>*/}
+            {/*    <Icon className="material-symbols-rounded">my_location</Icon>*/}
+            {/*</CurrentLocationBtn>*/}
             {
                 !isOpenedPostCafe && (
                     <AddCafeButton onClick={onPostCafeBtnClick}>

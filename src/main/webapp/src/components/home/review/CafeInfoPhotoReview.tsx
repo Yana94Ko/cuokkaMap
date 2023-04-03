@@ -3,19 +3,19 @@ import styled from "styled-components";
 import {Button} from "../../../styles/common";
 
 const Base = styled.div`
-  background-color: #fff;
-  width: 400px;
-  height: 45vh;
-  position: absolute;
-  z-index: 1000;
-  top: 327px;
-  left: 0;
-  padding: 2rem;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-radius: 2rem;
+  //background-color: #fff;
+  //width: 400px;
+  //height: 45vh;
+  //position: absolute;
+  //z-index: 1000;
+  //top: 327px;
+  //left: 0;
+  //padding: 2rem;
+  //box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  //display: flex;
+  //flex-direction: column;
+  //justify-content: space-between;
+  //border-radius: 2rem;
 `;
 
 const CafeInfoPhotoReview = () => {
@@ -47,7 +47,7 @@ const CafeInfoPhotoReview = () => {
 
     return(
         <Base>
-            <Button>
+            <Button style={{width: '100%'}}>
                 <label htmlFor="file" style={{cursor:"pointer"}}>
                     <div className="btn-upload">파일 업로드하기</div>
                 </label>

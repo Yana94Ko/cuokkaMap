@@ -35,13 +35,10 @@ const Base = styled.div`
   }
 `;
 const FilterTag = styled(Tag)`
-  color: #000;
   white-space: nowrap;
   margin-bottom: 0;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   ${props => props.active && css`
-    color: #000;
-
     &::before {
       width: 10px;
       height: 10px;

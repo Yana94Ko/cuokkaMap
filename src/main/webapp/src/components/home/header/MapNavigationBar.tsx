@@ -47,7 +47,6 @@ const Logo = styled.img`
   height: 40px;
   @media ${props => props.theme.windowSize.mobile} {
     height: 30px;
-
   }
 `;
 const SearchInput = styled(Input)`
@@ -70,7 +69,10 @@ const NavBtn = styled(Button)`
   background-color: ${props => props.theme.color.white};
   padding: 0.5rem;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-
+  transition: all 0.2s ease-in-out;
+  &:hover{
+    transform: scale(110%);
+  }
   a {
     color: white;
     text-decoration: none !important;
@@ -79,6 +81,10 @@ const NavBtn = styled(Button)`
 
 const NavIcon = styled(Icon)`
   color: ${props => props.theme.color.primary};
+  transition: all 0.2s ease-in-out;
+  &:hover{
+    transform: scale(110%);
+  }
 `;
 
 
