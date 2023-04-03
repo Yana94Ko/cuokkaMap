@@ -7,6 +7,13 @@ export const Icon = styled.span`
   'opsz' 48;
   font-size: ${props => props.theme.fontSize.lg};
   cursor: pointer;
+  
+  @media ${props => props.theme.windowSize.mobile} {
+    font-variation-settings: 'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 48;
+  }
 `;
 export const Button = styled.button`
   font-family: 'Noto Sans KR', sans-serif;
@@ -26,6 +33,7 @@ export const Button = styled.button`
 
 export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
   font-family: 'Noto Sans KR', sans-serif;
+  color: #000;
   border: 1px solid ${props => props.theme.color.darkGray};
   background-color: ${props => props.theme.color.white};
   font-size: ${props => props.theme.fontSize.base};

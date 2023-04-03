@@ -29,14 +29,12 @@ const Base = styled.div`
     top: 7rem;
     padding: 0 2rem;
   }
-  //&:last-child{
-  //  margin-right: 0;
-  //}
   & > button:last-child {
     margin-right: 0;
   }
 `;
 const FilterTag = styled(Tag)`
+  color: #000;
   white-space: nowrap;
   margin-bottom: 0;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -54,16 +52,19 @@ const FilterTag = styled(Tag)`
       border-radius: 50%;
       margin-right: 10px;
     }
-
   `}
 `;
+
 
 type filterContentType = {
     name: string,
     id: string
 }[]
 
-const FilterContainer = () => {
+type FilterContainerProps = {
+    setSearchDBKeyword: React.Dispatch<React.SetStateAction<string>>;
+}
+const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
@@ -92,10 +93,14 @@ const FilterContainer = () => {
         },
     ]
 
-
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(setCurrentFilter([event.currentTarget.id]))
+        if (event.currentTarget.id === currentFilter[0]) {
+            dispatch(setCurrentFilter([]));
+        } else {
+            setSearchDBKeyword("");
+            dispatch(setCurrentFilter([event.currentTarget.id]));
+        }
     }
 
     return (
