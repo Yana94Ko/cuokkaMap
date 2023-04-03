@@ -15,7 +15,7 @@ const Base = styled.div`
   z-index: 200;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   @media ${props => props.theme.windowSize.laptop} {
-    bottom: 8rem;
+    bottom: 130px;
     right: 50%;
     transform: translateX(50%);
   }

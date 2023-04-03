@@ -25,7 +25,7 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
     opacity: 1;
     @media ${props => props.theme.windowSize.mobile} {
       width: 100%;
-      height: 300px;
+      height: 420px;
       bottom: 0;
       overflow-y: auto;
       padding: 2rem;
@@ -106,7 +106,7 @@ const AddCafeBtn = styled(Button)`
   margin-top: 3rem;
   position: relative;
   @media ${props => props.theme.windowSize.mobile} {
-  margin-bottom: 50px;
+  margin-bottom: 150px;
   }
   
 `;

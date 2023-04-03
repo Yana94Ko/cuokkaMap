@@ -71,7 +71,7 @@ const AddCafeButton = styled(Button)`
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    bottom: 2rem;
+    bottom: 100px;
   }
 `;
 declare global {
@@ -502,17 +502,18 @@ const KakaoMap = ({
 
     // 현재위치로 이동시키는 함수
     const currentLocation = () => {
-        if (navigator.geolocation) {
-            //Gelocation으로 현재 위치 얻기
-            navigator.geolocation.getCurrentPosition((position) => {
-                var currentLat = position.coords.latitude,
-                    currentLng = position.coords.longitude;
-                if (mapState !== undefined) mapState.setCenter(new window.kakao.maps.LatLng(currentLat, currentLng))
-                mapState.setLevel(4);
-            }, () => {
-                window.alert("브라우저 위치 설정을 허용해 주세요.")
-            })
-        }
+        window.alert("위치 사용을 위한 HTTPS 관련 기능을 준비중이에요!")
+        // if (navigator.geolocation) {
+        //     //Gelocation으로 현재 위치 얻기
+        //     navigator.geolocation.getCurrentPosition((position) => {
+        //         var currentLat = position.coords.latitude,
+        //             currentLng = position.coords.longitude;
+        //         if (mapState !== undefined) mapState.setCenter(new window.kakao.maps.LatLng(currentLat, currentLng))
+        //         mapState.setLevel(4);
+        //     }, () => {
+        //         window.alert("브라우저 위치 설정을 허용해 주세요.")
+        //     })
+        // }
     }
 
     //카페등록 후 등록한 위치로 이동시키는 함수

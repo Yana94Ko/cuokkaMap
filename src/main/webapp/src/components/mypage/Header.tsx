@@ -30,11 +30,12 @@ const Header = () => {
     const navigate = useNavigate();
 
     const onLogoutClick = () => {
-        const result = window.confirm("로그아웃 하시겠습니까?");
-        if (result) {
-            sessionStorage.removeItem("id");
-            window.location.reload();
-        }
+        window.alert("로그인 관련 기능은 준비중입니다!")
+        // const result = window.confirm("로그아웃 하시겠습니까?");
+        // if (result) {
+        //     sessionStorage.removeItem("id");
+        //     window.location.reload();
+        // }
     }
     return (
         <Base>
