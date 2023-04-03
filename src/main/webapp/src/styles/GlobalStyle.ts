@@ -9,6 +9,19 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
   }
 
+  *::-webkit-scrollbar {
+    width: 5px;
+    background-color: ${props => props.theme.color.gray};
+    border-radius: 20px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    width: 5px;
+    border-radius: 20px;
+    background-color: ${props => props.theme.color.primary};
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
   body {
     overflow: hidden;
   }
@@ -50,6 +63,7 @@ const GlobalStyle = createGlobalStyle`
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     font-size: ${props => props.theme.fontSize.base};
   }
+
 `;
 
 

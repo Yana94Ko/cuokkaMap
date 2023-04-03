@@ -7,6 +7,7 @@ export const Icon = styled.span`
   'opsz' 48;
   font-size: ${props => props.theme.fontSize.lg};
   cursor: pointer;
+  color: ${props => props.theme.color.primary};
 
   @media ${props => props.theme.windowSize.mobile} {
     font-variation-settings: 'FILL' 1,
@@ -41,6 +42,7 @@ export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
   padding: 0.2rem 1rem;
   margin-right: 1rem;
   margin-bottom: 1rem;
+  transition: all 0.2s ease-in-out;
   ${props => props.clickable && css`
     cursor: pointer;
 
