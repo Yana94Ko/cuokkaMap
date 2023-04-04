@@ -52,8 +52,9 @@ function HomePage() {
                 if(JSON.parse(data).length === 0){
                     alert("검색어가 존재하지 않습니다");
                 }else{
-                    setDBFilterData(JSON.parse(data).map((filter:any) => filter.filter_type));
-                    setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
+                    // setDBFilterData(JSON.parse(data).map((filter:any) => filter.filter_type));
+                    setDBData(JSON.parse(data));
+                    // setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
                 }
             })
             .catch(err => console.log("에러", err));

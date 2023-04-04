@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import styled, {css} from "styled-components"
 
 import {CloseBtn} from "./PostCafeInfo";
@@ -12,7 +12,7 @@ import {RootState} from "../../modules";
 const Base = styled.div`
   background-color: #fff;
   width: 400px;
-  height: fit-content;
+  height: 80vh;
   position: absolute;
   z-index: 1000;
   top: 15vh;
@@ -23,6 +23,7 @@ const Base = styled.div`
   flex-direction: column;
   justify-content: space-between;
   border-radius: 1.5rem;
+  overflow:auto;
 
   @media ${props => props.theme.windowSize.laptop} {
     top: 50%;
@@ -53,6 +54,10 @@ const CafeInfoWrapper = styled.div`
       color: rgb(51, 134, 255);
     }
   }`;
+const TitleWrapper = styled.div`
+    display:flex;
+`;
+
 const PlaceName = styled.h3`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 900;
@@ -126,7 +131,7 @@ type CafeInfoProps = {
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
     let dataObject: any = {};
     dataObject = Object.assign({}, cafeInfoContainer);
-    const filterArr = dataObject.filter.split(", ");
+    const filterArr = dataObject.filter;
 
     const dispatch = useDispatch();
 
@@ -134,27 +139,29 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
         dispatch(setIsOpenedCafeInfo(false));
     }
     return (
-        <Base>
+        <Base >
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             {
                 cafeInfoContainer !== undefined && (
 
                     <CafeInfoWrapper>
+                        <TitleWrapper>
                         {dataObject.data.place_url ? (
                             <a href={dataObject.data.place_url} target="_blank"><PlaceName>
                                 {dataObject.data.place_name}&emsp;
-                                {dataObject.data.insta ? (
-                                    <a href={dataObject.data.insta} target="_blank"><img className="insta"
-                                                                                         src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
-                                                                                         width="30px" alt="insta"/></a>
-                                ) : (
-                                    <PlaceName>{dataObject.data.insta}</PlaceName>
-                                )}
+
                             </PlaceName></a>
                         ) : (
                             <PlaceName>{dataObject.data.place_name}</PlaceName>
                         )}
-
+                        {dataObject.data.insta ? (
+                            <a href={dataObject.data.insta} target="_blank"><img className="insta"
+                                                                                 src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
+                                                                                 width="30px" alt="insta"/></a>
+                        ) : (
+                            <PlaceName>{dataObject.data.insta}</PlaceName>
+                        )}
+                        </TitleWrapper>
                         <Item>
                             <LabelIcon className="material-symbols-rounded">location_on</LabelIcon>
                             {/*클릭한 카페 주소*/}
@@ -182,8 +189,11 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
                 )
             }
-            {/*<CafeInfoPhotoReview/>*/}
-            {/*<CafeInfoReview/>*/}
+            <br/>
+            <hr/>
+            <br/>
+            <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}/>
+
         </Base>
     )
 }
