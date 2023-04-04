@@ -38,3 +38,4 @@ out/
 
 ### api-key-property ###
 application-API-KEY.yml
+application-secret.yml
