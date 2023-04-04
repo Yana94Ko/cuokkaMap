@@ -25,6 +25,9 @@ public class PlaceServiceImpl implements PlaceService{
     public int savePlaceReview(PlaceVO vo) {return dao.savePlaceReview(vo);}
 
     @Override
+    public int saveFavoritePlace(PlaceVO vo) {return dao.saveFavoritePlace(vo);}
+
+    @Override
     public int getPlaceNum(int user_num) {return dao.getPlaceNum(user_num);}
 
     @Override
@@ -47,6 +50,9 @@ public class PlaceServiceImpl implements PlaceService{
 
     @Override
     public PlaceVO selectResentPlaceReviewByUserNum(int user_num) {return dao.selectResentPlaceReviewByUserNum(user_num);}
+
+    @Override
+    public PlaceVO selectResentFavoritePlaceByUserNum(int user_num) {return dao.selectResentFavoritePlaceByUserNum(user_num);}
 
     @Override
     public List<PlaceVO> selectPlaceImgByPlaceNum(int place_num) {return dao.selectPlaceImgByPlaceNum(place_num);}
