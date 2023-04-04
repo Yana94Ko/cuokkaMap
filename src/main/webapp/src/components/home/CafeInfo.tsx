@@ -9,13 +9,13 @@ import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
 import {RootState} from "../../modules";
 
-const Base = styled.div<{ isOpenedCafeInfo: boolean }>`
+const Base = styled.div`
   background-color: #fff;
   width: 400px;
   height: fit-content;
   position: absolute;
   z-index: 1000;
-  top: 20vh;
+  top: 15vh;
   left: 50px;
   padding: 2rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -23,48 +23,45 @@ const Base = styled.div<{ isOpenedCafeInfo: boolean }>`
   flex-direction: column;
   justify-content: space-between;
   border-radius: 1.5rem;
-  transition: all 0.5s 1s ease-in-out;
-  
-  ${props => props.isOpenedCafeInfo ? css`
-    opacity: 1;
+
+  @media ${props => props.theme.windowSize.laptop} {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  @media ${props => props.theme.windowSize.tablet} {
+    width: 350px;
+
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 100%;
+    top: calc(100% - 375px);
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
     
-    @media ${props => props.theme.windowSize.mobile} {
-      width: 100%;
-      top: 50%;
-      //bottom: 0;
-      left:50%;
-      transform: translateX(-50%);
-      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-    }
-  ` : css`
-    opacity: 0;
-    
-    @media ${props => props.theme.windowSize.mobile} {
-      top: 100%;
-      bottom: 0;
-    }
-  `}
-  
-  
+  }
 `;
 const CafeInfoWrapper = styled.div`
-  a{
-    outline:none;
+  a {
+    outline: none;
     text-decoration: none;
-    color:black;
-    transition:0.1s ease-in-out;
-    &:hover{
-      color:rgb(51, 134, 255);
+    color: black;
+    transition: 0.1s ease-in-out;
+
+    &:hover {
+      color: rgb(51, 134, 255);
     }
   }`;
 const PlaceName = styled.h3`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 900;
   margin-bottom: 2rem;
-  a{
-    img{
-      position:absolute;
-      top:27px;
+
+  a {
+    img {
+      position: absolute;
+      top: 27px;
     }
   }
 `;
@@ -91,26 +88,32 @@ const Label = styled.label`
 const InfoRequestBtn = styled(Button)`
   width: 100%;
   margin-top: 1rem;
-  a{
-    outline:none;
+
+  a {
+    outline: none;
     text-decoration: none;
-    color:white;
+    color: white;
+  }
+
+  @media ${props => props.theme.windowSize.mobile} {
+    margin-bottom: 80px;
   }
 `;
 
 const TagWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  @media ${props => props.theme.windowSize.mobile}{
+  @media ${props => props.theme.windowSize.mobile} {
     flex-wrap: nowrap;
     width: 100vw;
     overflow-x: auto;
   }
-  
+
 `;
 
 const StyledTag = styled(Tag)`
   white-space: nowrap;
+
   &:last-child {
     margin-right: 0;
   }
@@ -121,10 +124,8 @@ type CafeInfoProps = {
 }
 
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
-    const isOpenedCafeInfo = useSelector((state: RootState) => state.viewReducer.isOpenedCafeInfo);
-
-    let dataObject:any = {};
-    dataObject = Object.assign({},cafeInfoContainer);
+    let dataObject: any = {};
+    dataObject = Object.assign({}, cafeInfoContainer);
     const filterArr = dataObject.filter.split(", ");
 
     const dispatch = useDispatch();
@@ -132,10 +133,8 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
     }
-    // 카페 상세정보 DB 완성되면 진행하면 됩니다
-    // assignees: hwanyb, SeongSilver
     return (
-        <Base isOpenedCafeInfo={isOpenedCafeInfo}>
+        <Base>
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             {
                 cafeInfoContainer !== undefined && (
@@ -145,7 +144,9 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
                             <a href={dataObject.data.place_url} target="_blank"><PlaceName>
                                 {dataObject.data.place_name}&emsp;
                                 {dataObject.data.insta ? (
-                                    <a href={dataObject.data.insta} target="_blank"><img className="insta" src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"} width="30px" alt="insta"/></a>
+                                    <a href={dataObject.data.insta} target="_blank"><img className="insta"
+                                                                                         src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
+                                                                                         width="30px" alt="insta"/></a>
                                 ) : (
                                     <PlaceName>{dataObject.data.insta}</PlaceName>
                                 )}
@@ -166,15 +167,16 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
                         </Item>
                         <Label>옵션</Label>
                         <TagWrapper>
-                        {
-                            filterArr.map((tag: string, idx: number) => (
-                                <StyledTag key={idx} clickable={false} active={false} style={{borderColor:"#3386FF"}}>{
-                                    tag === "decaf" ? "디카페인" : tag === "lactos" ? "락토프리 우유" : tag === "soy" ? "두유" : tag  === "oat" ? "오트밀크" : tag === "zero" ? "제로시럽" : ""
-                                }</StyledTag>
-                            ))
-                        }
+                            {
+                                filterArr.map((tag: string, idx: number) => (
+                                    <StyledTag key={idx} clickable={false} active={false} style={{borderColor: "#3386FF"}}>{
+                                        tag === "decaf" ? "디카페인" : tag === "lactos" ? "락토프리 우유" : tag === "soy" ? "두유" : tag === "oat" ? "오트밀크" : tag === "zero" ? "제로시럽" : ""
+                                    }</StyledTag>
+                                ))
+                            }
                         </TagWrapper>
-                        <a href="https://forms.gle/H3M3YwCPgqgHVoRn7" target="_blank"><InfoRequestBtn>정보수정요청</InfoRequestBtn></a>
+                        <a href="https://forms.gle/H3M3YwCPgqgHVoRn7"
+                           target="_blank"><InfoRequestBtn>정보수정요청</InfoRequestBtn></a>
                     </CafeInfoWrapper>
 
 
