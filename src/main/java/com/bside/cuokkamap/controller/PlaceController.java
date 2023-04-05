@@ -202,9 +202,10 @@ public class PlaceController {
             if(result != 0) {
                 if( file.exists() ){
                     if(file.delete()){
+
                         return new ResponseEntity("이미지 삭제 성공", HttpStatus.OK);
                     }else{
-                        return new ResponseEntity("이미지 삭제 실페", HttpStatus.EXPECTATION_FAILED);
+                        return new ResponseEntity("이미지 파일 삭제 실페", HttpStatus.EXPECTATION_FAILED);
                     }
                 }else{
                     return new ResponseEntity("이미지 파일이 존재하지 않습니다", HttpStatus.EXPECTATION_FAILED);
@@ -234,6 +235,28 @@ public class PlaceController {
 
     // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
     // assignees : Yana94Ko
+    @PostMapping("/deletePlaceReview")
+    public ResponseEntity deletePlaceReview (@RequestBody String response) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject) parser.parse(response);
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setPlaceReview_num( jobj.get("placeReview_num")
+                .getAsInt()) ;
+        placeVO.setUser_num( jobj.get("user_num")
+                .getAsInt());
+        System.out.println("리뷰 삭제하러 옴 : " + placeVO.getPlaceReview_num() + " / " + placeVO.getUser_num() );
+        try {
+            int result = placeService.deletePlaceReview(placeVO);
+            if( result != 0 ) {
+                return new ResponseEntity("리뷰 삭제 성공", HttpStatus.OK);
+            } else {
+                return new ResponseEntity("리뷰 DB 삭제 실패", HttpStatus.EXPECTATION_FAILED);
+            }
+        }catch (Exception e) {
+            return new ResponseEntity("리뷰 삭제 중 에러 발생", HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
 
     // TODO(BE) : 장소정보 열람(사진, 리뷰 포함)관련 프론트 연동후 제확인 필요
     // assignees : Yana94Ko
@@ -294,6 +317,10 @@ public class PlaceController {
         }
     }
     // TODO(BE) : (Delete) FE 에서 받아온 favoritePlace_num으로 으로 favorite_place DB에서 삭제
+    // assignees : Yana94Ko
+
+
+    // TODO(BE, favoritePlce) : user_num 을 통해 favoritePlce 목록 돌려주기(with favorite_type, x,y좌표)
     // assignees : Yana94Ko
 
 }
