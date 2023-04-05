@@ -26,7 +26,7 @@
         INSERT 	place_review(place_num, user_num, placeReview, placeReview_emoji)
         VALUES  (#{place_num}, #{user_num}, #{placeReview}, #{placeReview_emoji})
     </insert>
-    <!-- 즐겨찾기 등록 // TODO : favorite_type 기능 추가시 xml 수정 필요-->
+    <!-- 즐겨찾기 등록 // TODO(BE) favorite_type 기능 추가시 xml 수정 필요-->
     <insert id='saveFavoritePlace'>
         INSERT 	favorite_place(place_num, user_num, favorite_type)
         SELECT  #{place_num}, #{user_num}, 0  FROM DUAL
