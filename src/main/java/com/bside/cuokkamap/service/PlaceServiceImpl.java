@@ -66,4 +66,7 @@ public class PlaceServiceImpl implements PlaceService{
     @Override
     public int deletePlaceImg(PlaceVO vo) {return dao.deletePlaceImg(vo);}
 
+    @Override
+    public int deletePlaceReview(PlaceVO vo) {return dao.deletePlaceReview(vo);}
+
 }
