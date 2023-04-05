@@ -476,7 +476,13 @@ const KakaoMap = ({
                         .then(response => response.text())
                         .then((message) => {
                             const data = JSON.parse(message);
-                            setCafeInfoContainer({data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info), filter: data.filterList, placeNum:placeNum, imageList:data.placeImgList, reviewList:data.placeReviewList});
+                            setCafeInfoContainer({
+                                data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                                filter: data.filterList,
+                                placeNum:placeNum,
+                                imageList:data.placeImgList,
+                                reviewList:data.placeReviewList
+                            });
                             dispatch(setIsOpenedCafeInfo(true));
                             // moveMapAfterPost(data.y, data.x);
                         }).catch(err => console.log(err));
