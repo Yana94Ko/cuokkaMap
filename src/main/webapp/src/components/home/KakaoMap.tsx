@@ -32,24 +32,24 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
     }
   }
 `;
-const CurrentLocationBtn = styled(Button)`
-  position: absolute;
-  top: 20rem;
-  right: 3rem;
-  z-index: 999;
-  background-color: ${props => props.theme.color.white};
-  padding: 0.5rem;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 
-  & span {
-    color: ${props => props.theme.color.primary};
-
-    @media ${props => props.theme.windowSize.mobile} {
-      right: 2rem;
-    }
-  }
-
-`;
+// const CurrentLocationBtn = styled(Button)`
+//   position: absolute;
+//   top: 20rem;
+//   right: 3rem;
+//   z-index: 999;
+//   background-color: ${props => props.theme.color.white};
+//   padding: 0.5rem;
+//   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+//
+//   & span {
+//     color: ${props => props.theme.color.primary};
+//
+//     @media ${props => props.theme.windowSize.mobile} {
+//       right: 2rem;
+//     }
+//   }
+// `;
 
 const AddCafeButton = styled(Button)`
   transition: all 0.2s ease-in-out;
@@ -68,16 +68,20 @@ const AddCafeButton = styled(Button)`
 
   & span {
     margin-right: 10px;
+    transition: all 0.2s ease-in-out;
   }
 
   &:hover {
     background-color: ${props => props.theme.color.primary};
     color: ${props => props.theme.color.white};
 
+    & span {
+      color: ${props => props.theme.color.white};
+    }
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    bottom: 4rem;
+    bottom: 5rem;
   }
   @media not all and (min-resolution: .001dpcm) {
     @supports (-webkit-appearance:none) {
@@ -101,6 +105,7 @@ type KakaoMapProps = {
     setMarkers: React.Dispatch<SetStateAction<any[]>>;
     removeMarker: () => void;
     dbFilterData: any[];
+    searchDB: () => void;
 }
 const KakaoMap = ({
                       dbData,
@@ -109,7 +114,8 @@ const KakaoMap = ({
                       markers,
                       setMarkers,
                       removeMarker,
-                      dbFilterData
+                      dbFilterData,
+                      searchDB
                   }: KakaoMapProps) => {
     const dispatch = useDispatch();
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
@@ -397,7 +403,6 @@ const KakaoMap = ({
             //데이터가 변할 때마다 리렌더링 => 데이터 추가되면 렌더링 / 필터링되면 렌더링
             displayDBPlaces(dbData, dbFilterData);
             //mapState.setLevel(7);
-            console.log("db변함?");
 
             if (keyword === "" && currentFilter.length > 0) {
                 mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
@@ -434,22 +439,25 @@ const KakaoMap = ({
                 removeMarker();
                 const responseData = JSON.parse(data).map((i: any) => JSON.parse(i.place_info))
                 setDBData(responseData);
-                setCafeInfoContainer(responseData[0]);
+                setCafeInfoContainer(cafeInfoContainer);
             }).catch(err => console.log("에러", err));
     }
 
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
     function displayDBPlaces(places: any[], filterData?: any[]) {
+        const placesInfo = places.map(a => JSON.parse((a.place_info)))
+        const placesFilter = places.map(a => (a.filter_type));
+        const placesNumber = places.map(a => (a.place_num));
         if (mapState !== undefined) {
             const bounds = new window.kakao.maps.LatLngBounds();
 
             removeMarker();
 
             //검색결과 목록으로 List요소 만들기, bounds : 검색된 좌표만큼의 범위 넓히기
-            for (var i = 0; i < places.length; i++) {
+            for (var i = 0; i < placesInfo.length; i++) {
                 // 마커를 생성하고 지도에 표시
-                let placePosition = new window.kakao.maps.LatLng(places[i].y, places[i].x),
-                    marker = addDBMarker(placePosition, places[i].place_name);
+                let placePosition = new window.kakao.maps.LatLng(placesInfo[i].y, placesInfo[i].x),
+                    marker = addDBMarker(placePosition, placesInfo[i].place_name);
 
                 // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
                 // LatLngBounds 객체에 좌표를 추가
@@ -458,12 +466,30 @@ const KakaoMap = ({
                 // 마커와 검색결과 항목에 mouseover 했을때
                 // 해당 장소에 인포윈도우에 장소명을 표시
                 // mouseout 했을 때는 인포윈도우를 닫기
-                (function (marker: any, data: any, filter?: any) {
+                (function (marker: any, data: any, filter?: any, placeNum?:string) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
-                        console.log(data);
-                        setCafeInfoContainer({data: data, filter: filter});
-                        dispatch(setIsOpenedCafeInfo(true));
-                        moveMapAfterPost(data.y, data.x);
+                        fetch('/api/place/selectDetailPlaceInfo',{
+                            method:'POST',
+                            headers:{
+                                'Content-Type': "application/json"
+                            },
+                            body:JSON.stringify({
+                                place_num: placeNum
+                            }),
+                        })
+                        .then(response => response.text())
+                        .then((message) => {
+                            const data = JSON.parse(message);
+                            setCafeInfoContainer({
+                                data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                                filter: data.filterList,
+                                placeNum:placeNum,
+                                imageList:data.placeImgList,
+                                reviewList:data.placeReviewList
+                            });
+                            dispatch(setIsOpenedCafeInfo(true));
+                            // moveMapAfterPost(data.y, data.x);
+                        }).catch(err => console.log(err));
 
                     });
                     window.kakao.maps.event.addListener(marker, 'mouseover', function () {
@@ -473,7 +499,7 @@ const KakaoMap = ({
                     window.kakao.maps.event.addListener(marker, 'mouseout', function () {
                         infowindow.close();
                     });
-                })(marker, places[i], filterData[i])
+                })(marker,placesInfo[i], placesFilter[i], String(placesNumber[i]));
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
@@ -531,7 +557,7 @@ const KakaoMap = ({
     function moveMapAfterPost(x: number, y: number) {
         var moveLatLng = new window.kakao.maps.LatLng(x, y);
         mapState.setCenter(moveLatLng);
-        mapState.setLevel(3);
+        mapState.setLevel(4);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
@@ -561,9 +587,10 @@ const KakaoMap = ({
             <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                               removeMarker={removeMarker} setDBData={setDBData}
                               setSearchDBKeyword={setSearchDBKeyword}/>
-            <CurrentLocationBtn onClick={currentLocation}>
-                <Icon className="material-symbols-rounded">my_location</Icon>
-            </CurrentLocationBtn>
+            {/*현재위치 기능 버튼 / https 관련 기능 추가 후 주석 해제*/}
+            {/*<CurrentLocationBtn onClick={currentLocation}>*/}
+            {/*    <Icon className="material-symbols-rounded">my_location</Icon>*/}
+            {/*</CurrentLocationBtn>*/}
             {
                 !isOpenedPostCafe && (
                     <AddCafeButton onClick={onPostCafeBtnClick}>
@@ -583,6 +610,10 @@ const KakaoMap = ({
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                                   searchCafeInfo={searchCafeInfo}
                                   setSearchCafeInfo={setSearchCafeInfo}
+                                  mapState={mapState}
+                                  markersTmp={markersTmp}
+
+                                  setDBData={setDBData}
                     />
                 )
             }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +164,7 @@ public class PlaceController {
             }
 
             //이미지 업로드 성공 후, DB 저장
-            placeVO.setPlaceImg_src("/public/upload/" + newFileName + "." + ext);
+            placeVO.setPlaceImg_src(newFileName + "." + ext);
             System.out.println("저장할 데이터 : " + placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceImg_src());
             int result = placeService.savePlaceImg(placeVO);
             if (result != 0) {
@@ -181,6 +182,40 @@ public class PlaceController {
     // TODO(BE) : (Delete) FE에서 받아온 placeImg_num으로 DB에서 삭제
     // - 또한 메모리 공간에서도 삭제 진행
     // assignees : Yana94Ko
+    @PostMapping("/deletePlaceImg")
+    public ResponseEntity deletePlaceImg (@RequestBody String response, HttpServletRequest request) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject) parser.parse(response);
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setPlaceImg_num(jobj.get("placeImg_num")
+                .getAsInt());
+        placeVO.setUser_num(jobj.get("user_num")
+                .getAsInt());
+        placeVO.setPlaceImg_src(jobj.get("placeImg_src")
+                .toString().replaceAll("\"", ""));
+        System.out.println("이미지 삭제하러 옴 : " + placeVO.getPlaceImg_num() + " / " + placeVO.getUser_num() + " / " + placeVO.getPlaceImg_src());
+        try {
+            File file = new File( request.getServletContext().getRealPath("public/upload/") + placeVO.getPlaceImg_src());
+
+            int result = placeService.deletePlaceImg(placeVO);
+
+            if(result != 0) {
+                if( file.exists() ){
+                    if(file.delete()){
+                        return new ResponseEntity("이미지 삭제 성공", HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity("이미지 삭제 실페", HttpStatus.EXPECTATION_FAILED);
+                    }
+                }else{
+                    return new ResponseEntity("이미지 파일이 존재하지 않습니다", HttpStatus.EXPECTATION_FAILED);
+                }
+            } else {
+                return new ResponseEntity("파일 삭제중 에러발생", HttpStatus.EXPECTATION_FAILED);
+            }
+        }catch (Exception e) {
+            return new ResponseEntity("이미지 삭제 전 에러 발생", HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 
     // TODO(BE) : 리뷰등록 관련 프론트 연동후 제확인 필요
     // assignees : Yana94Ko
