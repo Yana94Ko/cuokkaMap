@@ -21,10 +21,21 @@
         INSERT 	place_img(place_num, user_num, placeImg_src)
         VALUES  (#{place_num}, #{user_num}, #{placeImg_src})
     </insert>
-    <!-- 리 등록 -->
+    <!-- 리뷰 등록 -->
     <insert id='savePlaceReview'>
         INSERT 	place_review(place_num, user_num, placeReview, placeReview_emoji)
         VALUES  (#{place_num}, #{user_num}, #{placeReview}, #{placeReview_emoji})
+    </insert>
+    <!-- 즐겨찾기 등록 // TODO : favorite_type 기능 추가시 xml 수정 필요-->
+    <insert id='saveFavoritePlace'>
+        INSERT 	favorite_place(place_num, user_num, favorite_type)
+        SELECT  #{place_num}, #{user_num}, 0  FROM DUAL
+        WHERE NOT EXISTS
+            (SELECT place_num, user_num,favorite_type
+             FROM favorite_place
+             WHERE place_num = #{place_num}
+               AND user_num = #{user_num}
+               AND favorite_type = 0)
     </insert>
 
     <!-- 방금 해당 유저가 등록한 place_num 받아오기 -->
@@ -82,22 +93,29 @@
     </select>
 
     <select id="selectPlaceByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        select  place_num, place_info
-        from    place where place_num = #{param1}
+        SELECT  place_num, place_info
+        FROM    place WHERE place_num = #{param1}
     </select>
 
     <select id="selectResentPlaceImgByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        select  place_num, user_num, placeImg_src, placeImg_num
-        from    place_img
-        where user_num = #{param1}
+        SELECT  place_num, user_num, placeImg_src, placeImg_num
+        FROM    place_img
+        WHERE user_num = #{param1}
         ORDER 	BY placeImg_num DESC
         LIMIT 	1
     </select>
     <select id="selectResentPlaceReviewByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        select  place_num, user_num, placeReview, placeReview_emoji, placeReview_num
-        from    place_review
-        where user_num = #{param1}
+        SELECT  place_num, user_num, placeReview, placeReview_emoji, placeReview_num
+        FROM    place_review
+        WHERE user_num = #{param1}
         ORDER 	BY placeReview_num DESC
+        LIMIT 	1
+    </select>
+    <select id="selectResentFavoritePlaceByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT  favoritePlace_num, place_num, user_num, favorite_type
+        FROM    favorite_place
+        WHERE   user_num = #{param1}
+        ORDER 	BY favoritePlace_num DESC
         LIMIT 	1
     </select>
     <select id="selectPlaceImgByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">

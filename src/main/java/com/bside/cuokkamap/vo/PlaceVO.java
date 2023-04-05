@@ -31,6 +31,10 @@ public class PlaceVO {
     private String filter_type;
     private List<String> filterList;
 
+    //favorite_place
+    private int favoritePlace_num;
+    private int favorite_type;
+
     //자체 생성자
     public PlaceVO() {};
 }

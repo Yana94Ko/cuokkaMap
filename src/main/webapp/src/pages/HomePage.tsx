@@ -52,8 +52,7 @@ function HomePage() {
                 if(JSON.parse(data).length === 0){
                     alert("검색어가 존재하지 않습니다");
                 }else{
-                    setDBFilterData(JSON.parse(data).map((filter:any) => filter.filter_type));
-                    setDBData(JSON.parse(data).map((i: any) => JSON.parse(i.place_info)));
+                    setDBData(JSON.parse(data));
                 }
             })
             .catch(err => console.log("에러", err));
@@ -71,7 +70,7 @@ function HomePage() {
                     </Modal>
                 )
             }
-            {dbData && <KakaoMap dbData={dbData} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword} markers={markers} setMarkers={setMarkers} removeMarker={removeMarker} dbFilterData={dbFilterData}/>}
+            {dbData && <KakaoMap dbData={dbData} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword} markers={markers} setMarkers={setMarkers} removeMarker={removeMarker} dbFilterData={dbFilterData} searchDB={searchDB}/>}
 
         </>
     )
