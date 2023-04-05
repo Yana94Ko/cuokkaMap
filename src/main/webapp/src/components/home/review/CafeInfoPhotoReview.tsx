@@ -19,7 +19,7 @@ const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
     const sessionId = sessionStorage.getItem("id");
     let cafeInfoImageData:string[], cafeInfoUserNum:number[];
     if(cafeInfoContainer !== undefined){
-        cafeInfoImageData = Object.values(cafeInfoContainer)[3].map((data:dataType) => (data.placeImg_src.replace("/public","")));
+        cafeInfoImageData = Object.values(cafeInfoContainer)[3].map((data:dataType) => (data.placeImg_src));
         cafeInfoUserNum = Object.values(cafeInfoContainer)[3].map((data:dataType) => (data.user_num));
     }
     console.log(cafeInfoImageData);
@@ -112,12 +112,12 @@ const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
                 <input type="file" name="file" id="file" style={{display: "none"}} onChange={uploadFileReview}/>
             </Button>
                 {/*<input type="button" onClick={submit} value="등록"/>*/}
-            <div style={{height: "100%",}}>
+            <div style={{height: "100%"}}>
                 <ul style={{marginTop:"20px", display:"flex", flexWrap:"wrap"}}>
                 {
                     cafeInfoImageData && cafeInfoImageData.map((image:string, i:number) => (
                         <li key={i} style={{width:"150px", margin:"5px"}}>
-                            <img src={process.env.PUBLIC_URL + image} width="150px" alt="image"/>
+                            <img src={process.env.PUBLIC_URL+"/upload/" + image} width="150px" alt="image"/>
                             <>
                             {Number(sessionId) === cafeInfoUserNum[i] ? (<span style={{position:"absolute", right:"10px", color:"white"}}>x</span>) : null}
                             </>

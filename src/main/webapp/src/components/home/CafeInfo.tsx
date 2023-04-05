@@ -7,7 +7,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
-import {RootState} from "../../modules";
 
 const Base = styled.div`
   background-color: #fff;
@@ -23,7 +22,10 @@ const Base = styled.div`
   flex-direction: column;
   justify-content: space-between;
   border-radius: 1.5rem;
-  overflow:auto;
+  overflow-y:scroll;
+  &::-webkit-scrollbar{
+    display:none;
+  }
 
   @media ${props => props.theme.windowSize.laptop} {
     top: 50%;
@@ -40,9 +42,10 @@ const Base = styled.div`
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
-    
+    padding: 2rem 1rem 8rem 2rem;
   }
 `;
+
 const CafeInfoWrapper = styled.div`
   a {
     outline: none;
@@ -58,6 +61,7 @@ const TitleWrapper = styled.div`
     display:flex;
 `;
 
+
 const PlaceName = styled.h3`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 900;
@@ -70,38 +74,45 @@ const PlaceName = styled.h3`
     }
   }
 `;
+
 const Item = styled.div`
   display: flex;
   line-height: 2rem;
   margin-bottom: 1.5rem;
 `;
+
 const LabelIcon = styled(Icon)`
   display: flex;
   align-items: center;
   margin-right: 20px;
 `;
+
 const Info = styled.div`
   font-size: ${props => props.theme.fontSize.base};
   font-weight: 500;
 `;
+
 const Label = styled.label`
   display: block;
   font-size: ${props => props.theme.fontSize.base};
   font-weight: 700;
   margin-bottom: 20px;
 `;
+
 const InfoRequestBtn = styled(Button)`
-  width: 100%;
+  width: fit-content;
+  margin: 0 auto;
   margin-top: 1rem;
+  font-size: ${props => props.theme.fontSize.sm};
+  background-color: ${props => props.theme.color.gray};
+  padding: 0.2rem 1rem;
+  display: block;
+  color: ${props => props.theme.color.text};
 
   a {
     outline: none;
     text-decoration: none;
     color: white;
-  }
-
-  @media ${props => props.theme.windowSize.mobile} {
-    margin-bottom: 80px;
   }
 `;
 
@@ -114,6 +125,9 @@ const TagWrapper = styled.div`
     overflow-x: auto;
   }
 
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const StyledTag = styled(Tag)`
@@ -124,11 +138,36 @@ const StyledTag = styled(Tag)`
   }
 `;
 
+const ReviewTab = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Tab = styled.div<{ currentView: string }>`
+  width: 50%;
+  text-align: center;
+  margin-top: 2rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid ${props => props.theme.color.gray};
+  transition: all 0.2s ease-in-out;
+  font-weight: 300;
+  color: ${props => props.theme.color.darkGray};
+  cursor: pointer;
+  margin-bottom: 2rem;
+  ${props => props.currentView === props.id && css`
+    border-bottom: 2px solid ${props => props.theme.color.primary};
+    color: ${props => props.theme.color.text};
+    font-weight: 700;
+  `}
+`;
+
 type CafeInfoProps = {
     cafeInfoContainer: object;
 }
 
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
+    const [currentView, setCurrentView] = useState<string>("review");
+
     let dataObject: any = {};
     dataObject = Object.assign({}, cafeInfoContainer);
     const filterArr = dataObject.filter;
@@ -137,9 +176,17 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
+    };
+
+    const onReviewTabClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target instanceof Element) {
+            if (e.target.id !== '') {
+                setCurrentView(e.target.id);
+            }
+        }
     }
     return (
-        <Base >
+        <Base>
             <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
             {
                 cafeInfoContainer !== undefined && (
@@ -189,11 +236,13 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
 
                 )
             }
-            <br/>
-            <hr/>
-            <br/>
-            <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}/>
-
+            <ReviewTab onClick={onReviewTabClick}>
+                <Tab id="photo" currentView={currentView}>사진</Tab>
+                <Tab id="review" currentView={currentView}>후기</Tab>
+            </ReviewTab>
+            {
+                currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}/> : <CafeInfoReview/>
+            }
         </Base>
     )
 }

@@ -23,21 +23,20 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   @media ${props => props.theme.windowSize.mobile} {
     width: 100%;
     height: 400px;
-    overflow-y: auto;
-    padding: 2rem 2rem 5rem 2rem;
+    overflow: hidden;
+    padding: 2rem 1rem 8rem 2rem;
     justify-content: start;
     border-radius: 1.5rem 1.5rem 0 0;
     top: calc(100% - 400px);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-
   }
-  @media not all and (min-resolution: .001dpcm) {
-    @media ${props => props.theme.windowSize.mobile} {
-      @supports (-webkit-appearance:none) {
-        /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
-        bottom: 8rem;
-      }
-    }
+`;
+
+const Container = styled.div`
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 100%;
+    overflow-y: auto;
+    padding-right: 1rem;
   }
 `;
 
@@ -45,6 +44,11 @@ export const CloseBtn = styled(Icon)`
   position: absolute;
   right: 2rem;
   top: 2rem;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: rotate(90deg);
+  }
 `;
 
 const Title = styled.h1`
@@ -324,115 +328,116 @@ const PostCafeInfo = ({
 
     return (
         <Base isOpenedPostCafe={isOpenedPostCafe}>
-            <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
-            <Title>카페 추가</Title>
-            <Form onSubmit={AddCafeInfo}>
-                <SearchCafe>
-                    <Label>카페찾기</Label>
-                    <SearchInputWrapper>
-                        <SearchInput
-                            ref={PostCafeInput}
-                            value={searchCafeInfo || ""}
-                            name="search"
-                            onChange={onChange}
-                            autoComplete="off"
-                            placeholder="카페 이름으로 검색해주세요."
-                            onKeyPress={activeEnter}
-                        >
-                        </SearchInput>
-                        <SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>
-                        {searchedListCheck && <SearchedListContainer setSearchedListCheck={setSearchedListCheck}/>}
-                    </SearchInputWrapper>
-                </SearchCafe>
-                <CafeInfoWrapper>
-                    <CafeInfoItem onClick={onInputClick}>
-                        <Label>카페명*</Label>
-                        <Input
-                            value={copiedClickedInfo.place_name || ""}
-                            placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
-                            disabled={true}
-                            onChange={onChange}
-                            name="name"
-                        />
-                    </CafeInfoItem>
-                    <CafeInfoItem onClick={onInputClick}>
-                        <Label>주소*</Label>
-                        <Input
-                            value={copiedClickedInfo.address_name || ""}
-                            placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
-                            disabled={true}
-                            onChange={onChange}
-                            name="address"
-                        />
-                    </CafeInfoItem>
-                    <CafeInfoItem>
-                        <Label>옵션*</Label>
-                        <TagWrapper onClick={onTagClick}>
-                            <Tag
-                                clickable={true}
-                                active={tag.includes("decaf")}
-                                id="decaf"
+            <Container>
+                <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
+                <Title>카페 추가</Title>
+                <Form onSubmit={AddCafeInfo}>
+                    <SearchCafe>
+                        <Label>카페찾기</Label>
+                        <SearchInputWrapper>
+                            <SearchInput
+                                ref={PostCafeInput}
+                                value={searchCafeInfo || ""}
+                                name="search"
+                                onChange={onChange}
+                                autoComplete="off"
+                                placeholder="카페 이름으로 검색해주세요."
+                                onKeyPress={activeEnter}
+                            >
+                            </SearchInput>
+                            <SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>
+                            {searchedListCheck && <SearchedListContainer setSearchedListCheck={setSearchedListCheck}/>}
+                        </SearchInputWrapper>
+                    </SearchCafe>
+                    <CafeInfoWrapper>
+                        <CafeInfoItem onClick={onInputClick}>
+                            <Label>카페명*</Label>
+                            <Input
+                                value={copiedClickedInfo.place_name || ""}
+                                placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
+                                disabled={true}
+                                onChange={onChange}
+                                name="name"
+                            />
+                        </CafeInfoItem>
+                        <CafeInfoItem onClick={onInputClick}>
+                            <Label>주소*</Label>
+                            <Input
+                                value={copiedClickedInfo.address_name || ""}
+                                placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
+                                disabled={true}
+                                onChange={onChange}
+                                name="address"
+                            />
+                        </CafeInfoItem>
+                        <CafeInfoItem>
+                            <Label>옵션*</Label>
+                            <TagWrapper onClick={onTagClick}>
+                                <Tag
+                                    clickable={true}
+                                    active={tag.includes("decaf")}
+                                    id="decaf"
+                                    disabled={Object.keys(copiedClickedInfo).length === 0}
+                                >디카페인</Tag>
+                                <Tag clickable={true}
+                                     active={tag.includes("lactos")}
+                                     id="lactos"
+                                     disabled={Object.keys(copiedClickedInfo).length === 0}
+                                >락토프리 우유</Tag>
+                                <Tag clickable={true}
+                                     active={tag.includes("soy")}
+                                     id="soy"
+                                     disabled={Object.keys(copiedClickedInfo).length === 0}
+                                >두유</Tag>
+                                <Tag clickable={true}
+                                     active={tag.includes("oat")}
+                                     id="oat"
+                                     disabled={Object.keys(copiedClickedInfo).length === 0}
+                                >오트밀크</Tag>
+                                <Tag clickable={true}
+                                     active={tag.includes("zero")}
+                                     id="zero"
+                                     disabled={Object.keys(copiedClickedInfo).length === 0}
+                                >제로슈가</Tag>
+                            </TagWrapper>
+                        </CafeInfoItem>
+                        <CafeInfoItem onClick={onInputClick}>
+                            <Label>연락처</Label>
+                            <Input
+                                ref={PostCafeInput}
+                                defaultValue={copiedClickedInfo.phone || ""}
+                                name="contact"
+                                onChange={onChange}
+                                placeholder="카페 연락처를 입력해 주세요."
                                 disabled={Object.keys(copiedClickedInfo).length === 0}
-                            >디카페인</Tag>
-                            <Tag clickable={true}
-                                 active={tag.includes("lactos")}
-                                 id="lactos"
-                                 disabled={Object.keys(copiedClickedInfo).length === 0}
-                            >락토프리 우유</Tag>
-                            <Tag clickable={true}
-                                 active={tag.includes("soy")}
-                                 id="soy"
-                                 disabled={Object.keys(copiedClickedInfo).length === 0}
-                            >두유</Tag>
-                            <Tag clickable={true}
-                                 active={tag.includes("oat")}
-                                 id="oat"
-                                 disabled={Object.keys(copiedClickedInfo).length === 0}
-                            >오트밀크</Tag>
-                            <Tag clickable={true}
-                                 active={tag.includes("zero")}
-                                 id="zero"
-                                 disabled={Object.keys(copiedClickedInfo).length === 0}
-                            >제로슈가</Tag>
-                        </TagWrapper>
-                    </CafeInfoItem>
-                    <CafeInfoItem onClick={onInputClick}>
-                        <Label>연락처</Label>
-                        <Input
-                            ref={PostCafeInput}
-                            defaultValue={copiedClickedInfo.phone || ""}
-                            name="contact"
-                            onChange={onChange}
-                            placeholder="카페 연락처를 입력해 주세요."
-                            disabled={Object.keys(copiedClickedInfo).length === 0}
-                            onClick={onInputClick}
-                        />
-                    </CafeInfoItem>
-                    <CafeInfoItem onClick={onInputClick}>
-                        <Label>인스타그램</Label>
-                        <Input
-                            ref={PostCafeInput}
-                            // type=url 설정함으로 인해서 값 입력시 url 형태인지 자동으로 유효성검사
-                            // 값 입력되어있지 않을 시 유효성검사 안함
-                            type="url"
-                            value={copiedClickedInfo.insta || ""}
-                            name="insta"
-                            onChange={onChange}
-                            placeholder="카페 인스타그램 URL을 입력해 주세요."
-                            disabled={Object.keys(copiedClickedInfo).length === 0}
-                            onClick={onInputClick}
-                        />
-                    </CafeInfoItem>
-                    {/*cafeInfo의 name, address, tag 값이 하나라도 "" 일때 버튼 비활성화*/}
-                    <AddCafeBtn type="submit"
-                                disabled={copiedClickedInfo.place_name === ""
-                                    || copiedClickedInfo.address_name === ""
-                                    || tag?.length < 1}
-                    >카페 등록
-                    </AddCafeBtn>
-                </CafeInfoWrapper>
-
-            </Form>
+                                onClick={onInputClick}
+                            />
+                        </CafeInfoItem>
+                        <CafeInfoItem onClick={onInputClick}>
+                            <Label>인스타그램</Label>
+                            <Input
+                                ref={PostCafeInput}
+                                // type=url 설정함으로 인해서 값 입력시 url 형태인지 자동으로 유효성검사
+                                // 값 입력되어있지 않을 시 유효성검사 안함
+                                type="url"
+                                value={copiedClickedInfo.insta || ""}
+                                name="insta"
+                                onChange={onChange}
+                                placeholder="카페 인스타그램 URL을 입력해 주세요."
+                                disabled={Object.keys(copiedClickedInfo).length === 0}
+                                onClick={onInputClick}
+                            />
+                        </CafeInfoItem>
+                        {/*cafeInfo의 name, address, tag 값이 하나라도 "" 일때 버튼 비활성화*/}
+                        <AddCafeBtn type="submit"
+                                    disabled={copiedClickedInfo.place_name === ""
+                                        || copiedClickedInfo.address_name === ""
+                                        || tag?.length < 1}
+                        >카페 등록
+                        </AddCafeBtn>
+                    </CafeInfoWrapper>
+                </Form>
+            </Container>
         </Base>
     )
 }
