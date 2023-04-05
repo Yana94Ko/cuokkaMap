@@ -23,6 +23,7 @@ public class PlaceVO {
     private LocalDateTime placeImg_writedate;
 
     //place_review
+    private int placeReview_num;
     private Integer placeReview_emoji = null;
     private String placeReview;
     private LocalDateTime placeReview_writedate;
