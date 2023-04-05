@@ -63,5 +63,7 @@ public class PlaceServiceImpl implements PlaceService{
     @Override
     public String selectPlaceFilterByPlaceNum(int place_num) {return dao.selectPlaceFilterByPlaceNum(place_num);}
 
+    @Override
+    public int deletePlaceImg(PlaceVO vo) {return dao.deletePlaceImg(vo);}
 
 }

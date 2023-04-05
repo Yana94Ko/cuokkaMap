@@ -140,6 +140,12 @@
         GROUP BY p.place_num, p.place_info
     </select>
 
+    <delete id="deletePlaceImg">
+        DELETE FROM place_img
+        WHERE placeImg_num = #{placeImg_num}
+          AND user_num = #{user_num}
+          AND placeImg_src = #{placeImg_src};
+    </delete>
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, place_info
