@@ -146,6 +146,11 @@
           AND user_num = #{user_num}
           AND placeImg_src = #{placeImg_src};
     </delete>
+    <delete id="deletePlaceReview">
+        DELETE FROM place_review
+        WHERE placeReview_num = #{placeReview_num}
+          AND user_num = #{user_num};
+    </delete>
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, place_info
