@@ -97,9 +97,9 @@ public class PlaceController {
         }
         System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt);
         List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);
-        for(PlaceVO place : placeList){
-            System.out.println(place.getFilter_type());
-        }
+//        for(PlaceVO place : placeList){
+//            System.out.println(place.getFilter_type());
+//        }
 
         return new ResponseEntity( placeList, HttpStatus.OK);
     }
@@ -115,8 +115,8 @@ public class PlaceController {
                 .get("y").toString();
         System.out.println(x + " , " + y);
         int cnt = placeService.cntSamePlace(x,y);
-        System.out.println(placeService.cntSamePlace(x,y));
-        System.out.println(cnt);
+//        System.out.println(placeService.cntSamePlace(x,y));
+//        System.out.println(cnt);
         return new ResponseEntity(cnt, HttpStatus.OK);
     }
 
@@ -185,7 +185,7 @@ public class PlaceController {
     // TODO(BE) : 리뷰등록 관련 프론트 연동후 제확인 필요
     // assignees : Yana94Ko
     @PostMapping("/uploadPlaceReview")
-    public ResponseEntity uploadPlaceImg (PlaceVO placeVO) {
+    public ResponseEntity uploadPlaceIReview (PlaceVO placeVO) {
         //placeReview 저장
         System.out.println(placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceReview_emoji() +"   "+ placeVO.getPlaceReview());
         int result = placeService.savePlaceReview(placeVO);
@@ -235,6 +235,29 @@ public class PlaceController {
 
     // TODO(BE) : (Create) FE 에서 받아온 place_num, user_num 으로 favorite_place DB에 등록
     // assignees : Yana94Ko
+    @PostMapping("/uploadFavoritePlace")
+    public ResponseEntity uploadFavoritePlace (@RequestBody String response) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject)parser.parse(response);
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setPlace_num(jobj.get("place_num")
+                                    .getAsInt());
+        placeVO.setUser_num(jobj.get("user_num")
+                                    .getAsInt());
+        System.out.println("즐겨찾기 추가하러 옴 : 유저 - " + placeVO.getUser_num() + ", 장소 번호 - " + placeVO.getPlace_num());
+        try {
+            int result = placeService.saveFavoritePlace(placeVO);
+            if(result == 1){
+                PlaceVO favoriteInfo = placeService.selectResentFavoritePlaceByUserNum(placeVO.getUser_num());
+                //System.out.println(favoriteInfo.getFavoritePlace_num()+"/"+favoriteInfo.getPlace_num()+"/"+favoriteInfo.getUser_num());
+                return new ResponseEntity(favoriteInfo, HttpStatus.OK);
+            }else {
+                return new ResponseEntity("기존에 추가되어있는 즐겨찾기 입니다", HttpStatus.NOT_ACCEPTABLE);
+            }
+        }catch (Exception e) {
+            return new ResponseEntity("즐겨찾기 추가 실패", HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
     // TODO(BE) : (Delete) FE 에서 받아온 favoritePlace_num으로 으로 favorite_place DB에서 삭제
     // assignees : Yana94Ko
 
