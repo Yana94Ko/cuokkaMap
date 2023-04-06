@@ -183,7 +183,7 @@
     </delete>
     <delete id="deleteFavoritePlace">
         DELETE FROM favorite_place
-        WHERE favoritePlace_num = #{favoritePlace_num}
+        WHERE place_num = #{place_num}
           AND user_num = #{user_num};
     </delete>
     <!--

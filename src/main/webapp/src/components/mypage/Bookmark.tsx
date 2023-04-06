@@ -87,7 +87,7 @@ const Bookmark = () => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "favoritePlace_num" : e.target.id,
+                    "place_num" : e.target.id,
                     "user_num": userId,
                 })
             })

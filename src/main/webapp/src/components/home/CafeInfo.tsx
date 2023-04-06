@@ -7,6 +7,7 @@ import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
 import {RootState} from "../../modules";
+import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -254,7 +255,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "favoritePlace_num" : placeNum,
+                    "place_num" : placeNum,
                     "user_num" : userNum,
                 }),
             })
@@ -262,6 +263,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 .then(function (data) {
                     console.log(data);
                     fetchPlaceDetail(placeNum);
+                    dispatch(setCurrentFilter([]));
                 })
                 .catch(err => console.log("에러", err));
         }else{
