@@ -20,7 +20,7 @@ public interface PlaceService {
     public int getPlaceNum(int user_num);
 
     //모든 장소 정보 전달
-    public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt);
+    public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt, int user_num);
     //해당 좌표의 장소가 DB에 존재하는지 확인
     public int cntSamePlace(String x, String y);
     //장소 번호로 장소 검색
@@ -50,4 +50,6 @@ public interface PlaceService {
     public int deletePlaceImg(PlaceVO vo);
     //리뷰 삭제
     public int deletePlaceReview(PlaceVO vo);
+    //즐겨찾기 삭제
+    public int deleteFavoritePlace(PlaceVO vo);
 }

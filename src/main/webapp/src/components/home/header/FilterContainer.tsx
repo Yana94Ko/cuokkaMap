@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import styled, {css} from "styled-components";
 import axios from "axios";
-import {Tag} from "../../../styles/common";
+import {Tag, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
-import {setCurrentFilter} from "../../../modules/filterReducer";
+import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
 import {RootState} from "../../../modules";
 
 const Base = styled.div`
@@ -68,7 +68,9 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
     const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
+    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
 
     const filterContent: filterContentType = [
         {
@@ -102,9 +104,26 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
             dispatch(setCurrentFilter([event.currentTarget.id]));
         }
     }
+    const filterBookmarkHandler = (event:React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        dispatch(setIsBookmarkMode(!isBookmarkMode));
+    }
+        console.log(isBookmarkMode);
+
 
     return (
         <Base>
+            {
+                isLoggedin && (
+                    <FilterTag
+                        clickable={true}
+                        active={isBookmarkMode}
+                        onClick={filterBookmarkHandler}
+                    >
+                        <Icon className="material-symbols-rounded">bookmark_border</Icon>
+                    </FilterTag>
+                )
+            }
             {filterContent.map((filter: { name: string, id: string }, i: number) => (
                 <FilterTag clickable={true}
                            active={currentFilter.includes(filter.id)}

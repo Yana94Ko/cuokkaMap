@@ -31,7 +31,7 @@ public class PlaceServiceImpl implements PlaceService{
     public int getPlaceNum(int user_num) {return dao.getPlaceNum(user_num);}
 
     @Override
-    public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt) {return dao.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);}
+    public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt, int user_num) {return dao.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt, user_num);}
 
     @Override
     public int cntSamePlace(String x, String y) {return dao.cntSamePlace(x, y);}
@@ -74,5 +74,8 @@ public class PlaceServiceImpl implements PlaceService{
 
     @Override
     public int deletePlaceReview(PlaceVO vo) {return dao.deletePlaceReview(vo);}
+
+    @Override
+    public int deleteFavoritePlace(PlaceVO vo) {return dao.deleteFavoritePlace(vo);}
 
 }

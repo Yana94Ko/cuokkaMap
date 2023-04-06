@@ -82,6 +82,13 @@
                 </foreach>
                 )
             </if>
+            <if test="param5 != null and param5 != 0">
+                AND p.place_num IN (
+                    SELECT fp.place_num
+                    FROM favorite_place fp
+                    WHERE fp.user_num = #{param5}
+                )
+            </if>
         </where>
     </select>
 
@@ -161,6 +168,11 @@
     <delete id="deletePlaceReview">
         DELETE FROM place_review
         WHERE placeReview_num = #{placeReview_num}
+          AND user_num = #{user_num};
+    </delete>
+    <delete id="deleteFavoritePlace">
+        DELETE FROM favorite_place
+        WHERE favoritePlace_num = #{favoritePlace_num}
           AND user_num = #{user_num};
     </delete>
     <!--
