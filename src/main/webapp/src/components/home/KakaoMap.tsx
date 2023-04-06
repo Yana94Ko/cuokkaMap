@@ -121,6 +121,7 @@ const KakaoMap = ({
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const {isOpenedCafeInfo, isOpenedPostCafe} = useSelector((state: RootState) => state.viewReducer);
+    const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
     /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
 
 
@@ -510,14 +511,15 @@ const KakaoMap = ({
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            mapState.setBounds(bounds);
+            mapState.setBounds(bounds,200,200,200,200);
             // if(keyword === "" && currentFilter.length > 0){
             //     mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
             //
             // } else
-            if (keyword !== "" && currentFilter.length === 0) {
+            if (isBookmarkMode) {
+                mapState.setLevel(mapState.getLevel());
+            } else if(keyword !== "" && currentFilter.length === 0) {
                 mapState.setLevel(mapState.getLevel() + 1);
-
             }
 
         }

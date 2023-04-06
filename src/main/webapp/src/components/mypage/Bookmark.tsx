@@ -137,12 +137,10 @@ const Bookmark = () => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "favoritePlace_num" : e.target.id,
+                    "place_num" : e.target.id,
                     "user_num": userId,
                 })
             })
-                .then((res) => console.log(res.text()))
-                .then((message) => console.log(message))
                 .then(() => fetchMyBookmark())
                 .catch(err => console.log("에러", err));
         }else{

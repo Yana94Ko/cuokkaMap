@@ -7,6 +7,7 @@ import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
 import {RootState} from "../../modules";
+import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -189,7 +190,6 @@ type CafeInfoProps = {
 }
 
 const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: CafeInfoProps) => {
-    console.log(cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
     //로그인 되었는지 상태 가져오기
@@ -254,7 +254,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "favoritePlace_num" : placeNum,
+                    "place_num" : placeNum,
                     "user_num" : userNum,
                 }),
             })
@@ -262,6 +262,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 .then(function (data) {
                     console.log(data);
                     fetchPlaceDetail(placeNum);
+                    dispatch(setCurrentFilter([]));
                 })
                 .catch(err => console.log("에러", err));
         }else{
