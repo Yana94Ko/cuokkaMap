@@ -215,6 +215,7 @@ public class PlaceController {
                 return new ResponseEntity("파일 삭제중 에러발생", HttpStatus.EXPECTATION_FAILED);
             }
         }catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity("이미지 삭제 전 에러 발생", HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -250,6 +251,7 @@ public class PlaceController {
                 return new ResponseEntity("리뷰 DB 삭제 실패", HttpStatus.EXPECTATION_FAILED);
             }
         }catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity("리뷰 삭제 중 에러 발생", HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -319,6 +321,7 @@ public class PlaceController {
                 return new ResponseEntity("기존에 추가되어있는 즐겨찾기 입니다", HttpStatus.NOT_ACCEPTABLE);
             }
         }catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity("즐겨찾기 추가 실패", HttpStatus.NOT_ACCEPTABLE);
         }
     }
@@ -327,11 +330,11 @@ public class PlaceController {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
-        placeVO.setFavoritePlace_num( jobj.get("favoritePlace_num")
+        placeVO.setPlace_num( jobj.get("place_num")
                 .getAsInt());
         placeVO.setUser_num( jobj.get("user_num")
                 .getAsInt());
-        System.out.println("즐겨찾기 삭제하러 옴 : " + placeVO.getFavoritePlace_num() + " / " + placeVO.getUser_num() );
+        System.out.println("즐겨찾기 삭제하러 옴 : " + placeVO.getPlace_num() + " / " + placeVO.getUser_num() );
         try {
             int result = placeService.deleteFavoritePlace(placeVO);
             if( result != 0 ) {
@@ -340,6 +343,7 @@ public class PlaceController {
                 return new ResponseEntity("즐겨찾기 DB 삭제 실패", HttpStatus.EXPECTATION_FAILED);
             }
         }catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity("즐겨찾기 삭제 중 에러 발생", HttpStatus.EXPECTATION_FAILED);
         }
     }

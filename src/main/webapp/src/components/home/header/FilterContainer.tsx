@@ -97,6 +97,8 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
 
     const filterClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
+        //[YANA] 필터 검색시 북마크 해제
+        dispatch(setIsBookmarkMode(false));
         if (event.currentTarget.id === currentFilter[0]) {
             dispatch(setCurrentFilter([]));
         } else {
@@ -107,8 +109,10 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
     const filterBookmarkHandler = (event:React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         dispatch(setIsBookmarkMode(!isBookmarkMode));
+        //[YANA] 북마크 검색시 키워드,필터 해제
+        dispatch(setCurrentFilter([]));
+        setSearchDBKeyword("");
     }
-        console.log(isBookmarkMode);
 
 
     return (

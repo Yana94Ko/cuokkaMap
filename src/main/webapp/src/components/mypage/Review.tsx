@@ -5,6 +5,7 @@ import styled from "styled-components";
 import {RootState} from "../../modules";
 import {Icon} from "../../styles/common";
 import Card from "./Card";
+import Pagination from "./Pagination";
 
 const Base = styled.div`
   display: grid;
@@ -55,6 +56,13 @@ const Notice = styled.h1`
 
 const Review = () => {
     const [reviewData, setReviewData] = useState<any[]>([]);
+    const [reviewDataLength, setReviewDataLength] = useState<number>();
+    //한 페이지에서 보여줄 게시물의 게수
+    let limit = 3;
+    //page 현재 페이지의 번호
+    const [page, setPage] = useState<number>(1);
+    //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
+    let offset = (page-1) * limit;
 
     const userId = useSelector((state: RootState) => state.userReducer.userId);
 
@@ -73,7 +81,10 @@ const Review = () => {
             }),
         })
             .then(res => res.text())
-            .then((data: any) => setReviewData(JSON.parse(data)))
+            .then((data: any) => {
+                setReviewData(JSON.parse(data));
+                setReviewDataLength(JSON.parse(data).length);
+            })
             .catch(err => console.log("에러", err));
     }
 
@@ -122,13 +133,12 @@ const Review = () => {
                 .catch(err => console.log("에러", err));
         }
     }
-    // TODO(FE): 후기 페이징 기능 구현하기
-    // assignees: SeongSilver
     return (
         <Base>
             {
                 reviewData.length > 0 ? (
-                    reviewData.map((review: any, idx: number) => (
+                    <>
+                    {reviewData.slice(offset, offset+limit).map((review: any, idx: number) => (
                         <Card key={idx}>
                             <ReviewHeader>
                                 <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
@@ -146,7 +156,10 @@ const Review = () => {
                             }
                             <ReviewText>{review.placeReview}</ReviewText>
                         </Card>
-                    ))
+                    ))}
+                    <Pagination dataLength={reviewDataLength} limit={limit} page={page} setPage={setPage}/>
+                </>
+
                 ) : (
                     <Notice>등록하신 후기가 없습니다.</Notice>
                 )

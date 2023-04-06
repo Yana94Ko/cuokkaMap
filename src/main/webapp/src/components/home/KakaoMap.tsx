@@ -121,6 +121,7 @@ const KakaoMap = ({
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const {isOpenedCafeInfo, isOpenedPostCafe} = useSelector((state: RootState) => state.viewReducer);
+    const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
     /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
 
 
@@ -443,6 +444,35 @@ const KakaoMap = ({
     //         }).catch(err => console.log("에러", err));
     // }
 
+    function fetchPlaceDetail(placeNum:string):void{
+        fetch('/api/place/selectDetailPlaceInfo',{
+            method:'POST',
+            headers:{
+                'Content-Type': "application/json"
+            },
+            body:JSON.stringify({
+                place_num: placeNum,
+                user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
+            }),
+        })
+            .then(response => response.text())
+            .then((message) => {
+                const data = JSON.parse(message);
+                console.log(JSON.parse(message).isBookmarked);
+                setCafeInfoContainer({
+                    data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                    filter: data.filterList,
+                    placeNum:placeNum,
+                    imageList:data.placeImgList,
+                    reviewList:data.placeReviewList,
+                    isBookmarked:data.isBookmarked
+                });
+                dispatch(setIsOpenedCafeInfo(true));
+                // moveMapAfterPost(data.y, data.x);
+            }).catch(err => console.log(err));
+    }
+
+
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
     function displayDBPlaces(places: any[], filterData?: any[]) {
         const placesInfo = places.map(a => JSON.parse((a.place_info)))
@@ -468,31 +498,7 @@ const KakaoMap = ({
                 // mouseout 했을 때는 인포윈도우를 닫기
                 (function (marker: any, data: any, filter?: any, placeNum?:string) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
-                        console.log(sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id"))
-                        fetch('/api/place/selectDetailPlaceInfo',{
-                            method:'POST',
-                            headers:{
-                                'Content-Type': "application/json"
-                            },
-                            body:JSON.stringify({
-                                place_num: placeNum,
-                                user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
-                            }),
-                        })
-                        .then(response => response.text())
-                        .then((message) => {
-                            const data = JSON.parse(message);
-                            console.log(data)
-                            setCafeInfoContainer({
-                                data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
-                                filter: data.filterList,
-                                placeNum:placeNum,
-                                imageList:data.placeImgList,
-                                reviewList:data.placeReviewList
-                            });
-                            dispatch(setIsOpenedCafeInfo(true));
-                            // moveMapAfterPost(data.y, data.x);
-                        }).catch(err => console.log(err));
+                        fetchPlaceDetail(placeNum);
                     });
                     window.kakao.maps.event.addListener(marker, 'mouseover', function () {
                         displayInfowindow(marker, data.place_name);
@@ -505,14 +511,15 @@ const KakaoMap = ({
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            mapState.setBounds(bounds);
+            mapState.setBounds(bounds,200,200,200,200);
             // if(keyword === "" && currentFilter.length > 0){
             //     mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
             //
             // } else
-            if (keyword !== "" && currentFilter.length === 0) {
+            if (isBookmarkMode) {
+                mapState.setLevel(mapState.getLevel());
+            } else if(keyword !== "" && currentFilter.length === 0) {
                 mapState.setLevel(mapState.getLevel() + 1);
-
             }
 
         }
@@ -621,7 +628,7 @@ const KakaoMap = ({
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>
+                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer} fetchPlaceDetail={fetchPlaceDetail}/>
                 )
             }
         </Base>
