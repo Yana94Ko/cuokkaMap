@@ -619,7 +619,6 @@ const KakaoMap = ({
                                   setSearchCafeInfo={setSearchCafeInfo}
                                   mapState={mapState}
                                   markersTmp={markersTmp}
-
                                   setDBData={setDBData}
                     />
                 )

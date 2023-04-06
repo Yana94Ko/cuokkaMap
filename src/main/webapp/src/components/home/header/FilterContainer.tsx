@@ -5,6 +5,7 @@ import {Tag, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
 import {RootState} from "../../../modules";
+import {setIsOpenedCafeInfo} from "../../../modules/viewReducer";
 
 const Base = styled.div`
   position: absolute;
@@ -99,6 +100,7 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
         event.preventDefault();
         if (event.currentTarget.id === currentFilter[0]) {
             dispatch(setCurrentFilter([]));
+            dispatch(setIsOpenedCafeInfo(false));
         } else {
             setSearchDBKeyword("");
             dispatch(setCurrentFilter([event.currentTarget.id]));
@@ -107,6 +109,8 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
     const filterBookmarkHandler = (event:React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         dispatch(setIsBookmarkMode(!isBookmarkMode));
+        dispatch(setIsOpenedCafeInfo(false));
+
     }
 
 
