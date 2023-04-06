@@ -16,7 +16,15 @@ const Base = styled.main`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  @media ${props => props.theme.windowSize.laptop} {
+    padding: 2rem 5rem;
+  }
+  @media ${props => props.theme.windowSize.tablet} {
+    padding: 2rem 4rem;
+  }
   @media ${props => props.theme.windowSize.mobile} {
+    padding: 2rem;
+
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
@@ -68,6 +76,10 @@ const MyPageContent = styled.div`
   height: 100%;
   margin-top: 50px;
   overflow-y: auto;
+  padding: 1rem;
+  &::-webkit-scrollbar{
+    display: none;
+  }
 `;
 
 const Notice = styled.h1`
@@ -75,7 +87,7 @@ const Notice = styled.h1`
   text-align: center;
   width: 100vw;
   top: 50%;
-  left:0;
+  left: 0;
   font-size: ${props => props.theme.fontSize.lg};
   word-break: keep-all;
 `;
@@ -120,21 +132,20 @@ const MyPage = () => {
     return (
         <Base>
             <Header/>
-            {/*<TabWrapper>*/}
-            {/*    {*/}
-            {/*        myPageContent.map((tab, index) => (*/}
-            {/*            <Tab key={index} id={tab.id} active={currentMyPageView === tab.id} onClick={onTabClick}>*/}
-            {/*                {tab.name}*/}
-            {/*            </Tab>*/}
-            {/*        ))*/}
-            {/*    }*/}
-            {/*</TabWrapper>*/}
-            {/*<MyPageContent>*/}
-            {/*    {currentMyPageView === "photo" ? <PhotoReview/>*/}
-            {/*        : currentMyPageView === "review" ? <Review/>*/}
-            {/*            : <Bookmark/>}*/}
-            {/*</MyPageContent>*/}
-            <Notice>마이페이지 서비스 준비중입니다 😊</Notice>
+            <TabWrapper>
+                {
+                    myPageContent.map((tab, index) => (
+                        <Tab key={index} id={tab.id} active={currentMyPageView === tab.id} onClick={onTabClick}>
+                            {tab.name}
+                        </Tab>
+                    ))
+                }
+            </TabWrapper>
+            <MyPageContent>
+                {currentMyPageView === "photo" ? <PhotoReview/>
+                    : currentMyPageView === "review" ? <Review/>
+                        : <Bookmark/>}
+            </MyPageContent>
         </Base>
     )
 }
