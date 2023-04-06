@@ -28,6 +28,10 @@ const CloseBtn = styled(Icon)`
   display: block;
   z-index: 100;
   padding: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    transform: rotate(90deg);
+  }
 `;
 
 type BannerProps = {

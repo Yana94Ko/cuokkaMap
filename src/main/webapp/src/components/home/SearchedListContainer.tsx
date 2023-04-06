@@ -1,16 +1,11 @@
 import React, {SetStateAction} from 'react';
 import styled from "styled-components";
-import {Button, Icon, Input} from "../../styles/common";
 import {CloseBtn} from "./PostCafeInfo";
-
-interface listProps {
-    setSearchedListCheck: React.Dispatch<SetStateAction<boolean>>;
-}
 
 const Base = styled.div`
   position: absolute;
   height: 300px;
-  overflow: auto;
+  overflow-y: auto;
   top: 3rem;
   background-color: ${props => props.theme.color.white};
   color: ${props => props.theme.color.text};
@@ -46,15 +41,6 @@ const Base = styled.div`
     z-index: 1;
     border-radius: 10px;
   }
-
-
-  //#menu_wrap hr {
-  //  display: block;
-  //  height: 1px;
-  //  border: 0;
-  //  border-top: 2px solid red;
-  //  margin: 3px 0;
-  //}
 
   #menu_wrap .option {
     text-align: center;
@@ -195,6 +181,9 @@ const Base = styled.div`
   }
 `;
 
+interface listProps {
+    setSearchedListCheck: React.Dispatch<SetStateAction<boolean>>;
+}
 
 const SearchedListContainer = ({setSearchedListCheck}: listProps) => {
     const item = document.getElementsByClassName("item");
@@ -211,10 +200,12 @@ const SearchedListContainer = ({setSearchedListCheck}: listProps) => {
             });
         }
     }
-    return (<Base id={"search-result"}>
-        <CloseBtn className="material-symbols-rounded" onClick={removeValue}>close</CloseBtn>
-        <ul id="placesList"></ul>
-    </Base>)
+    return (
+        <Base id="search-result">
+            <CloseBtn className="material-symbols-rounded" onClick={removeValue}>close</CloseBtn>
+            <ul id="placesList"></ul>
+        </Base>
+    )
 }
 
 export default SearchedListContainer;

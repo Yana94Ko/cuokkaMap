@@ -16,7 +16,15 @@ const Base = styled.main`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  @media ${props => props.theme.windowSize.laptop} {
+    padding: 2rem 5rem;
+  }
+  @media ${props => props.theme.windowSize.tablet} {
+    padding: 2rem 4rem;
+  }
   @media ${props => props.theme.windowSize.mobile} {
+    padding: 2rem;
+
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
@@ -68,15 +76,18 @@ const MyPageContent = styled.div`
   height: 100%;
   margin-top: 50px;
   overflow-y: auto;
+  padding: 1rem;
+  &::-webkit-scrollbar{
+    display: none;
+  }
 `;
 
 const Notice = styled.h1`
   position: absolute;
   text-align: center;
-  width: 70vw;
+  width: 100vw;
   top: 50%;
-  left:50%;
-  transform: translateX(-50%);
+  left: 0;
   font-size: ${props => props.theme.fontSize.lg};
   word-break: keep-all;
 `;
@@ -121,27 +132,20 @@ const MyPage = () => {
     return (
         <Base>
             <Header/>
-            {/*<TabWrapper>*/}
-            {/*    {*/}
-            {/*        myPageContent.map((tab, index) => (*/}
-            {/*            <Tab key={index} id={tab.id} active={currentMyPageView === tab.id} onClick={onTabClick}>*/}
-            {/*                {tab.name}*/}
-            {/*            </Tab>*/}
-            {/*        ))*/}
-            {/*    }*/}
-            {/*</TabWrapper>*/}
-            {/*<MyPageContent>*/}
-            {/*    {currentMyPageView === "photo" ? <PhotoReview/>*/}
-            {/*        : currentMyPageView === "review" ? <Review/>*/}
-            {/*            : <Bookmark/>}*/}
-            {/*</MyPageContent>*/}
-            <Notice><p>마이페이지 서비스 준비중입니다 😊</p>
-                <p>&nbsp;</p>
-                <p>현재는 사용자 전원 로그인 처리된 상황입니다!</p>
-                <p>카카오 로그인의 경우, Spring-React(Type script)</p>
-                <p>동시 빌드 관련 이슈로.. 2023/4/7일까지 업데이트 될 예정입니다..!</p>
-                <p>&nbsp;</p>
-                <p>임시 아이디로 기능 사용해보시면서 조금만 기다려주세요!</p></Notice>
+            <TabWrapper>
+                {
+                    myPageContent.map((tab, index) => (
+                        <Tab key={index} id={tab.id} active={currentMyPageView === tab.id} onClick={onTabClick}>
+                            {tab.name}
+                        </Tab>
+                    ))
+                }
+            </TabWrapper>
+            <MyPageContent>
+                {currentMyPageView === "photo" ? <PhotoReview/>
+                    : currentMyPageView === "review" ? <Review/>
+                        : <Bookmark/>}
+            </MyPageContent>
         </Base>
     )
 }

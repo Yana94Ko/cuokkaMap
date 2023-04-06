@@ -21,10 +21,21 @@
         INSERT 	place_img(place_num, user_num, placeImg_src)
         VALUES  (#{place_num}, #{user_num}, #{placeImg_src})
     </insert>
-    <!-- 리 등록 -->
+    <!-- 리뷰 등록 -->
     <insert id='savePlaceReview'>
         INSERT 	place_review(place_num, user_num, placeReview, placeReview_emoji)
         VALUES  (#{place_num}, #{user_num}, #{placeReview}, #{placeReview_emoji})
+    </insert>
+    <!-- 즐겨찾기 등록 // TODO(BE) favorite_type 기능 추가시 xml 수정 필요-->
+    <insert id='saveFavoritePlace'>
+        INSERT 	favorite_place(place_num, user_num, favorite_type)
+        SELECT  #{place_num}, #{user_num}, 0  FROM DUAL
+        WHERE NOT EXISTS
+            (SELECT place_num, user_num,favorite_type
+             FROM favorite_place
+             WHERE place_num = #{place_num}
+               AND user_num = #{user_num}
+               AND favorite_type = 0)
     </insert>
 
     <!-- 방금 해당 유저가 등록한 place_num 받아오기 -->
@@ -71,6 +82,13 @@
                 </foreach>
                 )
             </if>
+            <if test="param5 != null and param5 != 0">
+                AND p.place_num IN (
+                    SELECT fp.place_num
+                    FROM favorite_place fp
+                    WHERE fp.user_num = #{param5}
+                )
+            </if>
         </where>
     </select>
 
@@ -80,24 +98,36 @@
         WHERE place_info LIKE CONCAT('%', CONCAT('"x":', #{param1}), '%')
           AND place_info LIKE CONCAT('%', CONCAT('"y":', #{param2}), '%')
     </select>
+    <select id="isFavoritePlace" resultType='int'>
+        SELECT COUNT(*)
+        FROM favorite_place
+        WHERE user_num = #{param1} AND place_num = #{param2}
+    </select>
 
     <select id="selectPlaceByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        select  place_num, place_info
-        from    place where place_num = #{param1}
+        SELECT  place_num, place_info
+        FROM    place WHERE place_num = #{param1}
     </select>
 
     <select id="selectResentPlaceImgByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        select  place_num, user_num, placeImg_src, placeImg_num
-        from    place_img
-        where user_num = #{param1}
+        SELECT  place_num, user_num, placeImg_src, placeImg_num
+        FROM    place_img
+        WHERE user_num = #{param1}
         ORDER 	BY placeImg_num DESC
         LIMIT 	1
     </select>
     <select id="selectResentPlaceReviewByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        select  place_num, user_num, placeReview, placeReview_emoji, placeReview_num
-        from    place_review
-        where user_num = #{param1}
+        SELECT  place_num, user_num, placeReview, placeReview_emoji, placeReview_num
+        FROM    place_review
+        WHERE user_num = #{param1}
         ORDER 	BY placeReview_num DESC
+        LIMIT 	1
+    </select>
+    <select id="selectResentFavoritePlaceByUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT  favoritePlace_num, place_num, user_num, favorite_type
+        FROM    favorite_place
+        WHERE   user_num = #{param1}
+        ORDER 	BY favoritePlace_num DESC
         LIMIT 	1
     </select>
     <select id="selectPlaceImgByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
@@ -121,7 +151,41 @@
         WHERE p.place_num = #{param1}
         GROUP BY p.place_num, p.place_info
     </select>
+    <select id="selectAllPlaceImgWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT pi.*, p.place_info
+        FROM place_img pi
+        JOIN place p ON pi.place_num = p.place_num
+        WHERE pi.user_num = #{param1};
+    </select>
+    <select id="selectAllPlaceReviewWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT pr.*, p.place_info
+        FROM place_review pr
+        JOIN place p on pr.place_num = p.place_num
+        WHERE pr.user_num = #{param1};
+    </select>
+    <select id="selectAllFavoritePlaceWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT fp.*, p.place_info
+        FROM favorite_place fp
+                 JOIN place p on fp.place_num = p.place_num
+        WHERE fp.user_num = #{param1};
+    </select>
 
+    <delete id="deletePlaceImg">
+        DELETE FROM place_img
+        WHERE placeImg_num = #{placeImg_num}
+          AND user_num = #{user_num}
+          AND placeImg_src = #{placeImg_src};
+    </delete>
+    <delete id="deletePlaceReview">
+        DELETE FROM place_review
+        WHERE placeReview_num = #{placeReview_num}
+          AND user_num = #{user_num};
+    </delete>
+    <delete id="deleteFavoritePlace">
+        DELETE FROM favorite_place
+        WHERE place_num = #{place_num}
+          AND user_num = #{user_num};
+    </delete>
     <!--
     <select id="selectPlaceByKeyword" resultType="com.bside.cuokkamap.vo.PlaceVO">
         select  place_num, place_info

@@ -23,6 +23,7 @@ public class PlaceVO {
     private LocalDateTime placeImg_writedate;
 
     //place_review
+    private int placeReview_num;
     private Integer placeReview_emoji = null;
     private String placeReview;
     private LocalDateTime placeReview_writedate;
@@ -30,6 +31,10 @@ public class PlaceVO {
     //filter
     private String filter_type;
     private List<String> filterList;
+
+    //favorite_place
+    private int favoritePlace_num;
+    private int favorite_type;
 
     //자체 생성자
     public PlaceVO() {};
