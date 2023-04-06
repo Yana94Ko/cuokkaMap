@@ -273,18 +273,21 @@ const CafeInfoReview = ({cafeInfoContainer, setCafeInfoContainer}: Props) => {
     }
 
     function fetchCafeInfo() {
+        console.log(sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id"))
         fetch('/api/place/selectDetailPlaceInfo', {
             method: 'POST',
             headers: {
                 'Content-Type': "application/json"
             },
             body: JSON.stringify({
-                place_num: copiedData.placeNum
+                place_num: copiedData.placeNum,
+                user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
             }),
         })
             .then(response => response.text())
             .then((message) => {
                 const data = JSON.parse(message);
+                console.log(data)
                 setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
