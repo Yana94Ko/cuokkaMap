@@ -54,7 +54,12 @@ function HomePage() {
             .then(response => response.text())
             .then(function (data: any) {
                 if(JSON.parse(data).length === 0){
-                    alert("검색어가 존재하지 않습니다");
+                    if(!isBookmarkMode){
+                        alert("검색어가 존재하지 않습니다");
+                    }else {
+
+                        alert("등록된 북마크가 없습니다!\n먼저 북마크를 등록해주세요!");
+                    }
                 }else{
                     setDBData(JSON.parse(data));
                 }

@@ -158,6 +158,12 @@
         JOIN place p on pr.place_num = p.place_num
         WHERE pr.user_num = #{param1};
     </select>
+    <select id="selectAllFavoritePlaceWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT fp.*, p.place_info
+        FROM favorite_place fp
+                 JOIN place p on fp.place_num = p.place_num
+        WHERE fp.user_num = #{param1};
+    </select>
 
     <delete id="deletePlaceImg">
         DELETE FROM place_img

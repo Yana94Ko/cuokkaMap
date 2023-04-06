@@ -70,6 +70,9 @@ public class PlaceServiceImpl implements PlaceService{
     public List<PlaceVO> selectAllPlaceReviewWithUserNum(int user_num) {return dao.selectAllPlaceReviewWithUserNum(user_num);}
 
     @Override
+    public List<PlaceVO> selectAllFavoritePlaceWithUserNum(int user_num) {return dao.selectAllFavoritePlaceWithUserNum(user_num);}
+
+    @Override
     public int deletePlaceImg(PlaceVO vo) {return dao.deletePlaceImg(vo);}
 
     @Override
