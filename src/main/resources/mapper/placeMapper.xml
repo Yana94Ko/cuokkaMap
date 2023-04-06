@@ -140,14 +140,16 @@
         GROUP BY p.place_num, p.place_info
     </select>
     <select id="selectAllPlaceImgWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        SELECT *
-        FROM place_img
-        WHERE user_num = #{param1};
+        SELECT pi.*, p.place_info
+        FROM place_img pi
+        JOIN place p ON pi.place_num = p.place_num
+        WHERE pi.user_num = #{param1};
     </select>
     <select id="selectAllPlaceReviewWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
-        SELECT *
-        FROM place_review
-        WHERE user_num = #{param1};
+        SELECT pr.*, p.place_info
+        FROM place_review pr
+        JOIN place p on pr.place_num = p.place_num
+        WHERE pr.user_num = #{param1};
     </select>
 
     <delete id="deletePlaceImg">
