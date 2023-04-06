@@ -127,9 +127,6 @@ public class PlaceController {
         return new ResponseEntity(cnt, HttpStatus.OK);
     }
 
-    // TODO(BE) : 사진등록 관련 프론트 연동후 재확인 필요
-    // assignees : Yana94Ko
-
     @PostMapping("/uploadPlaceImg")
     public ResponseEntity uploadPlaceImg (PlaceVO placeVO, HttpServletRequest request) {
         try {
@@ -185,9 +182,7 @@ public class PlaceController {
             return new ResponseEntity("이미지 업로드 실패", HttpStatus.EXPECTATION_FAILED);
         }
     }
-    // TODO(BE) : (Delete) FE에서 받아온 placeImg_num으로 DB에서 삭제
-    // - 또한 메모리 공간에서도 삭제 진행
-    // assignees : Yana94Ko
+
     @PostMapping("/deletePlaceImg")
     public ResponseEntity deletePlaceImg (@RequestBody String response, HttpServletRequest request) {
         JsonParser parser = new JsonParser();
@@ -224,8 +219,6 @@ public class PlaceController {
         }
     }
 
-    // TODO(BE) : 리뷰등록 관련 프론트 연동후 제확인 필요
-    // assignees : Yana94Ko
     @PostMapping("/uploadPlaceReview")
     public ResponseEntity uploadPlaceIReview (PlaceVO placeVO) {
         //placeReview 저장
@@ -239,8 +232,6 @@ public class PlaceController {
         }
     }
 
-    // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
-    // assignees : Yana94Ko
     @PostMapping("/deletePlaceReview")
     public ResponseEntity deletePlaceReview (@RequestBody String response) {
         JsonParser parser = new JsonParser();
@@ -263,9 +254,6 @@ public class PlaceController {
         }
     }
 
-
-    // TODO(BE) : 장소정보 열람(사진, 리뷰 포함)관련 프론트 연동후 제확인 필요
-    // assignees : Yana94Ko
     @PostMapping("/selectDetailPlaceInfo")
     public ResponseEntity selectDetailPlaceInfo (@RequestBody String response) {
         try {
@@ -297,8 +285,6 @@ public class PlaceController {
         }
     }
 
-    // TODO(BE) : (Create) FE 에서 받아온 place_num, user_num 으로 favorite_place DB에 등록
-    // assignees : Yana94Ko
     @PostMapping("/uploadFavoritePlace")
     public ResponseEntity uploadFavoritePlace (@RequestBody String response) {
         JsonParser parser = new JsonParser();
@@ -322,8 +308,6 @@ public class PlaceController {
             return new ResponseEntity("즐겨찾기 추가 실패", HttpStatus.NOT_ACCEPTABLE);
         }
     }
-    // TODO(BE) : (Delete) FE 에서 받아온 favoritePlace_num으로 으로 favorite_place DB에서 삭제
-    // assignees : Yana94Ko
     @PostMapping("/deleteFavoritePlace")
     public ResponseEntity deleteFavoritePlace (@RequestBody String response) {
         JsonParser parser = new JsonParser();
