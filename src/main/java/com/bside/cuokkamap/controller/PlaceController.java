@@ -103,7 +103,7 @@ public class PlaceController {
                     .getAsInt();
         }
         System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt + "/" + user_num);
-        List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);
+        List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt, user_num);
 //        for(PlaceVO place : placeList){
 //            System.out.println(place.getFilter_type());
 //        }
@@ -324,7 +324,27 @@ public class PlaceController {
     }
     // TODO(BE) : (Delete) FE 에서 받아온 favoritePlace_num으로 으로 favorite_place DB에서 삭제
     // assignees : Yana94Ko
-
+    @PostMapping("/deleteFavoritePlace")
+    public ResponseEntity deleteFavoritePlace (@RequestBody String response) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject) parser.parse(response);
+        PlaceVO placeVO = new PlaceVO();
+        placeVO.setFavoritePlace_num( jobj.get("favoritePlace_num")
+                .getAsInt());
+        placeVO.setUser_num( jobj.get("user_num")
+                .getAsInt());
+        System.out.println("즐겨찾기 삭제하러 옴 : " + placeVO.getFavoritePlace_num() + " / " + placeVO.getUser_num() );
+        try {
+            int result = placeService.deleteFavoritePlace(placeVO);
+            if( result != 0 ) {
+                return new ResponseEntity("즐겨찾기 삭제 성공", HttpStatus.OK);
+            } else {
+                return new ResponseEntity("즐겨찾기 DB 삭제 실패", HttpStatus.EXPECTATION_FAILED);
+            }
+        }catch (Exception e) {
+            return new ResponseEntity("즐겨찾기 삭제 중 에러 발생", HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 
     // TODO(BE, favoritePlce) : user_num 을 통해 favoritePlce 목록 돌려주기(with favorite_type, x,y좌표)
     // assignees : Yana94Ko
