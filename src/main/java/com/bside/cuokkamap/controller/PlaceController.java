@@ -261,10 +261,23 @@ public class PlaceController {
             JsonObject jobj = (JsonObject)parser.parse(response);
             int place_num = jobj.get("place_num")
                     .getAsInt();
+
             System.out.println("장소 상세정보 확인하러 옴  " + place_num);
             //값을 담아 보내줄 json 객체 생성
             JSONObject placeDetailInfo = new JSONObject();
             JSONObject jsonObject = new JSONObject();
+
+            //user_num으로 해당 카페 북마크 여부 판단
+            boolean isBookmarked = false;
+            if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")){
+                int user_num = jobj.get("user_num")
+                        .getAsInt();
+                if(placeService.isFavoritePlace(user_num, place_num) != 0){
+                    isBookmarked = true;
+                }
+            }
+
+            placeDetailInfo.put("isBookmarked", isBookmarked);
 
             //place_num으로 place의 filter_type 리스트 열람
             placeDetailInfo.put("filterList", placeService.selectPlaceFilterByPlaceNum(place_num).split(", "));
@@ -281,6 +294,7 @@ public class PlaceController {
 
             return new ResponseEntity(placeDetailInfo.toString(), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity("장소정보 열람 실패", HttpStatus.NOT_ACCEPTABLE);
         }
     }
