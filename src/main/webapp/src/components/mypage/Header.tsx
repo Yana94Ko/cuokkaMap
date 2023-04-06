@@ -23,6 +23,20 @@ const LogoutButton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(110%);
+  }
+
+  & span {
+    color: #fff;
+    transition: all 0.1s ease-in-out;
+
+    &:hover {
+      transform: scale(110%);
+    }
+  }
 `;
 
 
