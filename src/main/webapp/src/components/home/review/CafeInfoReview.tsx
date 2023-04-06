@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {SetStateAction, useEffect, useState} from "react";
 import styled, {css} from "styled-components";
 import {Button, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
@@ -6,13 +6,16 @@ import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 
 const Base = styled.div``;
+
 const ReviewForm = styled.form`
   width: 100%;
   margin-bottom: 2rem;
 `;
+
 const ItemWrapper = styled.div`
   margin-bottom: 2rem;
 `;
+
 const Label = styled.label`
   display: block;
   font-weight: 700;
@@ -33,12 +36,32 @@ const EmojiPickerWrapper = styled.ul<{ mode: string }>`
     padding-bottom: 1rem;
 
     & ${Emoji} {
+      line-height: 20px;
       border: none;
       cursor: default;
+      padding: 0;
+
+      &::after {
+        content: "|";
+        color: ${props => props.theme.color.darkGray};
+        font-weight: 300;
+        font-size: ${props => props.theme.fontSize.sm};
+      }
+
+      &:last-child {
+        &::after {
+          display: none;
+        }
+      }
+    }
+
+    & ${EmojiImg} {
+      width: 15px;
+      height: 15px;
+      margin-top: 2px;
     }
   `}
 `;
-
 
 const Emoji = styled.li<{ reviewEmoji: number; mode: string }>`
   width: fit-content;
@@ -53,12 +76,14 @@ const Emoji = styled.li<{ reviewEmoji: number; mode: string }>`
     border: 1px solid ${props.theme.color.primary};
   `}
 `;
+
 const EmojiImg = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 5px;
   z-index: 1;
 `;
+
 const EmojiText = styled.p`
   line-height: 20px;
   font-weight: 500;
@@ -71,10 +96,12 @@ const EmojiLength = styled.p`
   margin-left: 5px;
   background-color: ${props => props.theme.color.gray};
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   text-align: center;
+  margin-top: 1px;
 `;
+
 const ReviewItem = styled.div`
   position: relative;
   padding: 1rem;
@@ -95,11 +122,12 @@ const DeleteBtn = styled(Icon)`
     color: ${props => props.theme.color.zero};
   }
 `;
+
 const ReviewEmojiWrapper = styled.ul`
   margin-bottom: 5px;
 `;
 
-const ReviewTexrarea = styled.textarea`
+const ReviewTextarea = styled.textarea`
   font-family: 'Noto Sans KR', sans-serif;
   border-radius: 1rem;
   border: 1px solid ${props => props.theme.color.darkGray};
@@ -110,19 +138,21 @@ const ReviewTexrarea = styled.textarea`
 
   &:focus {
     border: 1px solid ${props => props.theme.color.primary};
-
   }
 
   outline: none;
 `;
+
 const ReviewLength = styled.p`
   text-align: right;
   font-size: ${props => props.theme.fontSize.sm};
   margin-top: 5px;
 `;
+
 const SubmitReview = styled(Button)`
   width: 100%;
 `;
+
 const ReviewWrapper = styled.div``;
 
 const NoReview = styled.p`
@@ -132,9 +162,11 @@ const NoReview = styled.p`
 `;
 
 type Props = {
-    cafeInfoContainer: any
+    cafeInfoContainer: any,
+    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
+
 }
-const CafeInfoReview = ({cafeInfoContainer}: Props) => {
+const CafeInfoReview = ({cafeInfoContainer, setCafeInfoContainer}: Props) => {
     const [copiedData, setCopiedData] = useState<any>({...cafeInfoContainer})
 
     const [reviewText, setReviewText] = useState<string>("");
@@ -143,6 +175,10 @@ const CafeInfoReview = ({cafeInfoContainer}: Props) => {
     const dispatch = useDispatch();
 
     const {userId, isLoggedin} = useSelector((state: RootState) => state.userReducer);
+
+    useEffect(() => {
+        setCopiedData({...cafeInfoContainer});
+    }, [cafeInfoContainer]);
 
     const emojiContent = [
         {
@@ -177,8 +213,6 @@ const CafeInfoReview = ({cafeInfoContainer}: Props) => {
         } else {
             setReviewEmoji(parseInt(e.currentTarget.id));
         }
-        // TODO(FE): BE 이모지 부분 배열로 바꾸어 달라고 요청한 뒤 이모지 중복선택할 수 있도록..
-        // assignees: hwanyb
     }
 
     const onFilterClick = (e: React.MouseEvent<HTMLLIElement>) => {
@@ -205,37 +239,62 @@ const CafeInfoReview = ({cafeInfoContainer}: Props) => {
             fetch('/api/place/uploadPlaceReview', {
                 method: 'POST',
                 body: formData,
-            }).then(res => console.log(res.text()))
+            })
+                .then(res => console.log(res.text()))
                 .then(() => {
                     setReviewText("");
                     setReviewEmoji(0);
                 })
-                // TODO(FE): 댓글 작성/ 삭제 후 다시 값을 받아와야 함
-                // assignees: hwanyb
+                .then(() => fetchCafeInfo())
                 .catch(err => console.log(err));
         }
     }
     const onDeleteClick = (
         e: React.MouseEvent<HTMLSpanElement>,
-        review: any
+        placeReview_num: number
     ) => {
-        // TODO(FE): 리뷰 삭제 api 로직 작성
-        // placeReview_num 에 해당하는 값이 없음 BE 확인해야함
-        // assignees: hwanyb
-
-        console.log(review)
-
-        // fetch('/api/place/deletePlaceReview', {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     },
-        //     body: {
-        //         "placeReview_num" : JSON.stringify(review.placeReview_num), //해당 값 없음
-        //         "user_num" : userId
-        //     },
-        // });
+        const result = window.confirm("댓글을 삭제하시겠습니까?");
+        if (result) {
+            fetch('/api/place/deletePlaceReview', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "placeReview_num": placeReview_num,
+                    "user_num": userId
+                })
+            })
+                .then((res) => console.log(res.text()))
+                .then((message) => console.log(message))
+                .then(() => fetchCafeInfo())
+                .catch(err => console.log("에러", err));
+        }
     }
+
+    function fetchCafeInfo() {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify({
+                place_num: copiedData.placeNum
+            }),
+        })
+            .then(response => response.text())
+            .then((message) => {
+                const data = JSON.parse(message);
+                setCafeInfoContainer({
+                    data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                    filter: data.filterList,
+                    placeNum: copiedData.placeNum,
+                    imageList: data.placeImgList,
+                    reviewList: data.placeReviewList
+                });
+            })
+    }
+
     return (
         <Base>
             <ReviewForm onSubmit={onSubmit}>
@@ -255,7 +314,7 @@ const CafeInfoReview = ({cafeInfoContainer}: Props) => {
                 </ItemWrapper>
                 <ItemWrapper>
                     <Label>후기</Label>
-                    <ReviewTexrarea minLength={5} maxLength={50} placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
+                    <ReviewTextarea minLength={5} maxLength={50} placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
                                     onChange={onChange}/>
                     <ReviewLength>{reviewText.length}/50</ReviewLength>
                 </ItemWrapper>
@@ -291,7 +350,7 @@ const CafeInfoReview = ({cafeInfoContainer}: Props) => {
                                         {
                                             review.user_num === parseInt(userId) &&
                                             <DeleteBtn className="material-symbols-rounded"
-                                                       onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review)}>delete</DeleteBtn>
+                                                       onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review.placeReview_num)}>delete</DeleteBtn>
                                         }
                                         <ReviewEmojiWrapper>
                                             {
@@ -305,7 +364,6 @@ const CafeInfoReview = ({cafeInfoContainer}: Props) => {
                                             }
                                         </ReviewEmojiWrapper>
                                         <p>{review.placeReview}</p>
-
                                     </ReviewItem>
                                 ))
                             }

@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, SetStateAction} from 'react';
 import styled, {css} from "styled-components"
 
 import {Icon, Tag} from "../../styles/common";
@@ -179,9 +179,10 @@ const CafeReviewContent = styled.div`
 
 type CafeInfoProps = {
     cafeInfoContainer: object;
+    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
 }
 
-const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
+const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
     const [currentView, setCurrentView] = useState<string>("photo");
 
     let dataObject: any = {};
@@ -263,7 +264,7 @@ const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
             </ReviewTab>
             <CafeReviewContent>
                 {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}/> :
-                    <CafeInfoReview cafeInfoContainer={cafeInfoContainer}/>}
+                    <CafeInfoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>}
             </CafeReviewContent>
         </Base>
     )
