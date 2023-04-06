@@ -10,6 +10,8 @@ import KakaoLogin from "../components/home/header/KakaoLogin";
 
 function HomePage() {
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
+    const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
+
     const [searchDBKeyword, setSearchDBKeyword] = useState("");
     //db에서 받아온 카페정보만 담은 데이터
     const [dbData, setDBData] = useState<any[]>();
@@ -20,8 +22,9 @@ function HomePage() {
     useEffect(() => {
         console.log("필터 : ", currentFilter)
         console.log("키워드 : ", searchDBKeyword)
+        console.log("북마크 모드라면 userId 띄우기 : ", isBookmarkMode === false ? "" : sessionStorage.getItem("id") )
         searchDB()
-    },[currentFilter, searchDBKeyword]);
+    },[currentFilter, searchDBKeyword, isBookmarkMode]);
 
     //모든 마커를 제거하는 함수
     function removeMarker() {
@@ -45,7 +48,7 @@ function HomePage() {
             body: JSON.stringify({
                 "place_filter": currentFilter === undefined ? [] : currentFilter,
                 "keywords": searchDBKeyword === undefined ? "" : searchDBKeyword,
-                "user_num" : sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
+                "user_num" : isBookmarkMode === false ? "" : sessionStorage.getItem("id")
             }),
         })
             .then(response => response.text())

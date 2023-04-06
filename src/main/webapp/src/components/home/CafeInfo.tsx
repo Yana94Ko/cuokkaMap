@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
+import {RootState} from "../../modules";
 
 const Base = styled.div`
   background-color: #fff;
@@ -177,13 +178,29 @@ const CafeReviewContent = styled.div`
   padding: 2rem;
 `;
 
+const BookmarkBtn = styled.span`
+  cursor:pointer;
+`;
+
 type CafeInfoProps = {
     cafeInfoContainer: object;
     setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
 }
 
 const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
+    //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
+    //북마크된 상태 확인
+    const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+    //로그인 되었는지 상태 가져오기
+    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
+    //아이디 조회
+    const userNum = sessionStorage.getItem('id');
+    //장소넘버 조회
+    let placeNum:string;
+    if(cafeInfoContainer !== undefined){
+        placeNum = Object.values(cafeInfoContainer)[2]
+    }
 
     let dataObject: any = {};
     dataObject = Object.assign({}, cafeInfoContainer);
@@ -202,33 +219,85 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
             }
         }
     }
+
+    const addBookMark = () => {
+        if(userNum === null){
+            alert("로그인 후 북마크 추가가 가능합니다");
+            return;
+        }
+        if(window.confirm("북마크를 추가하시겠습니까?")){
+            fetch('/api/place/uploadFavoritePlace',{
+                method:'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "place_num" : placeNum,
+                    "user_num" : userNum,
+                }),
+            })
+                .then(response => response.text())
+                .then(function (data) {
+                    console.log(JSON.parse(data));
+                    setIsBookmarked(true);
+                }).catch(err => console.log("에러", err));
+        }else{
+            return;
+        }
+
+    }
+
+    const removeBookMarker = () => {
+        alert("북마크 제거!");
+        // if(window.confirm("북마크를 제거하시겠습니까?")){
+        //     fetch('/api/place/removeFavoritePlace',{
+        //         method:'POST',
+        //         headers: {
+        //             "Content-Type": "application/json"
+        //         },
+        //         body: JSON.stringify({
+        //             "place_num" : placeNum,
+        //             "user_num" : userNum,
+        //         }),
+        //     })
+        //         .then(response => response.text())
+        //         .then(function (data) {
+        //             console.log(JSON.parse(data));
+        //             setIsBookmarked(false);
+        //         }).catch(err => console.log("에러", err));
+        // }else{
+        //     return;
+        // }
+    }
     return (
         <Base>
             {
                 cafeInfoContainer !== undefined && (
                     <>
                         {
-                            dataObject.data.insta ? (
                                 <TitleWrapper>
                                     <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
+                                    {
+                                        isLoggedin && (isBookmarked ? (
+                                            <BookmarkBtn className="material-icons-rounded" onClick={removeBookMarker}>bookmark</BookmarkBtn>
+                                        ) : (
+                                            <BookmarkBtn className="material-icons-rounded" onClick={addBookMark}>Bookmark_Border</BookmarkBtn>
+                                        ))
+                                    }
                                     <PlaceName href={dataObject.data.place_url} target="_blank">
                                         {dataObject.data.place_name}
-                                    </PlaceName>
-                                    <a href={dataObject.data.insta} target="_blank">
-                                        <img className="insta"
-                                             src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
-                                             width="30px" alt="insta"/>
-                                    </a>
-                                </TitleWrapper>
+                                    </PlaceName>&emsp;
+                                    {
+                                        dataObject.data.insta&&(
+                                            <a href={dataObject.data.insta} target="_blank">
+                                                <img className="insta"
+                                                     src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
+                                                     width="30px" alt="insta"/>
+                                            </a>
+                                        )
+                                    }
 
-                            ) : (
-                                <TitleWrapper>
-                                    <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
-                                    <PlaceName href={dataObject.data.place_url} target="_blank">
-                                        {dataObject.data.place_name}
-                                    </PlaceName>
                                 </TitleWrapper>
-                            )
                         }
 
                         <CafeInfoWrapper>
