@@ -139,6 +139,16 @@
         WHERE p.place_num = #{param1}
         GROUP BY p.place_num, p.place_info
     </select>
+    <select id="selectAllPlaceImgWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT *
+        FROM place_img
+        WHERE user_num = #{param1};
+    </select>
+    <select id="selectAllPlaceReviewWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT *
+        FROM place_review
+        WHERE user_num = #{param1};
+    </select>
 
     <delete id="deletePlaceImg">
         DELETE FROM place_img
