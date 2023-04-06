@@ -1,13 +1,115 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
+import styled from "styled-components";
 
-// TODO(FE): 마이페이지 내 사진후기 컴포넌트 완료하기
-// 사진후기 기능, 사진후기DB 완성되면 카드형태로 북마크 위치들 렌더
-// 후기, 사진, 북마크 셋다 카드 형식 Card컴포넌트로 맞추고
-// 삭제버튼도 동일한 위치에 두기
-// assignees: hwanyb, SeongSilver
+import {RootState} from "../../modules";
+import Card from "./Card";
+import {Icon} from "../../styles/common";
+
+const Base = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+`;
+
+const CardWrapper = styled.div`
+
+`;
+
+const ReviewHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  margin-top: 1rem;
+`;
+
+const PlaceName = styled.p`
+  font-size: ${props => props.theme.fontSize.lg};
+  font-weight: 700;
+`;
+const DeleteBtn = styled(Icon)`
+`;
+
+const ReviewImg = styled.img`
+  width: 110%;
+`;
+
+const Notice = styled.h1`
+  text-align: center;
+  color: ${props => props.theme.color.darkGray};
+`;
+
 const PhotoReview = () => {
-    return(
-        <div>PhotoReview</div>
+    const [reviewImgData, setReviewImgData] = useState<any[]>([]);
+
+    const userId = useSelector((state: RootState) => state.userReducer.userId);
+
+    useEffect(() => {
+        fetchMyImg()
+    }, []);
+
+    function fetchMyImg() {
+        fetch('/api/place/mypageImg', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "user_num": userId
+            }),
+        })
+            .then(res => res.text())
+            .then((data: any) => setReviewImgData(JSON.parse(data)))
+            .catch(err => console.log("에러", err));
+    }
+
+    const onDeleteClick = (
+        e: React.MouseEvent<HTMLSpanElement>,
+        reviewImg: any
+    ) => {
+        const result = window.confirm("이미지를 삭제하시겠습니까?");
+        if (result) {
+            fetch('/api/place/deletePlaceImg', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "placeImg_num": reviewImg.placeImg_num,
+                    "user_num": userId,
+                    "placeImg_src": reviewImg.placeImg_src
+                })
+            })
+                .then((res) => console.log(res.text()))
+                .then((message) => console.log(message))
+                .then(() => fetchMyImg())
+                .catch(err => console.log("에러", err));
+        }
+    }
+    // TODO(FE): 사진 후기 페이징 기능 구현하기
+    // assignees: SeongSilver
+    return (
+        <Base>
+            {
+                reviewImgData.length > 0 ? (
+                    reviewImgData.map((reviewImg: any, idx: number) => (
+                        <CardWrapper key={idx}>
+                            <Card>
+                                <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                            </Card>
+                            <ReviewHeader>
+                                <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
+                                <DeleteBtn className="material-symbols-rounded"
+                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
+                                >delete</DeleteBtn>
+                            </ReviewHeader>
+                        </CardWrapper>
+                    ))
+                ) : (
+                    <Notice>등록하신 사진 후기가 없습니다.</Notice>
+                )
+            }
+        </Base>
     )
 }
 
