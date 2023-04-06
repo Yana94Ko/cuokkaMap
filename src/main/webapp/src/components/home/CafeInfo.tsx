@@ -7,6 +7,7 @@ import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
 import {RootState} from "../../modules";
+import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -185,21 +186,22 @@ const BookmarkBtn = styled.span`
 type CafeInfoProps = {
     cafeInfoContainer: object;
     setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
+    fetchPlaceDetail:(placeNum:string) => void;
 }
 
-const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
+const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: CafeInfoProps) => {
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
-    //북마크된 상태 확인
-    const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
     //로그인 되었는지 상태 가져오기
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     //아이디 조회
     const userNum = sessionStorage.getItem('id');
     //장소넘버 조회
-    let placeNum:string;
+    let placeNum:string, isBookmarked:boolean;
     if(cafeInfoContainer !== undefined){
         placeNum = Object.values(cafeInfoContainer)[2]
+        //북마크 여부 확인
+        isBookmarked = Object.values(cafeInfoContainer)[5];
     }
 
     let dataObject: any = {};
@@ -221,10 +223,6 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
     }
 
     const addBookMark = () => {
-        if(userNum === null){
-            alert("로그인 후 북마크 추가가 가능합니다");
-            return;
-        }
         if(window.confirm("북마크를 추가하시겠습니까?")){
             fetch('/api/place/uploadFavoritePlace',{
                 method:'POST',
@@ -239,35 +237,38 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
                 .then(response => response.text())
                 .then(function (data) {
                     console.log(JSON.parse(data));
-                    setIsBookmarked(true);
-                }).catch(err => console.log("에러", err));
+                    fetchPlaceDetail(placeNum);
+                })
+                .catch(err => console.log("에러", err));
+
         }else{
             return;
         }
 
     }
-
+    console.log(placeNum);
     const removeBookMarker = () => {
-        alert("북마크 제거!");
-        // if(window.confirm("북마크를 제거하시겠습니까?")){
-        //     fetch('/api/place/removeFavoritePlace',{
-        //         method:'POST',
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         },
-        //         body: JSON.stringify({
-        //             "place_num" : placeNum,
-        //             "user_num" : userNum,
-        //         }),
-        //     })
-        //         .then(response => response.text())
-        //         .then(function (data) {
-        //             console.log(JSON.parse(data));
-        //             setIsBookmarked(false);
-        //         }).catch(err => console.log("에러", err));
-        // }else{
-        //     return;
-        // }
+        if(window.confirm("북마크를 삭제하시겠습니까?")){
+            fetch('/api/place/deleteFavoritePlace',{
+                method:'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "place_num" : placeNum,
+                    "user_num" : userNum,
+                }),
+            })
+                .then(response => response.text())
+                .then(function (data) {
+                    console.log(data);
+                    fetchPlaceDetail(placeNum);
+                    dispatch(setCurrentFilter([]));
+                })
+                .catch(err => console.log("에러", err));
+        }else{
+            return;
+        }
     }
     return (
         <Base>
