@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, SetStateAction} from "react";
 import styled from "styled-components";
 import {Button} from "../../../styles/common";
 import cafeInfo from "../CafeInfo";
 
 
 type PhotoReview = {
-    cafeInfoContainer: object
+    cafeInfoContainer: object;
+    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>;
 }
 type dataType = {
     placeImg_num:number;
@@ -16,7 +17,7 @@ type dataType = {
 
 }
 const PhotoContainer = styled.div`
-  height:100%;
+  //height:100%;
 `;
 const PhotoUl = styled.ul`
   margin-top:20px;
@@ -43,14 +44,14 @@ const DeleteBtn = styled.span`
   cursor:pointer;
 `;
 
-const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
+const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoReview) => {
     const sessionId = sessionStorage.getItem("id");
-    let cafeInfoImageData:string[], cafeInfoUserNum:number[];
+    let cafeInfoImageData:string[], cafeInfoUserNum:number[], cafeInfoPlaceNum:string|null;
     if(cafeInfoContainer !== undefined){
         cafeInfoImageData = Object.values(cafeInfoContainer)[3].map((data:dataType) => ([data.placeImg_src, data.placeImg_num]));
         cafeInfoUserNum = Object.values(cafeInfoContainer)[3].map((data:dataType) => (data.user_num));
+        cafeInfoPlaceNum = Object.values(cafeInfoContainer)[2]
     }
-    console.log(cafeInfoImageData);
     // 허용가능한 확장자 목록!
     const ALLOW_FILE_EXTENSION = "jpg,jpeg,png";
     const FILE_SIZE_MAX_LIMIT = 10 * 1024 * 1024;  // 10MB
@@ -120,6 +121,7 @@ const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
             body: formData,
         })
             .then(response => console.log(response.text()))
+            .then(() => fetchCafeInfo())
             .catch(err => console.log(JSON.parse(err)));
         target.value = "";
     }
@@ -144,10 +146,34 @@ const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
             })
                 .then(response => response.text())
                 .then(function (message) {
-                }).catch(err => console.log("에러", err));
+                })
+                .then(() => fetchCafeInfo())
+                .catch(err => console.log("에러", err));
         }else {
             return;
         }
+    }
+    function fetchCafeInfo() {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify({
+                place_num: cafeInfoPlaceNum
+            }),
+        })
+            .then(response => response.text())
+            .then((message) => {
+                const data = JSON.parse(message);
+                setCafeInfoContainer({
+                    data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                    filter: data.filterList,
+                    placeNum: cafeInfoPlaceNum,
+                    imageList: data.placeImgList,
+                    reviewList: data.placeReviewList
+                });
+            })
     }
 
     return (

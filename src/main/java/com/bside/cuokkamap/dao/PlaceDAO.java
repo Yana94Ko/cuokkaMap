@@ -46,4 +46,6 @@ public interface PlaceDAO {
 
     //이미지 파일 삭제
     public int deletePlaceImg(PlaceVO vo);
+    //리뷰 삭제
+    public int deletePlaceReview(PlaceVO vo);
 }
