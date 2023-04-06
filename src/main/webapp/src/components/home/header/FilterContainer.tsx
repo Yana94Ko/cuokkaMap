@@ -5,6 +5,7 @@ import {Tag, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
 import {RootState} from "../../../modules";
+import {setIsOpenedCafeInfo} from "../../../modules/viewReducer";
 
 const Base = styled.div`
   position: absolute;
@@ -101,6 +102,7 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
         dispatch(setIsBookmarkMode(false));
         if (event.currentTarget.id === currentFilter[0]) {
             dispatch(setCurrentFilter([]));
+            dispatch(setIsOpenedCafeInfo(false));
         } else {
             setSearchDBKeyword("");
             dispatch(setCurrentFilter([event.currentTarget.id]));
@@ -112,6 +114,8 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
         //[YANA] 북마크 검색시 키워드,필터 해제
         dispatch(setCurrentFilter([]));
         setSearchDBKeyword("");
+        dispatch(setIsOpenedCafeInfo(false));
+
     }
 
 
