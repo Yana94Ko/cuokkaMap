@@ -127,9 +127,6 @@ public class PlaceController {
         return new ResponseEntity(cnt, HttpStatus.OK);
     }
 
-    // TODO(BE) : 사진등록 관련 프론트 연동후 재확인 필요
-    // assignees : Yana94Ko
-
     @PostMapping("/uploadPlaceImg")
     public ResponseEntity uploadPlaceImg (PlaceVO placeVO, HttpServletRequest request) {
         try {
@@ -185,9 +182,7 @@ public class PlaceController {
             return new ResponseEntity("이미지 업로드 실패", HttpStatus.EXPECTATION_FAILED);
         }
     }
-    // TODO(BE) : (Delete) FE에서 받아온 placeImg_num으로 DB에서 삭제
-    // - 또한 메모리 공간에서도 삭제 진행
-    // assignees : Yana94Ko
+
     @PostMapping("/deletePlaceImg")
     public ResponseEntity deletePlaceImg (@RequestBody String response, HttpServletRequest request) {
         JsonParser parser = new JsonParser();
@@ -224,8 +219,6 @@ public class PlaceController {
         }
     }
 
-    // TODO(BE) : 리뷰등록 관련 프론트 연동후 제확인 필요
-    // assignees : Yana94Ko
     @PostMapping("/uploadPlaceReview")
     public ResponseEntity uploadPlaceIReview (PlaceVO placeVO) {
         //placeReview 저장
@@ -239,8 +232,6 @@ public class PlaceController {
         }
     }
 
-    // TODO(BE) : (Delete) FE에서 받아온 placeReview_num으로 DB에서 삭제
-    // assignees : Yana94Ko
     @PostMapping("/deletePlaceReview")
     public ResponseEntity deletePlaceReview (@RequestBody String response) {
         JsonParser parser = new JsonParser();
@@ -263,9 +254,6 @@ public class PlaceController {
         }
     }
 
-
-    // TODO(BE) : 장소정보 열람(사진, 리뷰 포함)관련 프론트 연동후 제확인 필요
-    // assignees : Yana94Ko
     @PostMapping("/selectDetailPlaceInfo")
     public ResponseEntity selectDetailPlaceInfo (@RequestBody String response) {
         try {
@@ -273,10 +261,23 @@ public class PlaceController {
             JsonObject jobj = (JsonObject)parser.parse(response);
             int place_num = jobj.get("place_num")
                     .getAsInt();
+
             System.out.println("장소 상세정보 확인하러 옴  " + place_num);
             //값을 담아 보내줄 json 객체 생성
             JSONObject placeDetailInfo = new JSONObject();
             JSONObject jsonObject = new JSONObject();
+
+            //user_num으로 해당 카페 북마크 여부 판단
+            boolean isBookmarked = false;
+            if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")){
+                int user_num = jobj.get("user_num")
+                        .getAsInt();
+                if(placeService.isFavoritePlace(user_num, place_num) != 0){
+                    isBookmarked = true;
+                }
+            }
+
+            placeDetailInfo.put("isBookmarked", isBookmarked);
 
             //place_num으로 place의 filter_type 리스트 열람
             placeDetailInfo.put("filterList", placeService.selectPlaceFilterByPlaceNum(place_num).split(", "));
@@ -293,12 +294,11 @@ public class PlaceController {
 
             return new ResponseEntity(placeDetailInfo.toString(), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity("장소정보 열람 실패", HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
-    // TODO(BE) : (Create) FE 에서 받아온 place_num, user_num 으로 favorite_place DB에 등록
-    // assignees : Yana94Ko
     @PostMapping("/uploadFavoritePlace")
     public ResponseEntity uploadFavoritePlace (@RequestBody String response) {
         JsonParser parser = new JsonParser();
@@ -322,8 +322,6 @@ public class PlaceController {
             return new ResponseEntity("즐겨찾기 추가 실패", HttpStatus.NOT_ACCEPTABLE);
         }
     }
-    // TODO(BE) : (Delete) FE 에서 받아온 favoritePlace_num으로 으로 favorite_place DB에서 삭제
-    // assignees : Yana94Ko
     @PostMapping("/deleteFavoritePlace")
     public ResponseEntity deleteFavoritePlace (@RequestBody String response) {
         JsonParser parser = new JsonParser();

@@ -422,26 +422,26 @@ const KakaoMap = ({
         }
     }, [searchedPlaceInfoInNav]);
 
-    // //DB에 있는 카페 중 키워드에 맞는 CafeInfo에 쓸 데이터를 불러오는 함수
-    function loadClickMarkerData(keywords: string) {
-        fetch("/api/place/getAllPlaceInfo", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "place_filter": [],
-                "keywords": keywords,
-            }),
-        })
-            .then(response => response.text())
-            .then(function (data: any) {
-                removeMarker();
-                const responseData = JSON.parse(data).map((i: any) => JSON.parse(i.place_info))
-                setDBData(responseData);
-                setCafeInfoContainer(cafeInfoContainer);
-            }).catch(err => console.log("에러", err));
-    }
+    // // //DB에 있는 카페 중 키워드에 맞는 CafeInfo에 쓸 데이터를 불러오는 함수
+    // function loadClickMarkerData(keywords: string) {
+    //     fetch("/api/place/getAllPlaceInfo", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json"
+    //         },
+    //         body: JSON.stringify({
+    //             "place_filter": [],
+    //             "keywords": keywords,
+    //         }),
+    //     })
+    //         .then(response => response.text())
+    //         .then(function (data: any) {
+    //             removeMarker();
+    //             const responseData = JSON.parse(data).map((i: any) => JSON.parse(i.place_info))
+    //             setDBData(responseData);
+    //             setCafeInfoContainer(cafeInfoContainer);
+    //         }).catch(err => console.log("에러", err));
+    // }
 
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
     function displayDBPlaces(places: any[], filterData?: any[]) {
@@ -468,18 +468,21 @@ const KakaoMap = ({
                 // mouseout 했을 때는 인포윈도우를 닫기
                 (function (marker: any, data: any, filter?: any, placeNum?:string) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
+                        console.log(sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id"))
                         fetch('/api/place/selectDetailPlaceInfo',{
                             method:'POST',
                             headers:{
                                 'Content-Type': "application/json"
                             },
                             body:JSON.stringify({
-                                place_num: placeNum
+                                place_num: placeNum,
+                                user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
                             }),
                         })
                         .then(response => response.text())
                         .then((message) => {
                             const data = JSON.parse(message);
+                            console.log(data)
                             setCafeInfoContainer({
                                 data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                                 filter: data.filterList,
