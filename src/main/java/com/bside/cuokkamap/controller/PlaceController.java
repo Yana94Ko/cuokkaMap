@@ -346,9 +346,6 @@ public class PlaceController {
         }
     }
 
-    // TODO(BE, favoritePlce) : user_num 을 통해 favoritePlce 목록 돌려주기(with favorite_type, x,y좌표)
-    // assignees : Yana94Ko
-
     @PostMapping("/mypageImg")
     public ResponseEntity mypageImg (@RequestBody String response) {
         JsonParser parser = new JsonParser();
@@ -363,8 +360,6 @@ public class PlaceController {
         return new ResponseEntity(myImgList, HttpStatus.OK);
     }
 
-
-
     @PostMapping("/mypageReview")
     public ResponseEntity mypageReview (@RequestBody String response) {
         JsonParser parser = new JsonParser();
@@ -377,5 +372,19 @@ public class PlaceController {
 
         List<PlaceVO> myReviewList = placeService.selectAllPlaceReviewWithUserNum(user_num);
         return new ResponseEntity(myReviewList, HttpStatus.OK);
+    }
+
+    @PostMapping("/mypageFavoritePlace")
+    public ResponseEntity mypageFavoritePlace (@RequestBody String response) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject) parser.parse(response);
+        int user_num = jobj.get("user_num")
+                .getAsInt();
+
+        // TODO(BE, pagind) : 페이징 작업 추가 필요
+        // assignees : Yana94Ko, hwanyb
+
+        List<PlaceVO> myFavoritePlaceList = placeService.selectAllFavoritePlaceWithUserNum(user_num);
+        return new ResponseEntity(myFavoritePlaceList, HttpStatus.OK);
     }
 }
