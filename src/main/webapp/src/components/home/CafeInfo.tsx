@@ -166,7 +166,7 @@ type CafeInfoProps = {
 }
 
 const CafeInfo = ({cafeInfoContainer}: CafeInfoProps) => {
-    const [currentView, setCurrentView] = useState<string>("review");
+    const [currentView, setCurrentView] = useState<string>("photo");
 
     let dataObject: any = {};
     dataObject = Object.assign({}, cafeInfoContainer);

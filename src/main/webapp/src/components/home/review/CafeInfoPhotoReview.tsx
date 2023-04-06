@@ -15,16 +15,42 @@ type dataType = {
     user_num:number;
 
 }
+const PhotoContainer = styled.div`
+  height:100%;
+`;
+const PhotoUl = styled.ul`
+  margin-top:20px;
+  display:flex;
+  flex-wrap:wrap;
+  text-align: center;
+`;
+const PhotoLi = styled.li`
+  width:160px;
+  margin:5px;
+`;
+const PhotoImg = styled.img`
+  width:160px;
+  height:120px;
+  object-fit:cover;
+  border-radius:10px;
+  z-index:100;
+  position:relative;
+`;
+const DeleteBtn = styled.span`
+  width:10px;
+  z-index:101;
+  position:absolute;
+  cursor:pointer;
+`;
+
 const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
     const sessionId = sessionStorage.getItem("id");
     let cafeInfoImageData:string[], cafeInfoUserNum:number[];
     if(cafeInfoContainer !== undefined){
-        cafeInfoImageData = Object.values(cafeInfoContainer)[3].map((data:dataType) => (data.placeImg_src));
+        cafeInfoImageData = Object.values(cafeInfoContainer)[3].map((data:dataType) => ([data.placeImg_src, data.placeImg_num]));
         cafeInfoUserNum = Object.values(cafeInfoContainer)[3].map((data:dataType) => (data.user_num));
     }
     console.log(cafeInfoImageData);
-    console.log(cafeInfoUserNum);
-
     // 허용가능한 확장자 목록!
     const ALLOW_FILE_EXTENSION = "jpg,jpeg,png";
     const FILE_SIZE_MAX_LIMIT = 10 * 1024 * 1024;  // 10MB
@@ -89,43 +115,62 @@ const CafeInfoPhotoReview = ({cafeInfoContainer}: PhotoReview) => {
         formData.append('place_num', Object.values(cafeInfoContainer)[2]);
         formData.append('user_num', sessionId);
 
-        // // 폼 객체 values 값을 순회.
-        // for (const pair of formData.values()) {
-        //     console.log(pair);
-        // }
-
         fetch('/api/place/uploadPlaceImg',{
             method:'POST',
             body: formData,
         })
-            .then(response => response.text())
+            .then(response => console.log(response.text()))
             .catch(err => console.log(JSON.parse(err)));
         target.value = "";
+    }
+
+    const removePhotoReview = (event: React.MouseEvent<HTMLSpanElement>) => {
+        if (!(event.target instanceof HTMLSpanElement)) {
+            return;
+        }
+        const [imageSrc, imageNum] = event.target.id.split(',');
+
+        if(window.confirm('사진을 삭제하시겠습니까?')){
+            fetch('/api/place/deletePlaceImg',{
+                method:'POST',
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    "placeImg_num":imageNum,
+                    "user_num": sessionId,
+                    "placeImg_src":imageSrc
+                })
+            })
+                .then(response => response.text())
+                .then(function (message) {
+                }).catch(err => console.log("에러", err));
+        }else {
+            return;
+        }
     }
 
     return (
         <>
             <Button>
-                <label htmlFor="file" style={{cursor: "pointer"}}>
-                    <div className="btn-upload">파일 업로드하기</div>
+                <label htmlFor="file">
+                    <div className="btn-upload" style={{cursor: "pointer"}}>파일 업로드하기</div>
                 </label>
                 <input type="file" name="file" id="file" style={{display: "none"}} onChange={uploadFileReview}/>
             </Button>
                 {/*<input type="button" onClick={submit} value="등록"/>*/}
-            <div style={{height: "100%"}}>
-                <ul style={{marginTop:"20px", display:"flex", flexWrap:"wrap"}}>
+            <PhotoContainer>
+                <PhotoUl>
                 {
                     cafeInfoImageData && cafeInfoImageData.map((image:string, i:number) => (
-                        <li key={i} style={{width:"150px", margin:"5px"}}>
-                            <img src={process.env.PUBLIC_URL+"/upload/" + image} width="150px" alt="image"/>
-                            <>
-                            {Number(sessionId) === cafeInfoUserNum[i] ? (<span style={{position:"absolute", right:"10px", color:"white"}}>x</span>) : null}
-                            </>
-                        </li>
+                        <PhotoLi key={i}>
+                            <PhotoImg src={process.env.PUBLIC_URL+"/upload/" + image[0]} alt={image[0]}/>
+                            {Number(sessionId) === cafeInfoUserNum[i] ? (<DeleteBtn className="material-symbols-rounded" onClick={removePhotoReview} id={image}>delete</DeleteBtn>) : null}
+                        </PhotoLi>
                     ))
                 }
-                </ul>
-            </div>
+                </PhotoUl>
+            </PhotoContainer>
         </>
     )
 }
