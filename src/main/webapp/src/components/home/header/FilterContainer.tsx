@@ -108,7 +108,6 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
         event.preventDefault();
         dispatch(setIsBookmarkMode(!isBookmarkMode));
     }
-        console.log(isBookmarkMode);
 
 
     return (

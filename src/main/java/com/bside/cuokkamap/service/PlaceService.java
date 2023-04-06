@@ -23,6 +23,8 @@ public interface PlaceService {
     public List<PlaceVO> selectALLPlaceWithFilterAndKeyword(List<String> filters, int filterCnt, List<String> keywords, int keywordCnt, int user_num);
     //해당 좌표의 장소가 DB에 존재하는지 확인
     public int cntSamePlace(String x, String y);
+    //해당 place_num이 user_num의 favorite_place에 소속되어있는지
+    public int isFavoritePlace(int user_num, int place_num);
     //장소 번호로 장소 검색
     public PlaceVO selectPlaceByPlaceNum(int place_num);
     //키워드로 장소 검색
@@ -45,6 +47,8 @@ public interface PlaceService {
     public List<PlaceVO> selectAllPlaceImgWithUserNum(int user_num);
     //user_num으로 작성한 모든 placeReview 조회
     public List<PlaceVO> selectAllPlaceReviewWithUserNum(int user_num);
+    //user_num으로 작성한 모든 favoritePlace 조회
+    public List<PlaceVO> selectAllFavoritePlaceWithUserNum(int user_num);
 
     //이미지 파일 삭제
     public int deletePlaceImg(PlaceVO vo);

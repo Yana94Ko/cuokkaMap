@@ -37,6 +37,9 @@ public class PlaceServiceImpl implements PlaceService{
     public int cntSamePlace(String x, String y) {return dao.cntSamePlace(x, y);}
 
     @Override
+    public int isFavoritePlace(int user_num, int place_num) {return dao.isFavoritePlace(user_num,place_num);}
+
+    @Override
     public PlaceVO selectPlaceByPlaceNum(int place_num) {return dao.selectPlaceByPlaceNum(place_num);}
 
     @Override
@@ -68,6 +71,9 @@ public class PlaceServiceImpl implements PlaceService{
 
     @Override
     public List<PlaceVO> selectAllPlaceReviewWithUserNum(int user_num) {return dao.selectAllPlaceReviewWithUserNum(user_num);}
+
+    @Override
+    public List<PlaceVO> selectAllFavoritePlaceWithUserNum(int user_num) {return dao.selectAllFavoritePlaceWithUserNum(user_num);}
 
     @Override
     public int deletePlaceImg(PlaceVO vo) {return dao.deletePlaceImg(vo);}

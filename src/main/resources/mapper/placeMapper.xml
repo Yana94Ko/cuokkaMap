@@ -98,6 +98,11 @@
         WHERE place_info LIKE CONCAT('%', CONCAT('"x":', #{param1}), '%')
           AND place_info LIKE CONCAT('%', CONCAT('"y":', #{param2}), '%')
     </select>
+    <select id="isFavoritePlace" resultType='int'>
+        SELECT COUNT(*)
+        FROM favorite_place
+        WHERE user_num = #{param1} AND place_num = #{param2}
+    </select>
 
     <select id="selectPlaceByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         SELECT  place_num, place_info
@@ -157,6 +162,12 @@
         FROM place_review pr
         JOIN place p on pr.place_num = p.place_num
         WHERE pr.user_num = #{param1};
+    </select>
+    <select id="selectAllFavoritePlaceWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
+        SELECT fp.*, p.place_info
+        FROM favorite_place fp
+                 JOIN place p on fp.place_num = p.place_num
+        WHERE fp.user_num = #{param1};
     </select>
 
     <delete id="deletePlaceImg">
