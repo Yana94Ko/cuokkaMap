@@ -34,6 +34,11 @@ const ReviewImg = styled.img`
   width: 110%;
 `;
 
+const Notice = styled.h1`
+  text-align: center;
+  color: ${props => props.theme.color.darkGray};
+`;
+
 const PhotoReview = () => {
     const [reviewImgData, setReviewImgData] = useState<any[]>([]);
 
@@ -86,7 +91,7 @@ const PhotoReview = () => {
     return (
         <Base>
             {
-                reviewImgData.length > 0 && (
+                reviewImgData.length > 0 ? (
                     reviewImgData.map((reviewImg: any, idx: number) => (
                         <CardWrapper key={idx}>
                             <Card>
@@ -100,6 +105,8 @@ const PhotoReview = () => {
                             </ReviewHeader>
                         </CardWrapper>
                     ))
+                ) : (
+                    <Notice>등록하신 사진 후기가 없습니다.</Notice>
                 )
             }
         </Base>

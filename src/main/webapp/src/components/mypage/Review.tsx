@@ -48,6 +48,11 @@ const ReviewText = styled.p`
   padding: 1rem;
 `;
 
+const Notice = styled.h1`
+  text-align: center;
+  color: ${props => props.theme.color.darkGray};
+`;
+
 const Review = () => {
     const [reviewData, setReviewData] = useState<any[]>([]);
 
@@ -122,7 +127,7 @@ const Review = () => {
     return (
         <Base>
             {
-                reviewData.length > 0 && (
+                reviewData.length > 0 ? (
                     reviewData.map((review: any, idx: number) => (
                         <Card key={idx}>
                             <ReviewHeader>
@@ -142,6 +147,8 @@ const Review = () => {
                             <ReviewText>{review.placeReview}</ReviewText>
                         </Card>
                     ))
+                ) : (
+                    <Notice>등록하신 후기가 없습니다.</Notice>
                 )
             }
         </Base>
