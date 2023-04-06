@@ -15,13 +15,13 @@ const ReviewHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-content: center;
+  padding: 1rem;
 `;
 const PlaceName = styled.p`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 700;
 `;
-const DeleteBtn = styled(Icon)`
-`;
+const DeleteBtn = styled(Icon)``;
 const Emoji = styled.div`
   width: fit-content;
   cursor: pointer;
@@ -31,6 +31,7 @@ const Emoji = styled.div`
   white-space: nowrap;
   border: 1px solid ${props => props.theme.color.darkGray};
   padding: 0.2rem 0.5rem;
+  margin-left: 1rem;
 `;
 const EmojiImg = styled.img`
   width: 20px;
@@ -44,13 +45,9 @@ const EmojiText = styled.p`
 `;
 const ReviewText = styled.p`
   font-weight: 500;
+  padding: 1rem;
 `;
 
-// TODO(FE): 마이페이지 내 후기 컴포넌트 완료하기
-// 후기 기능, 후기DB 완성되면 카드형태로 북마크 위치들 렌더
-// 후기, 사진, 북마크 셋다 카드 형식 Card컴포넌트로 맞추고
-// 삭제버튼도 동일한 위치에 두기
-// assignees: hwanyb, SeongSilver
 const Review = () => {
     const [reviewData, setReviewData] = useState<any[]>([]);
 
@@ -98,6 +95,30 @@ const Review = () => {
         }
     ];
 
+    const onDeleteClick = (
+        e: React.MouseEvent<HTMLSpanElement>,
+        review: any
+    ) => {
+        const result = window.confirm("후기를 삭제하시겠습니까?");
+        if (result) {
+            fetch('/api/place/deletePlaceReview', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "placeReview_num": review.placeReview_num,
+                    "user_num": userId,
+                })
+            })
+                .then((res) => console.log(res.text()))
+                .then((message) => console.log(message))
+                .then(() => fetchMyReview())
+                .catch(err => console.log("에러", err));
+        }
+    }
+    // TODO(FE): 후기 페이징 기능 구현하기
+    // assignees: SeongSilver
     return (
         <Base>
             {
@@ -105,8 +126,9 @@ const Review = () => {
                     reviewData.map((review: any, idx: number) => (
                         <Card key={idx}>
                             <ReviewHeader>
-                                <PlaceName>라운드 브릭</PlaceName>
-                                <DeleteBtn className="material-symbols-rounded">delete</DeleteBtn>
+                                <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
+                                <DeleteBtn className="material-symbols-rounded"
+                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review)}>delete</DeleteBtn>
                             </ReviewHeader>
                             {
                                 emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
