@@ -45,6 +45,8 @@ public interface PlaceService {
     public List<PlaceVO> selectAllPlaceImgWithUserNum(int user_num);
     //user_num으로 작성한 모든 placeReview 조회
     public List<PlaceVO> selectAllPlaceReviewWithUserNum(int user_num);
+    //user_num으로 작성한 모든 favoritePlace 조회
+    public List<PlaceVO> selectAllFavoritePlaceWithUserNum(int user_num);
 
     //이미지 파일 삭제
     public int deletePlaceImg(PlaceVO vo);
