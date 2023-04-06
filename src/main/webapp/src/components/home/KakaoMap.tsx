@@ -490,7 +490,6 @@ const KakaoMap = ({
                             dispatch(setIsOpenedCafeInfo(true));
                             // moveMapAfterPost(data.y, data.x);
                         }).catch(err => console.log(err));
-
                     });
                     window.kakao.maps.event.addListener(marker, 'mouseover', function () {
                         displayInfowindow(marker, data.place_name);
@@ -619,7 +618,7 @@ const KakaoMap = ({
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo cafeInfoContainer={cafeInfoContainer}/>
+                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>
                 )
             }
         </Base>

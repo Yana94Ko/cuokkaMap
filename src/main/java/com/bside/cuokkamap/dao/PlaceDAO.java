@@ -43,6 +43,10 @@ public interface PlaceDAO {
     public List<PlaceVO> selectPlaceReviewByPlaceNum(int place_num);
     //place_num으로 해당하는 filter_type들 조회
     public String selectPlaceFilterByPlaceNum(int place_num);
+    //user_num으로 작성한 모든 placeImg 조회
+    public List<PlaceVO> selectAllPlaceImgWithUserNum(int user_num);
+    //user_num으로 작성한 모든 placeReview 조회
+    public List<PlaceVO> selectAllPlaceReviewWithUserNum(int user_num);
 
     //이미지 파일 삭제
     public int deletePlaceImg(PlaceVO vo);
