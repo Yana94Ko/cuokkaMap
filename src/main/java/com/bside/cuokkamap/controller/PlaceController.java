@@ -81,6 +81,7 @@ public class PlaceController {
         List<String> keywords = null;
         int filterCnt = 0;
         int keywordCnt = 0;
+        int user_num = 0;
 
         //filters
         if(jobj.get("place_filter") != null && ! (jobj.get("place_filter").toString()).equals("[]")) {
@@ -96,7 +97,12 @@ public class PlaceController {
                                 .split(" ")));
             keywordCnt = keywords.size();
         }
-        System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt);
+        //user_num
+        if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")) {
+            user_num = jobj.get("user_num")
+                    .getAsInt();
+        }
+        System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt + "/" + user_num);
         List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt);
 //        for(PlaceVO place : placeList){
 //            System.out.println(place.getFilter_type());
