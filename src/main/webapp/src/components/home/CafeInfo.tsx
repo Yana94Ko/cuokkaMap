@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, SetStateAction} from 'react';
+import React, {useState, useEffect, SetStateAction} from 'react';
 import styled, {css} from "styled-components"
 
 import {Icon, Tag} from "../../styles/common";
@@ -262,8 +262,10 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer}: CafeInfoProps) => {
                 <Tab id="photo" currentView={currentView}>사진</Tab>
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
+            {/*TODO [FE] : 사진 후기창이랑 일반 후기창이랑 간격 다른것 */}
+            {/*assignees: SeongSilver, hwanyb 중에서 해결해줬으면 좋겠는 사람 태그하기*/}
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}/> :
+                {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/> :
                     <CafeInfoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>}
             </CafeReviewContent>
         </Base>
