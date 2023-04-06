@@ -7,6 +7,7 @@ import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
 import CafeInfoReview from "./review/CafeInfoReview";
 import {RootState} from "../../modules";
+import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -245,7 +246,6 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
         }
 
     }
-    console.log(placeNum);
     const removeBookMarker = () => {
         if(window.confirm("북마크를 삭제하시겠습니까?")){
             fetch('/api/place/deleteFavoritePlace',{
@@ -254,7 +254,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "favoritePlace_num" : placeNum,
+                    "place_num" : placeNum,
                     "user_num" : userNum,
                 }),
             })
@@ -262,6 +262,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 .then(function (data) {
                     console.log(data);
                     fetchPlaceDetail(placeNum);
+                    dispatch(setCurrentFilter([]));
                 })
                 .catch(err => console.log("에러", err));
         }else{
@@ -274,29 +275,29 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 cafeInfoContainer !== undefined && (
                     <>
                         {
-                                <TitleWrapper>
-                                    <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
-                                    {
-                                        isLoggedin && (isBookmarked ? (
-                                            <BookmarkBtn className="material-icons-rounded" onClick={removeBookMarker}>bookmark</BookmarkBtn>
-                                        ) : (
-                                            <BookmarkBtn className="material-icons-rounded" onClick={addBookMark}>Bookmark_Border</BookmarkBtn>
-                                        ))
-                                    }
-                                    <PlaceName href={dataObject.data.place_url} target="_blank">
-                                        {dataObject.data.place_name}
-                                    </PlaceName>&emsp;
-                                    {
-                                        dataObject.data.insta&&(
-                                            <a href={dataObject.data.insta} target="_blank">
-                                                <img className="insta"
-                                                     src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
-                                                     width="30px" alt="insta"/>
-                                            </a>
-                                        )
-                                    }
+                            <TitleWrapper>
+                                <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
+                                {
+                                    isLoggedin && (isBookmarked ? (
+                                        <BookmarkBtn className="material-icons-rounded" onClick={removeBookMarker}>bookmark</BookmarkBtn>
+                                    ) : (
+                                        <BookmarkBtn className="material-icons-rounded" onClick={addBookMark}>Bookmark_Border</BookmarkBtn>
+                                    ))
+                                }
+                                <PlaceName href={dataObject.data.place_url} target="_blank">
+                                    {dataObject.data.place_name}
+                                </PlaceName>&emsp;
+                                {
+                                    dataObject.data.insta&&(
+                                        <a href={dataObject.data.insta} target="_blank">
+                                            <img className="insta"
+                                                 src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
+                                                 width="30px" alt="insta"/>
+                                        </a>
+                                    )
+                                }
 
-                                </TitleWrapper>
+                            </TitleWrapper>
                         }
 
                         <CafeInfoWrapper>

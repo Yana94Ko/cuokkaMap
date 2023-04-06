@@ -44,7 +44,10 @@ const Pagination = ({dataLength, limit, page, setPage}:PaginationProps) => {
 
     return(
         <Base>
-            <PageButton onClick={() => setPage(page-1)} disabled={page === 1}>
+            <PageButton onClick={() => {
+                setPage(page-1)
+                //setNeedToSet(!needToSet);
+            }} disabled={page === 1}>
                 {/*<span className="material-symbols-rounded">arrow_back_ios</span>*/}
                 {/*<span className="material-symbols-rounded">chevron_left</span>*/}
                 &lt;
@@ -53,7 +56,10 @@ const Pagination = ({dataLength, limit, page, setPage}:PaginationProps) => {
                 showedContent.map((item, index) => (
                     <PageButton
                         key={index}
-                        onClick={() => setPage(index+1)}
+                        onClick={() => {
+                            setPage(index+1);
+                            //setNeedToSet(!needToSet);
+                        }}
                         className={
                             (index+1) === page ? 'active': ''
                         }
@@ -62,7 +68,10 @@ const Pagination = ({dataLength, limit, page, setPage}:PaginationProps) => {
                     </PageButton>
                 ))
             }
-            <PageButton onClick={() => setPage(page+1)} disabled={page === numPages}>
+            <PageButton onClick={() => {
+                setPage(page+1);
+                //setNeedToSet(!needToSet);
+            }} disabled={page === numPages}>
                 &gt;
                 {/*<span className="material-symbols-rounded">chevron_right</span>*/}
                 {/*<span className="material-symbols-rounded">arrow_forward_ios</span>*/}
