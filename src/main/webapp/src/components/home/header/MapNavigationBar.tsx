@@ -8,7 +8,7 @@ import {Button, Icon, Input} from "../../../styles/common";
 import MyPageList from "../MyPageList";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
-import {setCurrentFilter} from "../../../modules/filterReducer";
+import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
 
 
 const Base = styled.div`
@@ -149,7 +149,8 @@ const MapNavigationBar = ({
             dispatch(setCurrentFilter([]));
             setSearchDBKeyword(searchValue);
             setSearchedPlaceInfoInNav([]);
-
+            //[YANA] 키워드 검색시 북마크 해제
+            dispatch(setIsBookmarkMode(false));
             setSearchValue("")
 
             // 모바일에서 엔터키로 검색 시 키보드창이 닫기지 않는 이슈 해결하기 위한 코드
