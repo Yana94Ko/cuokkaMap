@@ -45,6 +45,7 @@ function HomePage() {
             body: JSON.stringify({
                 "place_filter": currentFilter === undefined ? [] : currentFilter,
                 "keywords": searchDBKeyword === undefined ? "" : searchDBKeyword,
+                "user_num" : sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
             }),
         })
             .then(response => response.text())
@@ -57,7 +58,6 @@ function HomePage() {
             })
             .catch(err => console.log("에러", err));
     }
-
 
     const isOpenedLoginModal = useSelector((state: RootState) => state.userReducer.isOpenedLoginModal);
 
