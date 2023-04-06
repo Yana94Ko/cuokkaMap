@@ -41,4 +41,9 @@ public interface PlaceService {
     public List<PlaceVO> selectPlaceReviewByPlaceNum(int place_num);
     //place_num으로 해당하는 filter_type들 조회
     public String selectPlaceFilterByPlaceNum(int place_num);
+
+    //이미지 파일 삭제
+    public int deletePlaceImg(PlaceVO vo);
+    //리뷰 삭제
+    public int deletePlaceReview(PlaceVO vo);
 }
