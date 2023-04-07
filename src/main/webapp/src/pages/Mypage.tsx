@@ -4,7 +4,7 @@ import styled, {css} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../modules";
-import {setCurrentMyPageView} from "../modules/viewReducer";
+import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../modules/viewReducer";
 import PhotoReview from "../components/mypage/PhotoReview";
 import Review from "../components/mypage/Review";
 import Bookmark from "../components/mypage/Bookmark";
@@ -77,7 +77,8 @@ const MyPageContent = styled.div`
   margin-top: 50px;
   overflow-y: auto;
   padding: 1rem;
-  &::-webkit-scrollbar{
+
+  &::-webkit-scrollbar {
     display: none;
   }
 `;
@@ -103,11 +104,21 @@ const MyPage = () => {
     const dispatch = useDispatch();
 
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
-    const currentMyPageView = useSelector((state: RootState) => state.viewReducer.currentMyPageView);
+    const {
+        currentMyPageView,
+        isOpenedPostCafe,
+        isOpenedCafeInfo
+    } = useSelector((state: RootState) => state.viewReducer);
 
     useEffect(() => {
         if (!isLoggedin) {
             navigate("/");
+        }
+        if (isOpenedPostCafe) {
+            dispatch(setIsOpenedPostCafe(false));
+        }
+        if (isOpenedCafeInfo) {
+            dispatch(setIsOpenedCafeInfo(false));
         }
     });
 
