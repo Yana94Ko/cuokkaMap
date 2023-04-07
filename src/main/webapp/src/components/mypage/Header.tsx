@@ -17,25 +17,16 @@ const Logo = styled.img`
   height: 50px;
 `;
 const LogoutButton = styled(Button)`
-  width: 40px;
-  height: 40px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.2s ease-in-out;
-
-  &:hover {
-    transform: scale(110%);
-  }
-
-  & span {
-    color: #fff;
-    transition: all 0.1s ease-in-out;
-
-    &:hover {
-      transform: scale(110%);
-    }
+  padding: 0.5rem 1rem;
+  background-color: ${props => props.theme.color.gray};
+  color: ${props => props.theme.color.text};
+  font-weight: 700;
+  &:hover{
+    background-color: ${props => props.theme.color.primary};
+    color: ${props => props.theme.color.white};
+    
   }
 `;
 
@@ -56,7 +47,7 @@ const Header = () => {
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"} alt="로고이미지"/>
             </StyledLink>
             <LogoutButton onClick={onLogoutClick}>
-                <Icon className="material-symbols-rounded">logout</Icon>
+                로그아웃
             </LogoutButton>
             {/*TODO(FE): 회원탈퇴 기능 추가해야함*/}
             {/*회원탈퇴관련 DB완료되면 기능 추가하기*/}

@@ -8,9 +8,12 @@ import Card from "./Card";
 import Pagination from "./Pagination";
 
 const Base = styled.div`
+  height: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
+  
+  
 `;
 const ReviewHeader = styled.div`
   display: flex;
