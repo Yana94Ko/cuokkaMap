@@ -8,29 +8,34 @@ import {setIsOpenedLoginModal} from "../../modules/userReducer";
 import {setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
+import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 
 const Base = styled.div`
+  width: 100vw;
+  height: 100vh;
   position: relative;
   display: flex;
   justify-content: end;
-`;
-const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
-  width: 100vw;
-  min-height: 100vh;
-  ${props => props.isOpenedPostCafe && css`
-    width: calc(100vw - 200px);
-
-    @media ${props => props.theme.windowSize.mobile} {
-      width: 100vw;
-
-    }
-  `} @media ${props => props.theme.windowSize.mobile} {
+  @media ${props => props.theme.windowSize.mobile} {
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
       min-height: -webkit-fill-available;
     }
   }
+`;
+const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
+  width: 100vw;
+  min-height: 100vh;
+  ${props => props.isOpenedPostCafe && css`
+    width: calc(100vw - 300px);
+
+    @media ${props => props.theme.windowSize.tablet} {
+      width: 100vw;
+      height: calc(100vh - 300px);
+      min-height: calc(100vh - 300px);
+    }
+  `}
 `;
 
 // const CurrentLocationBtn = styled(Button)`
@@ -90,6 +95,46 @@ const AddCafeButton = styled(Button)`
     }
   }
 `;
+
+const BookmarkBtn = styled(Button)<{ isBookmarkMode: boolean }>`
+  position: absolute;
+  z-index: 111;
+  top: 20%;
+  right: 3rem;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+
+  ${props => props.isBookmarkMode ? css`
+    background-color: ${props => props.theme.color.primary};
+
+    & span {
+      color: ${props => props.theme.color.white};
+    }
+  ` : css`
+    background-color: ${props => props.theme.color.white};
+  `}
+  &:hover {
+    transform: scale(110%);
+  }
+
+  @media ${props => props.theme.windowSize.mobile} {
+    right: 2rem;
+  }
+`;
+const BookmarkIcon = styled(Icon)`
+  color: ${props => props.theme.color.primary};
+  transition: all 0.1s ease-in-out;
+
+  &:hover {
+    transform: scale(110%);
+  }
+`;
+
+
 declare global {
     interface Window {
         kakao: any;
@@ -137,7 +182,15 @@ const KakaoMap = ({
 
     var markersTmp: any[] = [];
     var markerAPI: any[] = [];
-    var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
+    if (isBookmarkMode) {
+        var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/bookmark.png`;
+    } else {
+        if (currentFilter.length === 0) {
+            var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/all.png`;
+        } else {
+            var filterMarkerImgSrc = `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
+        }
+    }
     var filterImgSize = new window.kakao.maps.Size(38, 38);
     var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
     /*------------------------------------------- [ END ] 지도, 마커 등 맵 관련 -------------------------------------------*/
@@ -174,9 +227,8 @@ const KakaoMap = ({
             };
         }
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
-
+        map.setMaxLevel(10);
         setMapState(map);
-
     }, []);
     //장소 검색 객체 생성
     var placeSearch = new window.kakao.maps.services.Places();
@@ -573,11 +625,19 @@ const KakaoMap = ({
             dispatch(setIsOpenedCafeInfo(false));
             dispatch(setIsOpenedPostCafe(true));
             removeMarker();
-            mapState.relayout();
         } else {
             // 로그인되어있지 않으 시 로그인 모달창 열기
             dispatch(setIsOpenedLoginModal(true));
         }
+    }
+
+    const filterBookmarkHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        dispatch(setIsBookmarkMode(!isBookmarkMode));
+        //[YANA] 북마크 검색시 키워드,필터 해제
+        dispatch(setCurrentFilter([]));
+        setSearchDBKeyword("");
+        dispatch(setIsOpenedCafeInfo(false));
     }
 
 
@@ -587,10 +647,6 @@ const KakaoMap = ({
             <Header setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                     removeMarker={removeMarker} setDBData={setDBData}
                     setSearchDBKeyword={setSearchDBKeyword}/>
-            {/*현재위치 기능 버튼 / https 관련 기능 추가 후 주석 해제*/}
-            {/*<CurrentLocationBtn onClick={currentLocation}>*/}
-            {/*    <Icon className="material-symbols-rounded">my_location</Icon>*/}
-            {/*</CurrentLocationBtn>*/}
             {
                 !isOpenedPostCafe && (
                     <AddCafeButton onClick={onPostCafeBtnClick}>
@@ -622,6 +678,15 @@ const KakaoMap = ({
                               fetchPlaceDetail={fetchPlaceDetail}/>
                 )
             }
+            {/* 북마크 버튼 */}
+            <BookmarkBtn isBookmarkMode={isBookmarkMode} onClick={filterBookmarkHandler}>
+                <BookmarkIcon className="material-symbols-rounded">star</BookmarkIcon>
+            </BookmarkBtn>
+
+            {/*현재위치 기능 버튼 / https 관련 기능 추가 후 주석 해제*/}
+            {/*<CurrentLocationBtn onClick={currentLocation}>*/}
+            {/*    <Icon className="material-symbols-rounded">my_location</Icon>*/}
+            {/*</CurrentLocationBtn>*/}
         </Base>
     )
 }
