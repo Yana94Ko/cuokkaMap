@@ -59,6 +59,7 @@ const CloseBtn = styled(Icon)`
   }
 `;
 const CafeInfoWrapper = styled.div``;
+
 const TitleWrapper = styled.div`
   display: flex;
   position: sticky;
@@ -68,6 +69,8 @@ const TitleWrapper = styled.div`
   left: 0;
   background-color: #fff;
   padding: 2rem;
+  display: flex;
+  align-items: center;
 `;
 
 const PlaceName = styled.a`
@@ -80,6 +83,32 @@ const PlaceName = styled.a`
   &:hover {
     color: ${props => props.theme.color.primary};
   }
+`;
+
+const InstaBtn = styled.a`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1rem;
+  & img {
+    width: 22px;
+    height: 22px;
+  }
+`;
+
+const BookmarkBtn = styled(Icon)<{ isLoggedin: boolean, isBookmarked: boolean }>`
+  cursor:pointer;
+  margin-left: 1rem;
+  
+  ${props => props.isLoggedin && css`
+    display: block;
+  `}
+  ${props => props.isBookmarked === false && css`
+  font-variation-settings: 'FILL' 0,
+    'wght' 700,
+    'GRAD' 0,
+    'opsz' 48;
+    `}
 `;
 
 const Item = styled.div`
@@ -179,9 +208,6 @@ const CafeReviewContent = styled.div`
   padding: 2rem;
 `;
 
-const BookmarkBtn = styled.span`
-  cursor:pointer;
-`;
 
 type CafeInfoProps = {
     cafeInfoContainer: object;
@@ -277,26 +303,21 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                         {
                             <TitleWrapper>
                                 <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
-                                {
-                                    isLoggedin && (isBookmarked ? (
-                                        <BookmarkBtn className="material-icons-rounded" onClick={removeBookMarker}>bookmark</BookmarkBtn>
-                                    ) : (
-                                        <BookmarkBtn className="material-icons-rounded" onClick={addBookMark}>Bookmark_Border</BookmarkBtn>
-                                    ))
-                                }
+
                                 <PlaceName href={dataObject.data.place_url} target="_blank">
                                     {dataObject.data.place_name}
-                                </PlaceName>&emsp;
+                                </PlaceName>
                                 {
                                     dataObject.data.insta&&(
-                                        <a href={dataObject.data.insta} target="_blank">
+                                        <InstaBtn href={dataObject.data.insta} target="_blank">
                                             <img className="insta"
                                                  src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
                                                  width="30px" alt="insta"/>
-                                        </a>
+                                        </InstaBtn>
                                     )
                                 }
-
+                                <BookmarkBtn className="material-symbols-rounded" isLoggedin={isLoggedin} isBookmarked={isBookmarked} onClick={isBookmarked ? removeBookMarker : addBookMark
+                                }>star</BookmarkBtn>
                             </TitleWrapper>
                         }
 
