@@ -145,8 +145,8 @@ interface FnProps {
     setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
     mapState: any;
     markersTmp:any[];
-
     setDBData:React.Dispatch<SetStateAction<any[]>>;
+    setIsPostedCafe:React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -162,7 +162,8 @@ const PostCafeInfo = ({
                           setSearchCafeInfo,
                           mapState,
                           markersTmp,
-                          setDBData
+                          setDBData,
+                          setIsPostedCafe
                       }: FnProps) => {
     const dispatch = useDispatch();
 
@@ -272,6 +273,7 @@ const PostCafeInfo = ({
 
     const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(copiedClickedInfo)
         const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠습니까?");
         const dataToSave = {
             user_num: sessionStorage.getItem("id"),
@@ -293,7 +295,7 @@ const PostCafeInfo = ({
                     console.log(placeInfo);
                     alert("카페등록이 완료되었습니다.");
                     removeMarker();
-                    settingKeywordPostCafeName(placeInfo.place_name);
+                    //settingKeywordPostCafeName(placeInfo.place_name);
                     dispatch(setIsOpenedPostCafe(false));
 
                     // var markerPosition = new window.kakao.maps.LatLng(placeInfo.y, placeInfo.x);
@@ -303,7 +305,11 @@ const PostCafeInfo = ({
                     //     title:placeInfo.place_name
                     // });
                     // marker.setMap(mapState);
-                    settingKeywordPostCafeName(placeInfo);
+                    settingKeywordPostCafeName(loadData);
+                    setIsPostedCafe(true);
+                    return placeInfo;
+                })
+                .then((placeInfo) => {
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
                 });
         }
