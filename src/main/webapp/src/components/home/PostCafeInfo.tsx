@@ -42,8 +42,8 @@ const Container = styled.div`
 
 export const CloseBtn = styled(Icon)`
   position: absolute;
-  right: 2rem;
-  top: 2rem;
+  right: 1rem;
+  top: 1rem;
   transition: all 0.2s ease-in-out;
 
   &:hover {
@@ -144,9 +144,8 @@ interface FnProps {
     searchCafeInfo: string;
     setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
     mapState: any;
-    markersTmp:any[];
-
-    setDBData:React.Dispatch<SetStateAction<any[]>>;
+    markersTmp: any[];
+    setDBData: React.Dispatch<SetStateAction<any[]>>;
 }
 
 const PostCafeInfo = ({
@@ -265,11 +264,6 @@ const PostCafeInfo = ({
         }
     }, [clickMarkerCafeInfo]);
 
-    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
-    var filterMarkerImgSrc = currentFilter.length === 0 ? `${process.env.PUBLIC_URL}/assets/images/markers/all.png` : `${process.env.PUBLIC_URL}/assets/images/markers/${currentFilter}.png`;
-    var filterImgSize = new window.kakao.maps.Size(38, 38);
-    var filterMarkerImg = new window.kakao.maps.MarkerImage(filterMarkerImgSrc, filterImgSize);
-
     const AddCafeInfo = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const result = window.confirm("입력하신 정보로 카페정보를 등록하시겠습니까?");
@@ -290,19 +284,10 @@ const PostCafeInfo = ({
                 .then((data) => {
                     const loadData = JSON.parse(data);
                     const placeInfo = JSON.parse(loadData.place_info);
-                    console.log(placeInfo);
                     alert("카페등록이 완료되었습니다.");
                     removeMarker();
                     settingKeywordPostCafeName(placeInfo.place_name);
                     dispatch(setIsOpenedPostCafe(false));
-
-                    // var markerPosition = new window.kakao.maps.LatLng(placeInfo.y, placeInfo.x);
-                    // var marker = new window.kakao.maps.Markers({
-                    //     image:filterMarkerImg,
-                    //     position:markerPosition,
-                    //     title:placeInfo.place_name
-                    // });
-                    // marker.setMap(mapState);
                     settingKeywordPostCafeName(placeInfo);
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
                 });

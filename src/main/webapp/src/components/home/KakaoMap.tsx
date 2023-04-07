@@ -220,12 +220,11 @@ const KakaoMap = ({
     // 카카오맵 api를 이용하여 키워드 검색을 요청하는 함수
     function searchPlaces() {
         if (mapState !== undefined) {
-            //mapState.setLevel(5);
             //장소 검색 객체를 통해 키워드로 장소검색을 요청합니다.
             placeSearch.keywordSearch(keyword, placesSearchCB, {
                 category_group_code: "CE7", // 카페만 검색 코드 추가
                 location: mapState.getCenter(),
-                size: 10,
+                size: 15,
                 page: 1,
                 sort: window.kakao.maps.services.SortBy.Distance,
             });
@@ -323,15 +322,9 @@ const KakaoMap = ({
         if (mapState !== undefined) {
             const el = document.createElement("li");
 
-            let itemStr = `<span className="markerbg marker_${index + 1}"></span>
-                                <div className="info"><h5>${places.place_name}</h5>
-                                ${places.road_address_name
-                ? `<span>${places.road_address_name}</span>
-    <!--                                <span className="jibun gray">${places.address_name}</span>-->
-                                    `
-                : `<span>${places.address_name}</span>`
-            }
-                                </div>`;
+            let itemStr = `<div className="info"><h5>${places.place_name}</h5>
+                                ${places.road_address_name ? `<span>${places.road_address_name}</span>` : `<span>${places.address_name}</span>`}
+                            </div>`;
             el.innerHTML = itemStr;
             el.className = "item";
 
@@ -365,7 +358,7 @@ const KakaoMap = ({
     function addMarker(position: () => {}, idx?: number, title?: string | undefined) {
         if (mapState !== undefined) {
             // 카페추가 검색 마커
-            var AddCafeMarkerSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+            var AddCafeMarkerSrc = process.env.PUBLIC_URL + "/assets/images/markers/search.png", // 마커 이미지 url, 스프라이트 이미지를 씁니다
                 AddCafeMarkerSize = new window.kakao.maps.Size(34, 37), //마커크기
                 AddCafeMarkerOptions = {
                     spriteSize: new window.kakao.maps.Size(36, 691), //스프라이트 크기
@@ -384,7 +377,6 @@ const KakaoMap = ({
             marker.setMap(mapState);
             markersTmp.push(marker)
             setMarkers(markersTmp);
-            //console.log(markersTmp)
 
             return marker;
         }
@@ -444,13 +436,13 @@ const KakaoMap = ({
     //         }).catch(err => console.log("에러", err));
     // }
 
-    function fetchPlaceDetail(placeNum:string):void{
-        fetch('/api/place/selectDetailPlaceInfo',{
-            method:'POST',
-            headers:{
+    function fetchPlaceDetail(placeNum: string): void {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
                 'Content-Type': "application/json"
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 place_num: placeNum,
                 user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
             }),
@@ -462,16 +454,15 @@ const KakaoMap = ({
                 setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
-                    placeNum:placeNum,
-                    imageList:data.placeImgList,
-                    reviewList:data.placeReviewList,
-                    isBookmarked:data.isBookmarked
+                    placeNum: placeNum,
+                    imageList: data.placeImgList,
+                    reviewList: data.placeReviewList,
+                    isBookmarked: data.isBookmarked
                 });
                 dispatch(setIsOpenedCafeInfo(true));
                 // moveMapAfterPost(data.y, data.x);
             }).catch(err => console.log(err));
     }
-
 
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
     function displayDBPlaces(places: any[], filterData?: any[]) {
@@ -496,7 +487,7 @@ const KakaoMap = ({
                 // 마커와 검색결과 항목에 mouseover 했을때
                 // 해당 장소에 인포윈도우에 장소명을 표시
                 // mouseout 했을 때는 인포윈도우를 닫기
-                (function (marker: any, data: any, filter?: any, placeNum?:string) {
+                (function (marker: any, data: any, filter?: any, placeNum?: string) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
                         fetchPlaceDetail(placeNum);
                     });
@@ -507,18 +498,18 @@ const KakaoMap = ({
                     window.kakao.maps.event.addListener(marker, 'mouseout', function () {
                         infowindow.close();
                     });
-                })(marker,placesInfo[i], placesFilter[i], String(placesNumber[i]));
+                })(marker, placesInfo[i], placesFilter[i], String(placesNumber[i]));
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            mapState.setBounds(bounds,200,200,200,200);
+            mapState.setBounds(bounds, 200, 200, 200, 200);
             // if(keyword === "" && currentFilter.length > 0){
             //     mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
             //
             // } else
             if (isBookmarkMode) {
                 mapState.setLevel(mapState.getLevel());
-            } else if(keyword !== "" && currentFilter.length === 0) {
+            } else if (keyword !== "" && currentFilter.length === 0) {
                 mapState.setLevel(mapState.getLevel() + 1);
             }
 
@@ -627,7 +618,8 @@ const KakaoMap = ({
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer} fetchPlaceDetail={fetchPlaceDetail}/>
+                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}
+                              fetchPlaceDetail={fetchPlaceDetail}/>
                 )
             }
         </Base>
