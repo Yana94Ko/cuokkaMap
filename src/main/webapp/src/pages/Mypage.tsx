@@ -81,6 +81,10 @@ const MyPageContent = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @media ${props => props.theme.windowSize.tablet} {
+    margin-top: 1rem;
+  }
 `;
 
 const Notice = styled.h1`
