@@ -14,36 +14,64 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   top: 0;
   left: 0;
   z-index: 1000;
-  padding: 2rem 1rem;
+  padding: 1rem 2rem 3rem 2rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.5s 1s ease-in-out;
-  @media ${props => props.theme.windowSize.mobile} {
+  border-radius: 0 1.5rem 1.5rem 0;
+
+  @media ${props => props.theme.windowSize.tablet} {
+    overflow-y: auto;
     width: 100%;
     height: 400px;
-    overflow: hidden;
-    padding: 2rem 1rem 8rem 2rem;
+    padding: 1rem 2rem 5rem 2rem;
     justify-content: start;
     border-radius: 1.5rem 1.5rem 0 0;
     top: calc(100% - 400px);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
   }
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    padding: 1rem 2rem 8rem 2rem;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const Container = styled.div`
-  @media ${props => props.theme.windowSize.mobile} {
-    width: 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @media ${props => props.theme.windowSize.tablet} {
     overflow-y: auto;
-    padding-right: 1rem;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
+`;
+
+const Header = styled.div`
+  background-color: #fff;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1111;
+  padding: 2rem;
 `;
 
 export const CloseBtn = styled(Icon)`
   position: absolute;
-  right: 1rem;
-  top: 1rem;
+  right: 0;
+  top: 0;
   transition: all 0.2s ease-in-out;
 
   &:hover {
@@ -56,17 +84,13 @@ const Title = styled.h1`
   font-weight: 700;
   text-align: center;
   color: ${props => props.theme.color.primary};
-  margin-bottom: 50px;
 `;
 
 const Form = styled.form`
-  height: 100%;
+  height: 90%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  @media ${props => props.theme.windowSize.mobile} {
-    height: fit-content;
-  }
 `;
 
 const SearchCafe = styled.div`
@@ -81,10 +105,10 @@ const CafeInfoWrapper = styled.div`
 `;
 
 const CafeInfoItem = styled.div`
-  @media ${props => props.theme.windowSize.mobile} {
+  @media ${props => props.theme.windowSize.tablet} {
     height: fit-content;
     justify-content: start;
-    margin-bottom: 20px;
+    margin-bottom: 3rem;
   }
 `;
 
@@ -303,7 +327,6 @@ const PostCafeInfo = ({
         setKeyword("");
         displayDBPlaces(dbData, dbFilterData);
     }
-
     const onInputClick = () => {
         if (Object.keys(copiedClickedInfo).length === 0) {
             alert("카페찾기를 먼저 완료해 주세요.");
@@ -314,8 +337,10 @@ const PostCafeInfo = ({
     return (
         <Base isOpenedPostCafe={isOpenedPostCafe}>
             <Container>
-                <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
-                <Title>카페 추가</Title>
+                <Header>
+                    <Title>카페 추가</Title>
+                    <CloseBtn className="material-symbols-rounded" onClick={closePostCafe}>close</CloseBtn>
+                </Header>
                 <Form onSubmit={AddCafeInfo}>
                     <SearchCafe>
                         <Label>카페찾기</Label>
