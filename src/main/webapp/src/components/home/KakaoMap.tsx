@@ -1,7 +1,7 @@
 import React, {SetStateAction, useEffect, useState} from "react";
 import styled, {css} from "styled-components";
 import {Button, Icon} from "../../styles/common";
-import MapNavigationBar from "../home/header/MapNavigationBar";
+import Header from "./header/Header";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import {setIsOpenedLoginModal} from "../../modules/userReducer";
@@ -584,9 +584,9 @@ const KakaoMap = ({
     return (
         <Base>
             <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe}/>
-            <MapNavigationBar setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
-                              removeMarker={removeMarker} setDBData={setDBData}
-                              setSearchDBKeyword={setSearchDBKeyword}/>
+            <Header setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
+                    removeMarker={removeMarker} setDBData={setDBData}
+                    setSearchDBKeyword={setSearchDBKeyword}/>
             {/*현재위치 기능 버튼 / https 관련 기능 추가 후 주석 해제*/}
             {/*<CurrentLocationBtn onClick={currentLocation}>*/}
             {/*    <Icon className="material-symbols-rounded">my_location</Icon>*/}

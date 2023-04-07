@@ -4,8 +4,8 @@ import styled, {css} from "styled-components"
 import {Icon, Tag} from "../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
-import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
-import CafeInfoReview from "./review/CafeInfoReview";
+import CafeInfoPhotoReview from "./CafeInfo/CafeInfoPhotoReview";
+import CafeInfoReview from "./CafeInfo/CafeInfoReview";
 import {RootState} from "../../modules";
 import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 

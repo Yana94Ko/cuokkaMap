@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from "styled-components";
-import Modal from "../../Modal";
-import {Icon} from "../../../styles/common";
+import Modal from "./Modal";
+import {Icon} from "../styles/common";
 import {useDispatch} from "react-redux";
-import {setIsOpenedLoginModal} from "../../../modules/userReducer";
+import {setIsOpenedLoginModal} from "../modules/userReducer";
 
 const Base = styled.div`
   position: relative;
