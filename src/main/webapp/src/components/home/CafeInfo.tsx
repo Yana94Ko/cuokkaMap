@@ -31,17 +31,15 @@ const Base = styled.div`
     transform: translateY(-48%);
   }
   @media ${props => props.theme.windowSize.tablet} {
-    width: 350px;
+    border-radius: 1.5rem 1.5rem 0 0;
 
-  }
-  @media ${props => props.theme.windowSize.mobile} {
     width: 100%;
-    top: calc(100% - 375px);
+    height: 350px;
+    top: calc(100% - 350px);
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
-    padding: 2rem 1rem 8rem 2rem;
   }
 `;
 
@@ -180,7 +178,7 @@ const ReviewTab = styled.div`
   position: sticky;
   position: -webkit-sticky;
   z-index: 11;
-  top: 70px;
+  top: 50px;
   background-color: #fff;
   padding: 2rem 0 0 0;
   justify-content: space-between;
@@ -204,6 +202,17 @@ const Tab = styled.div<{ currentView: string }>`
 
 const CafeReviewContent = styled.div`
   padding: 2rem;
+  @media ${props => props.theme.windowSize.tablet} {
+    padding-bottom: 3rem;
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    padding-bottom: 5rem;
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      padding-bottom: 8rem;
+    }
+  }
 `;
 
 
