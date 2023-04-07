@@ -7,7 +7,7 @@ import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
 import CafeInfoPhotoReview from "./CafeInfo/CafeInfoPhotoReview";
 import CafeInfoReview from "./CafeInfo/CafeInfoReview";
 import {RootState} from "../../modules";
-import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
+import {setCurrentFilter} from "../../modules/filterReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -18,9 +18,6 @@ const Base = styled.div`
   top: 15vh;
   left: 3rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   border-radius: 1.5rem;
   overflow-y: scroll;
 
@@ -90,6 +87,7 @@ const InstaBtn = styled.a`
   justify-content: center;
   align-items: center;
   margin-left: 1rem;
+
   & img {
     width: 22px;
     height: 22px;
@@ -97,18 +95,18 @@ const InstaBtn = styled.a`
 `;
 
 const BookmarkBtn = styled(Icon)<{ isLoggedin: boolean, isBookmarked: boolean }>`
-  cursor:pointer;
+  cursor: pointer;
   margin-left: 1rem;
-  
+
   ${props => props.isLoggedin && css`
     display: block;
   `}
   ${props => props.isBookmarked === false && css`
-  font-variation-settings: 'FILL' 0,
+    font-variation-settings: 'FILL' 0,
     'wght' 700,
     'GRAD' 0,
     'opsz' 48;
-    `}
+  `}
 `;
 
 const Item = styled.div`
@@ -212,7 +210,7 @@ const CafeReviewContent = styled.div`
 type CafeInfoProps = {
     cafeInfoContainer: object;
     setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
-    fetchPlaceDetail:(placeNum:string) => void;
+    fetchPlaceDetail: (placeNum: string) => void;
 }
 
 const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: CafeInfoProps) => {
@@ -223,8 +221,8 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     //아이디 조회
     const userNum = sessionStorage.getItem('id');
     //장소넘버 조회
-    let placeNum:string, isBookmarked:boolean;
-    if(cafeInfoContainer !== undefined){
+    let placeNum: string, isBookmarked: boolean;
+    if (cafeInfoContainer !== undefined) {
         placeNum = Object.values(cafeInfoContainer)[2]
         //북마크 여부 확인
         isBookmarked = Object.values(cafeInfoContainer)[5];
@@ -249,15 +247,15 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     }
 
     const addBookMark = () => {
-        if(window.confirm("북마크를 추가하시겠습니까?")){
-            fetch('/api/place/uploadFavoritePlace',{
-                method:'POST',
+        if (window.confirm("북마크를 추가하시겠습니까?")) {
+            fetch('/api/place/uploadFavoritePlace', {
+                method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "place_num" : placeNum,
-                    "user_num" : userNum,
+                    "place_num": placeNum,
+                    "user_num": userNum,
                 }),
             })
                 .then(response => response.text())
@@ -267,21 +265,21 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 })
                 .catch(err => console.log("에러", err));
 
-        }else{
+        } else {
             return;
         }
 
     }
     const removeBookMarker = () => {
-        if(window.confirm("북마크를 삭제하시겠습니까?")){
-            fetch('/api/place/deleteFavoritePlace',{
-                method:'POST',
+        if (window.confirm("북마크를 삭제하시겠습니까?")) {
+            fetch('/api/place/deleteFavoritePlace', {
+                method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "place_num" : placeNum,
-                    "user_num" : userNum,
+                    "place_num": placeNum,
+                    "user_num": userNum,
                 }),
             })
                 .then(response => response.text())
@@ -291,7 +289,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                     dispatch(setCurrentFilter([]));
                 })
                 .catch(err => console.log("에러", err));
-        }else{
+        } else {
             return;
         }
     }
@@ -308,7 +306,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                                     {dataObject.data.place_name}
                                 </PlaceName>
                                 {
-                                    dataObject.data.insta&&(
+                                    dataObject.data.insta && (
                                         <InstaBtn href={dataObject.data.insta} target="_blank">
                                             <img className="insta"
                                                  src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
@@ -316,8 +314,10 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                                         </InstaBtn>
                                     )
                                 }
-                                <BookmarkBtn className="material-symbols-rounded" isLoggedin={isLoggedin} isBookmarked={isBookmarked} onClick={isBookmarked ? removeBookMarker : addBookMark
-                                }>star</BookmarkBtn>
+                                <BookmarkBtn className="material-symbols-rounded" isLoggedin={isLoggedin}
+                                             isBookmarked={isBookmarked}
+                                             onClick={isBookmarked ? removeBookMarker : addBookMark
+                                             }>star</BookmarkBtn>
                             </TitleWrapper>
                         }
 
@@ -352,10 +352,9 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 <Tab id="photo" currentView={currentView}>사진</Tab>
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
-            {/*TODO [FE] : 사진 후기창이랑 일반 후기창이랑 간격 다른것 */}
-            {/*assignees: SeongSilver, hwanyb 중에서 해결해줬으면 좋겠는 사람 태그하기*/}
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/> :
+                {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}
+                                                                setCafeInfoContainer={setCafeInfoContainer}/> :
                     <CafeInfoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>}
             </CafeReviewContent>
         </Base>
