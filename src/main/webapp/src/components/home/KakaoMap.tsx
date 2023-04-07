@@ -227,7 +227,6 @@ const KakaoMap = ({
             };
         }
         let map = new window.kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
-        map.setMaxLevel(10);
         setMapState(map);
     }, []);
     //장소 검색 객체 생성
@@ -633,11 +632,15 @@ const KakaoMap = ({
 
     const filterBookmarkHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        dispatch(setIsBookmarkMode(!isBookmarkMode));
-        //[YANA] 북마크 검색시 키워드,필터 해제
-        dispatch(setCurrentFilter([]));
-        setSearchDBKeyword("");
-        dispatch(setIsOpenedCafeInfo(false));
+        if (isLoggedin) {
+            dispatch(setIsBookmarkMode(!isBookmarkMode));
+            //[YANA] 북마크 검색시 키워드,필터 해제
+            dispatch(setCurrentFilter([]));
+            setSearchDBKeyword("");
+            dispatch(setIsOpenedCafeInfo(false));
+        } else {
+            dispatch(setIsOpenedLoginModal(true));
+        }
     }
 
 
