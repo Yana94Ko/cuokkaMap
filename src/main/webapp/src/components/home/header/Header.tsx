@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import FilterContainer from "./FilterContainer";
 import {Button, Icon, Input} from "../../../styles/common";
-import MyPageList from "../MyPageList";
+import MyPageList from "./MyPageList";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
@@ -81,7 +81,7 @@ const NavBtn = styled(Button)`
 
 const NavIcon = styled(Icon)`
   color: ${props => props.theme.color.primary};
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   &:hover{
     transform: scale(110%);
   }
@@ -95,7 +95,7 @@ interface PropsToKaKaoMap {
     setSearchDBKeyword: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const MapNavigationBar = ({
+const Header = ({
                               setSearchedPlaceInfoInNav,
                               removeMarker,
                               setDBData,
@@ -169,24 +169,23 @@ const MapNavigationBar = ({
             </InputWrapper>
             <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>
-                {
-                    isLoggedin ? (
                         <div onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
                             <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
-                                <Link to="/mypage">
-                                    <NavIcon className="material-symbols-rounded">person</NavIcon>
-                                </Link>
+                                {
+                                    isLoggedin ? (
+                                        <Link to="/mypage">
+                                            <NavIcon className="material-symbols-rounded">person</NavIcon>
+                                        </Link>
+                                    ) : (
+                                        <NavIcon onClick={() => dispatch(setIsOpenedLoginModal(true))} className="material-symbols-rounded">person</NavIcon>
+                                    )
+                                }
                             </NavBtn>
                             {isMypage && <MyPageList/>}
                         </div>
-                    ) : (
-                        <NavBtn onClick={() => dispatch(setIsOpenedLoginModal(true))}>
-                            <NavIcon className="material-symbols-rounded">login</NavIcon>
-                        </NavBtn>)
-                }
             </NavLoginOrMyPage>
         </Base>
     );
 }
 
-export default MapNavigationBar;
+export default Header;

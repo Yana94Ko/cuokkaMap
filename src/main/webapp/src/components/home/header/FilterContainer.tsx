@@ -7,10 +7,9 @@ import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReduce
 import {RootState} from "../../../modules";
 import {setIsOpenedCafeInfo} from "../../../modules/viewReducer";
 
-const Base = styled.div`
+const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   position: absolute;
   top: 4rem;
-  //right: 30rem;
   left: 45vw;
   display: flex;
   overflow-x: scroll;
@@ -34,6 +33,10 @@ const Base = styled.div`
   & > button:last-child {
     margin-right: 0;
   }
+
+  ${props => props.isOpenedPostCafe && css`
+    display: none;
+  `}
 `;
 const FilterTag = styled(Tag)`
   white-space: nowrap;
@@ -69,9 +72,7 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
     const dispatch = useDispatch();
 
     const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
-    const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
     const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
-    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
 
     const filterContent: filterContentType = [
         {
@@ -108,33 +109,12 @@ const FilterContainer = ({setSearchDBKeyword}: FilterContainerProps) => {
             dispatch(setCurrentFilter([event.currentTarget.id]));
         }
     }
-    const filterBookmarkHandler = (event:React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        dispatch(setIsBookmarkMode(!isBookmarkMode));
-        //[YANA] 북마크 검색시 키워드,필터 해제
-        dispatch(setCurrentFilter([]));
-        setSearchDBKeyword("");
-        dispatch(setIsOpenedCafeInfo(false));
-
-    }
-
 
     return (
-        <Base>
-            {
-                isLoggedin && (
-                    <FilterTag
-                        clickable={true}
-                        active={isBookmarkMode}
-                        onClick={filterBookmarkHandler}
-                    >
-                        <Icon className="material-symbols-rounded">bookmark_border</Icon>
-                    </FilterTag>
-                )
-            }
+        <Base isOpenedPostCafe={isOpenedPostCafe}>
             {filterContent.map((filter: { name: string, id: string }, i: number) => (
                 <FilterTag clickable={true}
-                           active={currentFilter.includes(filter.id)}
+                           active={currentFilter?.includes(filter.id)}
                            onClick={filterClickHandler}
                            key={i}
                            id={filter.id}

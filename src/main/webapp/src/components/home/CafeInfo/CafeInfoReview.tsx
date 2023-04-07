@@ -40,19 +40,6 @@ const EmojiPickerWrapper = styled.ul<{ mode: string }>`
       border: none;
       cursor: default;
       padding: 0;
-
-      &::after {
-        content: "|";
-        color: ${props => props.theme.color.darkGray};
-        font-weight: 300;
-        font-size: ${props => props.theme.fontSize.sm};
-      }
-
-      &:last-child {
-        &::after {
-          display: none;
-        }
-      }
     }
 
     & ${EmojiImg} {

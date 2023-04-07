@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import {Icon} from "../../styles/common";
+import {Icon} from "../styles/common";
 
 
 const Base = styled.div`

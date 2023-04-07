@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../modules";
 import Modal from "../components/Modal";
 import KakaoMap from "../components/home/KakaoMap";
-import KakaoLogin from "../components/home/header/KakaoLogin";
+import KakaoLogin from "../components/KakaoLogin";
 import {setIsBookmarkMode} from "../modules/filterReducer";
 
 
