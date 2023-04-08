@@ -1,20 +1,29 @@
 import React, {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
 
 import {RootState} from "../../modules";
-import {Icon} from "../../styles/common";
+import {Button, Icon} from "../../styles/common";
 import Card from "./Card";
 import Pagination from "./Pagination";
+import {setIsBookmarkMode} from "../../modules/filterReducer";
+import {useNavigate} from "react-router-dom";
+import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import {setIsOpenedCafeInfo, setNeedToFocus} from "../../modules/viewReducer";
 
 const Base = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
 `;
 
 const CardWrapper = styled.div``;
-
+const BookmarkHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
 const BookmarkFooter = styled.div`
   display: flex;
   justify-content: space-between;
@@ -26,12 +35,43 @@ const BookmarkFooter = styled.div`
 const PlaceName = styled.p`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 700;
-  margin-bottom: 10px;
 `;
+
+const MapGuideText = styled.p`
+  margin-left: 10rem;
+  text-align: right;
+  font-size: ${props => props.theme.fontSize.sm};
+  color: ${props => props.theme.color.darkGray};
+  display: none;
+`;
+
+const GoToMapBtn = styled(Button)`
+  padding: 0.2rem 0.5rem;
+  font-size: ${props => props.theme.fontSize.sm};
+  background-color: transparent;
+  display: flex;
+  justify-content: end;
+
+  &::before {
+    content: "맵에서 보기";
+    color: ${props => props.theme.color.darkGray};
+    display: none;
+    line-height: 20px;
+    margin-right: 10px;
+  }
+
+  &:hover {
+    &::before {
+      display: inline;
+    }
+  }
+`;
+
 const PlaceAdress = styled.p`
   font-size: ${props => props.theme.fontSize.sm};
   font-weight: 500;
 `;
+
 const DeleteBtn = styled(Icon)`
   color: ${props => props.theme.color.darkGray};
   transition: all 0.2s ease-in-out;
@@ -40,7 +80,6 @@ const DeleteBtn = styled(Icon)`
     color: ${props => props.theme.color.zero};
   }
 `;
-
 
 const Notice = styled.h1`
   text-align: center;
@@ -64,7 +103,12 @@ const Bookmark = () => {
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
     let offset = (page - 1) * limit;
 
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch();
+
     const userId = useSelector((state: RootState) => state.userReducer.userId);
+
     useEffect(() => {
         if (needToSet) {
             fetchMyBookmark();
@@ -87,10 +131,10 @@ const Bookmark = () => {
                         }
                     let map = new window.kakao.maps.Map(mapContainer, mapOption);
                     // 지도에 확대 축소 컨트롤을 생성한다
-                    let zoomControl = new window.kakao.maps.ZoomControl();
+                    // let zoomControl = new window.kakao.maps.ZoomControl();
 
                     // 지도의 우측에 확대 축소 컨트롤을 추가한다
-                    map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+                    // map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
                     let markerPosition = new window.kakao.maps.LatLng(y, x);
 
                     let marker = new window.kakao.maps.Marker({
@@ -145,6 +189,46 @@ const Bookmark = () => {
         }
     }
 
+    const onGoToMapBtnClick = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        bookmarkData: any) => {
+        fetchPlaceDetail(bookmarkData.place_num);
+    }
+
+    function fetchPlaceDetail(placeNum: string): void {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify({
+                place_num: placeNum,
+                user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
+            }),
+        })
+            .then(response => response.text())
+            .then((message) => {
+                const data = JSON.parse(message);
+                dispatch(setCafeInfoContainer({
+                    data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                    filter: data.filterList,
+                    placeNum: placeNum,
+                    imageList: data.placeImgList,
+                    reviewList: data.placeReviewList,
+                    isBookmarked: data.isBookmarked
+                }));
+            })
+            .then(() => {
+                dispatch(setIsBookmarkMode(true));
+                dispatch(setNeedToFocus(true));
+            })
+            .then(() => {
+                navigate("/");
+                dispatch(setIsOpenedCafeInfo(true));
+            })
+            .catch(err => console.log(err));
+    }
+
     return (
         <Base>
             {
@@ -152,7 +236,14 @@ const Bookmark = () => {
                     <>
                         {bookmarkData.slice(offset, offset + limit).map((bookmarkData: any, idx: number) => (
                             <CardWrapper id="mapCard" key={idx}>
-                                <PlaceName>{JSON.parse(bookmarkData.place_info).place_name}</PlaceName>
+                                <BookmarkHeader>
+                                    <PlaceName>{JSON.parse(bookmarkData.place_info).place_name}</PlaceName>
+                                    <MapGuideText>맵에서 보기</MapGuideText>
+                                    <GoToMapBtn
+                                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => onGoToMapBtnClick(e, bookmarkData)}>
+                                        <Icon className="material-symbols-rounded">map</Icon>
+                                    </GoToMapBtn>
+                                </BookmarkHeader>
                                 <Card height={190}>
                                     <div id={`map${offset + idx}`}
                                          style={{width: "100%", height: "190px", margin: "auto"}}></div>

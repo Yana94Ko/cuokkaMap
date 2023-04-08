@@ -5,6 +5,7 @@ import {Button, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
+import {setCafeInfoContainer} from "../../../modules/cafeInfoReducer";
 
 const UploadButton = styled(Button)`
   width: 100%;
@@ -80,18 +81,15 @@ type dataType = {
     place_num: number;
     user_num: number;
 }
-const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoReview) => {
-    const dispatch = useDispatch();
+const CafeInfoPhotoReview = () => {
+    const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
+    const dispatch = useDispatch();
+    console.log(cafeInfoContainer);
     const {isLoggedin} = useSelector((state: RootState) => state.userReducer)
 
     const sessionId = sessionStorage.getItem("id");
-    let cafeInfoImageData: string[], cafeInfoUserNum: number[], cafeInfoPlaceNum: string | null;
-    if (cafeInfoContainer !== undefined) {
-        cafeInfoImageData = Object.values(cafeInfoContainer)[3].map((data: dataType) => ([data.placeImg_src, data.placeImg_num]));
-        cafeInfoUserNum = Object.values(cafeInfoContainer)[3].map((data: dataType) => (data.user_num));
-        cafeInfoPlaceNum = Object.values(cafeInfoContainer)[2]
-    }
+
     // 허용가능한 확장자 목록!
     const ALLOW_FILE_EXTENSION = "jpg,jpeg,png";
     const FILE_SIZE_MAX_LIMIT = 10 * 1024 * 1024;  // 10MB
@@ -149,7 +147,7 @@ const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoRev
             const formData = new FormData();
 
             formData.append('place_img', files);
-            formData.append('place_num', Object.values(cafeInfoContainer)[2]);
+            formData.append('place_num', cafeInfoContainer.placeNum);
             formData.append('user_num', sessionId);
 
             fetch('/api/place/uploadPlaceImg', {
@@ -173,9 +171,9 @@ const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoRev
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "placeImg_num": image[1],
+                    "placeImg_num": image.placeImg_num,
                     "user_num": sessionId,
-                    "placeImg_src": image[0]
+                    "placeImg_src": image.placeImg_src
                 })
             })
                 .then(response => response.text())
@@ -194,19 +192,19 @@ const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoRev
                 'Content-Type': "application/json"
             },
             body: JSON.stringify({
-                place_num: cafeInfoPlaceNum
+                place_num: cafeInfoContainer.placeNum
             }),
         })
             .then(response => response.text())
             .then((message) => {
                 const data = JSON.parse(message);
-                setCafeInfoContainer({
+                dispatch(setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
-                    placeNum: cafeInfoPlaceNum,
+                    placeNum: cafeInfoContainer.placeNum,
                     imageList: data.placeImgList,
                     reviewList: data.placeReviewList
-                });
+                }));
             })
     }
 
@@ -225,17 +223,17 @@ const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoRev
                 <input type="file" name="file" id="file" disabled={!isLoggedin} style={{display: "none"}}
                        onChange={uploadFileReview}/>
             </UploadButton>
-            {/*<input type="button" onClick={submit} value="등록"/>*/}
             <PhotoContainer>
                 {
-                    cafeInfoImageData?.length === 0 ? (
+                    cafeInfoContainer.imageList.length === 0 ? (
                         <NoReview>아직 등록된 후기가 없습니다!<br/>카페에 방문하셨다면 첫 후기를 올려주세요 :)</NoReview>
                     ) : (
                         <PhotoUl>
-                            {cafeInfoImageData?.map((image: string, i: number) => (
-                                <PhotoLi key={i}>
-                                    <PhotoImg src={process.env.PUBLIC_URL + "/upload/" + image[0]} alt={image[0]}/>
-                                    {Number(sessionId) === cafeInfoUserNum[i] && (
+                            {cafeInfoContainer.imageList.map((image: any, idx: number) => (
+                                <PhotoLi key={idx}>
+                                    <PhotoImg src={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
+                                              alt={image.placeImg_src}/>
+                                    {Number(sessionId) === image.user_num && (
                                         <DeleteBtn
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) => removePhotoReview(e, image)}>
                                             <Icon className="material-symbols-rounded">delete</Icon>
@@ -243,7 +241,6 @@ const CafeInfoPhotoReview = ({cafeInfoContainer, setCafeInfoContainer}: PhotoRev
                                 </PhotoLi>
                             ))}
                         </PhotoUl>
-
                     )
                 }
             </PhotoContainer>
