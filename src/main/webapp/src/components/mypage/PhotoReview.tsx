@@ -9,13 +9,11 @@ import Pagination from "./Pagination";
 
 const Base = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 2rem;
 `;
 
-const CardWrapper = styled.div`
-
-`;
+const CardWrapper = styled.div``;
 
 const ReviewHeader = styled.div`
   display: flex;
@@ -29,6 +27,12 @@ const PlaceName = styled.p`
   font-weight: 700;
 `;
 const DeleteBtn = styled(Icon)`
+  color: ${props => props.theme.color.darkGray};
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    color: ${props => props.theme.color.zero};
+  }
 `;
 
 const ReviewImg = styled.img`
@@ -45,11 +49,11 @@ const PhotoReview = () => {
     const [imgDataLength, setImgDataLength] = useState<number>();
 
     //한 페이지에서 보여줄 게시물의 게수
-    let limit = 3;
+    let limit = 8;
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
-    let offset = (page-1) * limit;
+    let offset = (page - 1) * limit;
 
     const userId = useSelector((state: RootState) => state.userReducer.userId);
 
@@ -99,32 +103,28 @@ const PhotoReview = () => {
         }
     }
     return (
-        <Base>
-            {
-                reviewImgData.length > 0 ? (
-                    <>
-                        {
-                            reviewImgData.slice(offset, offset+limit).map((reviewImg: any, idx: number) => (
-                                <CardWrapper key={idx}>
-                                    <Card>
-                                        <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
-                                    </Card>
-                                    <ReviewHeader>
-                                        <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
-                                        <DeleteBtn className="material-symbols-rounded"
-                                                   onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
-                                        >delete</DeleteBtn>
-                                    </ReviewHeader>
-                                </CardWrapper>
-                            ))
-                        }
-                        <Pagination dataLength={imgDataLength} limit={limit} page={page} setPage={setPage}/>
-                    </>
-                ) : (
-                    <Notice>등록하신 사진 후기가 없습니다.</Notice>
-                )
-            }
-        </Base>
+        reviewImgData.length > 0 ? (
+            <Base>
+                {
+                    reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
+                        <CardWrapper key={idx}>
+                            <Card height={200}>
+                                <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                            </Card>
+                            <ReviewHeader>
+                                <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
+                                <DeleteBtn className="material-symbols-rounded"
+                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
+                                >delete</DeleteBtn>
+                            </ReviewHeader>
+                        </CardWrapper>
+                    ))
+                }
+                <Pagination dataLength={imgDataLength} limit={limit} page={page} setPage={setPage}/>
+            </Base>
+        ) : (
+            <Notice>등록하신 사진 후기가 없습니다.</Notice>
+        )
     )
 }
 

@@ -1,41 +1,84 @@
 import React, {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
-import {Icon} from "../../styles/common";
-import Card from "./Card";
+
 import {RootState} from "../../modules";
+import {Button, Icon} from "../../styles/common";
+import Card from "./Card";
 import Pagination from "./Pagination";
+import {setIsBookmarkMode} from "../../modules/filterReducer";
+import {useNavigate} from "react-router-dom";
+import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import {setIsOpenedCafeInfo, setNeedToFocus} from "../../modules/viewReducer";
 
 const Base = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
 `;
-const CardWrapper = styled.div`
 
-`;
-
+const CardWrapper = styled.div``;
 const BookmarkHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+const BookmarkFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-content: center;
   margin-top: 1rem;
+  line-height: 20px;
 `;
 
 const PlaceName = styled.p`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 700;
-  margin-bottom:10px;
-`;
-const PlaceAdress = styled.p`
-  font-size: ${props => props.theme.fontSize.base};
-  font-weight: 700;
-`;
-const DeleteBtn = styled(Icon)`
 `;
 
-const ReviewImg = styled.img`
-  width: 110%;
+const MapGuideText = styled.p`
+  margin-left: 10rem;
+  text-align: right;
+  font-size: ${props => props.theme.fontSize.sm};
+  color: ${props => props.theme.color.darkGray};
+  display: none;
+`;
+
+const GoToMapBtn = styled(Button)`
+  padding: 0.2rem 0.5rem;
+  font-size: ${props => props.theme.fontSize.sm};
+  background-color: transparent;
+  display: flex;
+  justify-content: end;
+
+  &::before {
+    content: "맵에서 보기";
+    color: ${props => props.theme.color.darkGray};
+    display: none;
+    line-height: 20px;
+    margin-right: 10px;
+  }
+
+  &:hover {
+    &::before {
+      display: inline;
+    }
+  }
+`;
+
+const PlaceAdress = styled.p`
+  font-size: ${props => props.theme.fontSize.sm};
+  font-weight: 500;
+`;
+
+const DeleteBtn = styled(Icon)`
+  color: ${props => props.theme.color.darkGray};
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    color: ${props => props.theme.color.zero};
+  }
 `;
 
 const Notice = styled.h1`
@@ -54,23 +97,26 @@ const Bookmark = () => {
     const [bookmarkLength, setBookmarkLength] = useState<number>();
     const [needToSet, setNeedToSet] = useState<boolean>(true);
     //한 페이지에서 보여줄 게시물의 게수
-    let limit = 3;
+    let limit = 8;
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
-    let offset = (page-1) * limit;
+    let offset = (page - 1) * limit;
+
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch();
 
     const userId = useSelector((state: RootState) => state.userReducer.userId);
-    useEffect( ()=>{
-        if(needToSet){
+
+    useEffect(() => {
+        if (needToSet) {
             fetchMyBookmark();
         }
-            if(bookmarkData.length>0){
-                console.log(offset, "/", bookmarkData.length > offset+limit ? offset+limit : bookmarkData.length)
-                for (let i = offset; i < (bookmarkData.length > offset+limit ? offset+limit : bookmarkData.length); i++) {
-                    if(document.getElementById("map" + i) !== null){
+        if (bookmarkData.length > 0) {
+            for (let i = offset; i < (bookmarkData.length > offset + limit ? offset + limit : bookmarkData.length); i++) {
+                if (document.getElementById("map" + i) !== null) {
 
-                    console.log("라랄랄"+i)
                     const y = JSON.parse(bookmarkData[i].place_info).y;
                     const x = JSON.parse(bookmarkData[i].place_info).x;
                     let mapContainer = document.getElementById("map" + i),
@@ -85,21 +131,20 @@ const Bookmark = () => {
                         }
                     let map = new window.kakao.maps.Map(mapContainer, mapOption);
                     // 지도에 확대 축소 컨트롤을 생성한다
-                    let zoomControl = new window.kakao.maps.ZoomControl();
+                    // let zoomControl = new window.kakao.maps.ZoomControl();
 
                     // 지도의 우측에 확대 축소 컨트롤을 추가한다
-                    map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
-                    let markerPosition  = new window.kakao.maps.LatLng(y,x);
+                    // map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+                    let markerPosition = new window.kakao.maps.LatLng(y, x);
 
                     let marker = new window.kakao.maps.Marker({
                         position: markerPosition
                     });
 
                     marker.setMap(map);
-
-                    }
                 }
             }
+        }
 
     }, [needToSet, offset])
 
@@ -122,53 +167,97 @@ const Bookmark = () => {
             .catch(err => console.log("에러", err));
     }
 
-    function makeMap(){
-
-    }
-
-    const onDeleteClick = (e:React.MouseEvent<HTMLSpanElement>) => {
+    const onDeleteClick = (e: React.MouseEvent<HTMLSpanElement>) => {
         if (!(e.target instanceof Element)) {
             return
         }
-        if(window.confirm("북마크를 삭제하시겠습니까?")) {
+        if (window.confirm("북마크를 삭제하시겠습니까?")) {
             fetch('/api/place/deleteFavoritePlace', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "place_num" : e.target.id,
+                    "place_num": e.target.id,
                     "user_num": userId,
                 })
             })
                 .then(() => fetchMyBookmark())
                 .catch(err => console.log("에러", err));
-        }else{
+        } else {
             return;
         }
     }
 
-    return(
+    const onGoToMapBtnClick = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        bookmarkData: any) => {
+        fetchPlaceDetail(bookmarkData.place_num);
+    }
+
+    function fetchPlaceDetail(placeNum: string): void {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify({
+                place_num: placeNum,
+                user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
+            }),
+        })
+            .then(response => response.text())
+            .then((message) => {
+                const data = JSON.parse(message);
+                dispatch(setCafeInfoContainer({
+                    data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
+                    filter: data.filterList,
+                    placeNum: placeNum,
+                    imageList: data.placeImgList,
+                    reviewList: data.placeReviewList,
+                    isBookmarked: data.isBookmarked
+                }));
+            })
+            .then(() => {
+                dispatch(setIsBookmarkMode(true));
+                dispatch(setNeedToFocus(true));
+            })
+            .then(() => {
+                navigate("/");
+                dispatch(setIsOpenedCafeInfo(true));
+            })
+            .catch(err => console.log(err));
+    }
+
+    return (
         <Base>
             {
                 bookmarkData.length > 0 ? (
                     <>
-                        {bookmarkData.slice(offset, offset+limit).map((bookmarkData: any, idx: number) => (
+                        {bookmarkData.slice(offset, offset + limit).map((bookmarkData: any, idx: number) => (
                             <CardWrapper id="mapCard" key={idx}>
-                                    <PlaceName>{JSON.parse(bookmarkData.place_info).place_name}</PlaceName>
-                                <Card>
-                                    <div id={`map${offset + idx}`} style={{width:"100%", height:"200px",margin:"auto"}}></div>
-                                </Card>
                                 <BookmarkHeader>
+                                    <PlaceName>{JSON.parse(bookmarkData.place_info).place_name}</PlaceName>
+                                    <MapGuideText>맵에서 보기</MapGuideText>
+                                    <GoToMapBtn
+                                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => onGoToMapBtnClick(e, bookmarkData)}>
+                                        <Icon className="material-symbols-rounded">map</Icon>
+                                    </GoToMapBtn>
+                                </BookmarkHeader>
+                                <Card height={190}>
+                                    <div id={`map${offset + idx}`}
+                                         style={{width: "100%", height: "190px", margin: "auto"}}></div>
+                                </Card>
+                                <BookmarkFooter>
                                     <PlaceAdress>{JSON.parse(bookmarkData.place_info).road_address_name}</PlaceAdress>
                                     <DeleteBtn className="material-symbols-rounded"
                                                id={bookmarkData.place_num}
                                                onClick={onDeleteClick}
                                     >delete</DeleteBtn>
-                                </BookmarkHeader>
+                                </BookmarkFooter>
                             </CardWrapper>
                         ))}
-                        <Pagination dataLength={bookmarkLength} limit={limit} page={page} setPage={setPage} />
+                        <Pagination dataLength={bookmarkLength} limit={limit} page={page} setPage={setPage}/>
                     </>
                 ) : (
                     <Notice>등록하신 북마크가 없습니다.</Notice>

@@ -10,10 +10,14 @@ const Base = styled.div`
   background-color: ${props => props.theme.color.white};
   color: ${props => props.theme.color.text};
   width: 100%;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
   border-radius: 1rem;
   z-index: 999;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .map_wrap, .map_wrap * {
     font-size: 12px;
@@ -67,32 +71,22 @@ const Base = styled.div`
     margin-top: 1rem;
   }
 
-  #placesList .item span {
-    display: block;
-    margin-top: 0.5rem;
-  }
-
   #placesList .item h5, #placesList .item .info {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    font-size: ${props => props.theme.fontSize.md};
+    font-weight: 700;
+    margin-bottom: 0.5rem;
   }
 
-  #placesList .item .info {
-    //padding: 10px 0 10px 55px;
+  #placesList .item .info h5 {
+    font-size: ${props => props.theme.fontSize.md};
   }
 
-  #placesList .info .gray {
-    color: #8a8a8a;
-  }
-
-  #placesList .info .jibun {
-    padding-left: 26px;
-    background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;
-  }
-
-  #placesList .info .tel {
-    color: #009900;
+  #placesList .item span {
+    font-size: ${props => props.theme.fontSize.sm};
+    font-weight: 300;
   }
 
   #placesList .item .markerbg {
@@ -101,7 +95,7 @@ const Base = styled.div`
     width: 36px;
     height: 37px;
     margin: 10px 0 0 10px;
-    background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;
+    background: url(${process.env.PUBLIC_URL + "assets/images/markers/search.png"}) no-repeat;
   }
 
   #placesList .item .marker_1 {
@@ -163,22 +157,6 @@ const Base = styled.div`
   #placesList .item .marker_15 {
     background-position: 0 -654px;
   }
-
-  #pagination {
-    margin: 10px auto;
-    text-align: center;
-  }
-
-  #pagination a {
-    display: inline-block;
-    margin-right: 10px;
-  }
-
-  #pagination .on {
-    font-weight: bold;
-    cursor: default;
-    color: #777;
-  }
 `;
 
 interface listProps {
@@ -209,4 +187,3 @@ const SearchedListContainer = ({setSearchedListCheck}: listProps) => {
 }
 
 export default SearchedListContainer;
-
