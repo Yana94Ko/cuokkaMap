@@ -4,6 +4,7 @@ import {Button, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
+import {setCafeInfoContainer} from "../../../modules/cafeInfoReducer";
 
 const Base = styled.div``;
 
@@ -153,9 +154,10 @@ type Props = {
     setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
 
 }
-const CafeInfoReview = ({cafeInfoContainer, setCafeInfoContainer}: Props) => {
-    const [copiedData, setCopiedData] = useState<any>({...cafeInfoContainer})
+const CafeInfoReview = () => {
+    const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
+    const [copiedData, setCopiedData] = useState<any>({...cafeInfoContainer})
     const [reviewText, setReviewText] = useState<string>("");
     const [reviewEmoji, setReviewEmoji] = useState<number>(0);
 
@@ -275,13 +277,13 @@ const CafeInfoReview = ({cafeInfoContainer, setCafeInfoContainer}: Props) => {
             .then((message) => {
                 const data = JSON.parse(message);
                 console.log(data)
-                setCafeInfoContainer({
+                dispatch(setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
                     placeNum: copiedData.placeNum,
                     imageList: data.placeImgList,
                     reviewList: data.placeReviewList
-                });
+                }));
             })
     }
 

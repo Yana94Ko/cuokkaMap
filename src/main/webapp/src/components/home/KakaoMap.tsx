@@ -5,10 +5,12 @@ import Header from "./header/Header";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import {setIsOpenedLoginModal} from "../../modules/userReducer";
-import {setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../modules/viewReducer";
+import {setIsOpenedCafeInfo, setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
 import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
+import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import cafeInfo from "../home/CafeInfo";
 
 const Base = styled.div`
   width: 100vw;
@@ -107,15 +109,12 @@ const BookmarkBtn = styled(Button)<{ isBookmarkMode: boolean }>`
   align-items: center;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
+  background-color: ${props => props.theme.color.white};
 
-  ${props => props.isBookmarkMode ? css`
-    background-color: ${props => props.theme.color.primary};
-
+  ${props => props.isBookmarkMode === false && css`
     & span {
-      color: ${props => props.theme.color.white};
+      font-variation-settings: 'FILL' 0;
     }
-  ` : css`
-    background-color: ${props => props.theme.color.white};
   `}
   &:hover {
     transform: scale(110%);
@@ -165,7 +164,7 @@ const KakaoMap = ({
     const dispatch = useDispatch();
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
-    const {isOpenedCafeInfo, isOpenedPostCafe} = useSelector((state: RootState) => state.viewReducer);
+    const {isOpenedCafeInfo, isOpenedPostCafe, needToFocus} = useSelector((state: RootState) => state.viewReducer);
     const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
     const [isPostedCafe, setIsPostedCafe] = useState<boolean>(false);
     /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
@@ -200,9 +199,10 @@ const KakaoMap = ({
     //MapNav에서 검색된 데이터를 담을 마커 배열 state
     const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
     //DB검색된 카페 클릭시 해당 마커의 정보만 담을 state
-    const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
+    // const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
     //마커를 클릭해서 카페추가에 올릴 정보
     const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
+    const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
 
     /*------------------------------------------- [ END ] 데이터 관련 -------------------------------------------*/
@@ -488,13 +488,13 @@ const KakaoMap = ({
     //         }).catch(err => console.log("에러", err));
     // }
 
-    function fetchPlaceDetail(placeNum:string):void{
-        fetch('/api/place/selectDetailPlaceInfo',{
-            method:'POST',
-            headers:{
+    function fetchPlaceDetail(placeNum: string): void {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
                 'Content-Type': "application/json"
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 place_num: placeNum,
                 user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
             }),
@@ -502,15 +502,14 @@ const KakaoMap = ({
             .then(response => response.text())
             .then((message) => {
                 const data = JSON.parse(message);
-                console.log(JSON.parse(message).isBookmarked);
-                setCafeInfoContainer({
+                dispatch(setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
                     placeNum: placeNum,
                     imageList: data.placeImgList,
                     reviewList: data.placeReviewList,
                     isBookmarked: data.isBookmarked
-                });
+                }));
                 dispatch(setIsOpenedCafeInfo(true));
                 // moveMapAfterPost(data.y, data.x);
             }).catch(err => console.log(err));
@@ -543,7 +542,6 @@ const KakaoMap = ({
                 (function (marker: any, data: any, filter?: any, placeNum?: string) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
                         fetchPlaceDetail(placeNum);
-                        moveToPosition(data.y, data.x);
                     });
                     window.kakao.maps.event.addListener(marker, 'mouseover', function () {
                         displayInfowindow(marker, data.place_name);
@@ -556,10 +554,13 @@ const KakaoMap = ({
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            if(!isPostedCafe){
+            if (!needToFocus) {
                 mapState.setBounds(bounds);
             } else {
-                setIsPostedCafe(!isPostedCafe)
+                if (cafeInfoContainer !== undefined) {
+                    moveToPosition(cafeInfoContainer.data.y, cafeInfoContainer.data.x);
+                    dispatch(setNeedToFocus(!needToFocus));
+                }
             }
 
             // if(keyword === "" && currentFilter.length > 0){
@@ -619,7 +620,7 @@ const KakaoMap = ({
         bounds.extend(placePosition);
         mapState.setBounds(bounds);
         mapState.setCenter(placePosition);
-        mapState.setLevel(4);
+        mapState.setLevel(2);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
@@ -654,7 +655,6 @@ const KakaoMap = ({
         }
     }
 
-
     return (
         <Base>
             <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe}/>
@@ -674,20 +674,17 @@ const KakaoMap = ({
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
                                   searchPlaces={searchPlaces}
                                   removeMarker={removeMarker}
-                                  moveToPosition={moveToPosition}
                                   removeMarkerAPI={removeMarkerAPI}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                                   searchCafeInfo={searchCafeInfo}
                                   setSearchCafeInfo={setSearchCafeInfo}
                                   setDBData={setDBData}
-                                  setIsPostedCafe={setIsPostedCafe}
                     />
                 )
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}
-                              fetchPlaceDetail={fetchPlaceDetail}/>
+                    <CafeInfo fetchPlaceDetail={fetchPlaceDetail}/>
                 )
             }
             {/* 북마크 버튼 */}

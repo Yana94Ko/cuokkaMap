@@ -4,8 +4,11 @@ import {useDispatch, useSelector} from "react-redux";
 
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
-import {setIsOpenedPostCafe} from "../../modules/viewReducer";
+import {setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import {RootState} from "../../modules";
+import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import {Simulate} from "react-dom/test-utils";
+import load = Simulate.load;
 
 const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   background-color: #fff;
@@ -160,7 +163,6 @@ interface FnProps {
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
     removeMarker: () => void;
-    moveToPosition: (x: number, y: number) => void;
     displayDBPlaces: (data: any[], filter?: any[]) => void;
     dbData: any[];
     dbFilterData: any[];
@@ -168,7 +170,6 @@ interface FnProps {
     searchCafeInfo: string;
     setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
     setDBData: React.Dispatch<SetStateAction<any[]>>;
-    setIsPostedCafe: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -176,13 +177,11 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          moveToPosition,
                           displayDBPlaces, dbData, dbFilterData,
                           removeMarkerAPI,
                           searchCafeInfo,
                           setSearchCafeInfo,
                           setDBData,
-                          setIsPostedCafe,
                       }: FnProps) => {
     const dispatch = useDispatch();
 
@@ -309,23 +308,17 @@ const PostCafeInfo = ({
                     const placeInfo = JSON.parse(loadData.place_info);
                     alert("카페등록이 완료되었습니다.");
                     removeMarker();
-                    //settingKeywordPostCafeName(placeInfo.place_name);
                     dispatch(setIsOpenedPostCafe(false));
-                    settingKeywordPostCafeName(placeInfo);
-
-                    // var markerPosition = new window.kakao.maps.LatLng(placeInfo.y, placeInfo.x);
-                    // var marker = new window.kakao.maps.Markers({
-                    //     image:filterMarkerImg,
-                    //     position:markerPosition,
-                    //     title:placeInfo.place_name
-                    // });
-                    // marker.setMap(mapState);
                     settingKeywordPostCafeName(loadData);
-                    setIsPostedCafe(true);
-                    return placeInfo;
-                })
-                .then((placeInfo) => {
-                    moveToPosition(placeInfo.y, placeInfo.x);
+                    dispatch(setNeedToFocus(true))
+                    dispatch(setCafeInfoContainer({
+                        data: placeInfo,
+                        filter: loadData.filterList,
+                        placeNum: loadData.place_num,
+                        imageList: null,
+                        reviewList: null,
+                        isBookmarked: false
+                    }));
                 });
         }
     }

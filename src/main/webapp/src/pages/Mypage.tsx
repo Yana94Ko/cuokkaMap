@@ -22,11 +22,11 @@ const Base = styled.main`
   }
   @media ${props => props.theme.windowSize.tablet} {
     padding: 2rem 4rem 8rem 4rem;
-    
+
   }
   @media ${props => props.theme.windowSize.mobile} {
     padding: 2rem 2rem 8rem 2rem;
-    
+
 
     /* mobile viewport bug fix */
     /* iOS only */
@@ -111,30 +111,20 @@ const MyPage = () => {
     const dispatch = useDispatch();
 
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
-    const {
-        currentMyPageView,
-        isOpenedPostCafe,
-        isOpenedCafeInfo
-    } = useSelector((state: RootState) => state.viewReducer);
-
-    useEffect(() => {
-        dispatch(setCurrentMyPageView("photo"));
-    }, []);
+    const {currentMyPageView} = useSelector((state: RootState) => state.viewReducer);
 
     useEffect(() => {
         if (!isLoggedin) {
             navigate("/");
             window.location.reload();
         }
-        if (isOpenedPostCafe) {
-            dispatch(setIsOpenedPostCafe(false));
-        }
-        if (isOpenedCafeInfo) {
-            dispatch(setIsOpenedCafeInfo(false));
-        }
     });
 
     const myPageContent: TabProps[] = [
+        {
+            name: "북마크",
+            id: "bookmark"
+        },
         {
             name: "사진",
             id: "photo"
@@ -142,11 +132,7 @@ const MyPage = () => {
         {
             name: "후기",
             id: "review"
-        },
-        {
-            name: "북마크",
-            id: "bookmark"
-        },
+        }
     ];
 
     const onTabClick = (e: React.MouseEvent<HTMLDivElement>) => {

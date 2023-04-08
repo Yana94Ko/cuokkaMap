@@ -2,11 +2,13 @@ import {combineReducers} from "redux";
 import filterReducer from "./filterReducer";
 import userReducer from "./userReducer";
 import viewReducer from "./viewReducer";
+import cafeInfoReducer from "./cafeInfoReducer";
 
 const rootReducer = combineReducers({
     filterReducer,
     userReducer,
-    viewReducer
+    viewReducer,
+    cafeInfoReducer
 });
 
 export default rootReducer;
