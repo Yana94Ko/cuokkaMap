@@ -59,7 +59,7 @@ const TitleWrapper = styled.div`
   display: flex;
   position: sticky;
   position: -webkit-sticky;
-  z-index: 11;
+  z-index: 1111;
   top: 0;
   left: 0;
   background-color: #fff;
@@ -177,7 +177,7 @@ const ReviewTab = styled.div`
   display: flex;
   position: sticky;
   position: -webkit-sticky;
-  z-index: 11;
+  z-index: 1111;
   top: 50px;
   background-color: #fff;
   padding: 2rem 0 0 0;
