@@ -167,6 +167,7 @@ const KakaoMap = ({
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const {isOpenedCafeInfo, isOpenedPostCafe} = useSelector((state: RootState) => state.viewReducer);
     const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
+    const [isPostedCafe, setIsPostedCafe] = useState<boolean>(false);
     /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
 
 
@@ -196,7 +197,6 @@ const KakaoMap = ({
     /*------------------------------------------- [ END ] 지도, 마커 등 맵 관련 -------------------------------------------*/
 
     /*------------------------------------------- 데이터 관련 START -------------------------------------------*/
-
     //MapNav에서 검색된 데이터를 담을 마커 배열 state
     const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
     //DB검색된 카페 클릭시 해당 마커의 정보만 담을 state
@@ -487,13 +487,13 @@ const KakaoMap = ({
     //         }).catch(err => console.log("에러", err));
     // }
 
-    function fetchPlaceDetail(placeNum: string): void {
-        fetch('/api/place/selectDetailPlaceInfo', {
-            method: 'POST',
-            headers: {
+    function fetchPlaceDetail(placeNum:string):void{
+        fetch('/api/place/selectDetailPlaceInfo',{
+            method:'POST',
+            headers:{
                 'Content-Type': "application/json"
             },
-            body: JSON.stringify({
+            body:JSON.stringify({
                 place_num: placeNum,
                 user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
             }),
@@ -514,6 +514,7 @@ const KakaoMap = ({
                 // moveMapAfterPost(data.y, data.x);
             }).catch(err => console.log(err));
     }
+
 
 //DB의 카페 검색 결과 목록과 마커를 표출하는 함수
     function displayDBPlaces(places: any[], filterData?: any[]) {
@@ -553,7 +554,12 @@ const KakaoMap = ({
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            mapState.setBounds(bounds, 200, 200, 200, 200);
+            if(!isPostedCafe){
+                mapState.setBounds(bounds);
+            } else {
+                setIsPostedCafe(!isPostedCafe)
+            }
+
             // if(keyword === "" && currentFilter.length > 0){
             //     mapState.setLevel(7);// TODO(FE) : 데이터가 많아지고 나면 setLevel을 낮추고 자기 위치에서 필터 할 수 있도록 조정
             //
@@ -606,8 +612,11 @@ const KakaoMap = ({
 
     //카페등록 후 등록한 위치로 이동시키는 함수
     function moveMapAfterPost(x: number, y: number) {
-        var moveLatLng = new window.kakao.maps.LatLng(x, y);
-        mapState.setCenter(moveLatLng);
+        const bounds = new window.kakao.maps.LatLngBounds();
+        const placePosition = new window.kakao.maps.LatLng(x, y)
+        bounds.extend(placePosition);
+        mapState.setBounds(bounds);
+        mapState.setCenter(placePosition);
         mapState.setLevel(4);
     }
 
@@ -672,6 +681,7 @@ const KakaoMap = ({
                                   mapState={mapState}
                                   markersTmp={markersTmp}
                                   setDBData={setDBData}
+                                  setIsPostedCafe={setIsPostedCafe}
                     />
                 )
             }

@@ -170,6 +170,7 @@ interface FnProps {
     mapState: any;
     markersTmp: any[];
     setDBData: React.Dispatch<SetStateAction<any[]>>;
+    setIsPostedCafe:React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -185,7 +186,8 @@ const PostCafeInfo = ({
                           setSearchCafeInfo,
                           mapState,
                           markersTmp,
-                          setDBData
+                          setDBData,
+                          setIsPostedCafe
                       }: FnProps) => {
     const dispatch = useDispatch();
 
@@ -310,9 +312,22 @@ const PostCafeInfo = ({
                     const placeInfo = JSON.parse(loadData.place_info);
                     alert("카페등록이 완료되었습니다.");
                     removeMarker();
-                    settingKeywordPostCafeName(placeInfo.place_name);
+                    //settingKeywordPostCafeName(placeInfo.place_name);
                     dispatch(setIsOpenedPostCafe(false));
                     settingKeywordPostCafeName(placeInfo);
+
+                    // var markerPosition = new window.kakao.maps.LatLng(placeInfo.y, placeInfo.x);
+                    // var marker = new window.kakao.maps.Markers({
+                    //     image:filterMarkerImg,
+                    //     position:markerPosition,
+                    //     title:placeInfo.place_name
+                    // });
+                    // marker.setMap(mapState);
+                    settingKeywordPostCafeName(loadData);
+                    setIsPostedCafe(true);
+                    return placeInfo;
+                })
+                .then((placeInfo) => {
                     moveMapAfterPost(placeInfo.y, placeInfo.x);
                 });
         }
