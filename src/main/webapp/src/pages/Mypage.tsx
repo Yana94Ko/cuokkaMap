@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react';
-import Header from "../components/mypage/Header";
 import styled, {css} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
+
 import {RootState} from "../modules";
 import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../modules/viewReducer";
+import Header from "../components/mypage/Header";
 import PhotoReview from "../components/mypage/PhotoReview";
 import Review from "../components/mypage/Review";
 import Bookmark from "../components/mypage/Bookmark";
@@ -115,8 +116,13 @@ const MyPage = () => {
     } = useSelector((state: RootState) => state.viewReducer);
 
     useEffect(() => {
+        dispatch(setCurrentMyPageView("photo"));
+    }, []);
+
+    useEffect(() => {
         if (!isLoggedin) {
             navigate("/");
+            window.location.reload();
         }
         if (isOpenedPostCafe) {
             dispatch(setIsOpenedPostCafe(false));
