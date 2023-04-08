@@ -155,7 +155,6 @@ const Review = () => {
                 .catch(err => console.log("에러", err));
         }
     }
-    console.log(reviewData)
     return (
         <Base>
             {
@@ -178,8 +177,7 @@ const Review = () => {
                                     ))
                                 }
                                 <ReviewText>{review.placeReview}</ReviewText>
-                                <ReviewDate>후기 작성 일시
-                                    | {review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
+                                <ReviewDate>{review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
                             </Card>
                         ))}
                         <Pagination dataLength={reviewDataLength} limit={limit} page={page} setPage={setPage}/>
