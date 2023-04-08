@@ -17,11 +17,17 @@ const ReviewHeader = styled.div`
   justify-content: space-between;
   align-content: center;
   padding: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid ${props => props.theme.color.gray};
+  line-height: 25px;
 `;
 const PlaceName = styled.p`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 700;
-  word-break: keep-all;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  overflow: hidden;
 `;
 const DeleteBtn = styled(Icon)`
   color: ${props => props.theme.color.darkGray};
@@ -41,6 +47,7 @@ const Emoji = styled.div`
   border: 1px solid ${props => props.theme.color.darkGray};
   padding: 0.2rem 0.5rem;
   margin-left: 2rem;
+  margin-top: 1rem;
 `;
 const EmojiImg = styled.img`
   width: 20px;
@@ -53,8 +60,15 @@ const EmojiText = styled.p`
   font-weight: 500;
 `;
 const ReviewText = styled.p`
-  font-weight: 500;
-  padding: 2rem;
+  padding-left: 2rem;
+  font-size: ${props => props.theme.fontSize.md};
+`;
+
+const ReviewDate = styled.p`
+  font-size: ${props => props.theme.fontSize.sm};
+  padding-left: 2rem;
+  margin-bottom: 2rem;
+  font-weight: 300;
 `;
 
 const Notice = styled.h1`
@@ -70,7 +84,7 @@ const Review = () => {
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
-    let offset = (page-1) * limit;
+    let offset = (page - 1) * limit;
 
     const userId = useSelector((state: RootState) => state.userReducer.userId);
 
@@ -141,32 +155,35 @@ const Review = () => {
                 .catch(err => console.log("에러", err));
         }
     }
+    console.log(reviewData)
     return (
         <Base>
             {
                 reviewData.length > 0 ? (
                     <>
-                    {reviewData.slice(offset, offset+limit).map((review: any, idx: number) => (
-                        <Card height={200} key={idx}>
-                            <ReviewHeader>
-                                <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
-                                <DeleteBtn className="material-symbols-rounded"
-                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review)}>delete</DeleteBtn>
-                            </ReviewHeader>
-                            {
-                                emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
-                                    <Emoji key={emoji.id}>
-                                        <EmojiImg src={emoji.imgSrc}/>
-                                        <EmojiText>{emoji.name}</EmojiText>
-                                    </Emoji>
+                        {reviewData.slice(offset, offset + limit).map((review: any, idx: number) => (
+                            <Card height={200} key={idx}>
+                                <ReviewHeader>
+                                    <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
+                                    <DeleteBtn className="material-symbols-rounded"
+                                               onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review)}>delete</DeleteBtn>
+                                </ReviewHeader>
+                                {
+                                    emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
+                                        <Emoji key={emoji.id}>
+                                            <EmojiImg src={emoji.imgSrc}/>
+                                            <EmojiText>{emoji.name}</EmojiText>
+                                        </Emoji>
 
-                                ))
-                            }
-                            <ReviewText>{review.placeReview}</ReviewText>
-                        </Card>
-                    ))}
-                    <Pagination dataLength={reviewDataLength} limit={limit} page={page} setPage={setPage}/>
-                </>
+                                    ))
+                                }
+                                <ReviewText>{review.placeReview}</ReviewText>
+                                <ReviewDate>후기 작성 일시
+                                    | {review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
+                            </Card>
+                        ))}
+                        <Pagination dataLength={reviewDataLength} limit={limit} page={page} setPage={setPage}/>
+                    </>
 
                 ) : (
                     <Notice>등록하신 후기가 없습니다.</Notice>
