@@ -556,6 +556,13 @@ const KakaoMap = ({
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             if (!needToFocus) {
                 mapState.setBounds(bounds);
+                if(mapState.getLevel() > 9){
+                    // [YANA] : 한반도 곳곳에 장소가 추가됬을 시 첫 화면에서 시청 중심으로 적절한 레벨로 보여주기
+                    const newBounds = new window.kakao.maps.LatLngBounds();
+                    newBounds.extend(new window.kakao.maps.LatLng(37.56646421202285, 126.98104067102928));
+                    mapState.setBounds(newBounds);
+                    mapState.setLevel(9)
+                }
             } else {
                 if (cafeInfoContainer !== undefined) {
                     moveToPosition(cafeInfoContainer.data.y, cafeInfoContainer.data.x);
@@ -574,6 +581,9 @@ const KakaoMap = ({
             }
 
         }
+    }
+    if(mapState !== undefined){
+        console.log(mapState.getCenter())
     }
 
     function addDBMarker(position: any, title: string) {
