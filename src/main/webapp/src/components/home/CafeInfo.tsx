@@ -217,12 +217,11 @@ const CafeReviewContent = styled.div`
 
 
 type CafeInfoProps = {
-    cafeInfoContainer: object;
-    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
     fetchPlaceDetail: (placeNum: string) => void;
 }
 
-const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: CafeInfoProps) => {
+const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
+    const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
     //로그인 되었는지 상태 가져오기
@@ -232,9 +231,9 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     //장소넘버 조회
     let placeNum: string, isBookmarked: boolean;
     if (cafeInfoContainer !== undefined) {
-        placeNum = Object.values(cafeInfoContainer)[2]
+        placeNum = cafeInfoContainer.placeNum;
         //북마크 여부 확인
-        isBookmarked = Object.values(cafeInfoContainer)[5];
+        isBookmarked = cafeInfoContainer.isBookmarked;
     }
 
     let dataObject: any = {};
@@ -246,7 +245,6 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
     };
-
     const onReviewTabClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target instanceof Element) {
             if (e.target.id !== '') {
@@ -362,9 +360,7 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer}
-                                                                setCafeInfoContainer={setCafeInfoContainer}/> :
-                    <CafeInfoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>}
+                {currentView === "photo" ? <CafeInfoPhotoReview/> : <CafeInfoReview/>}
             </CafeReviewContent>
         </Base>
     )

@@ -5,10 +5,12 @@ import Header from "./header/Header";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import {setIsOpenedLoginModal} from "../../modules/userReducer";
-import {setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../modules/viewReducer";
+import {setIsOpenedCafeInfo, setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
 import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
+import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import cafeInfo from "../home/CafeInfo";
 
 const Base = styled.div`
   width: 100vw;
@@ -162,7 +164,7 @@ const KakaoMap = ({
     const dispatch = useDispatch();
     /*------------------------------------------- 상태 관련 START -------------------------------------------*/
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
-    const {isOpenedCafeInfo, isOpenedPostCafe} = useSelector((state: RootState) => state.viewReducer);
+    const {isOpenedCafeInfo, isOpenedPostCafe, needToFocus} = useSelector((state: RootState) => state.viewReducer);
     const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
     const [isPostedCafe, setIsPostedCafe] = useState<boolean>(false);
     /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
@@ -197,9 +199,10 @@ const KakaoMap = ({
     //MapNav에서 검색된 데이터를 담을 마커 배열 state
     const [searchedPlaceInfoInNav, setSearchedPlaceInfoInNav] = useState<object[]>([]);
     //DB검색된 카페 클릭시 해당 마커의 정보만 담을 state
-    const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
+    // const [cafeInfoContainer, setCafeInfoContainer] = useState<object>();
     //마커를 클릭해서 카페추가에 올릴 정보
     const [clickMarkerCafeInfo, setClickMarkerCafeInfo] = useState<any>();
+    const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
 
     /*------------------------------------------- [ END ] 데이터 관련 -------------------------------------------*/
@@ -499,14 +502,14 @@ const KakaoMap = ({
             .then((message) => {
                 const data = JSON.parse(message);
                 console.log(JSON.parse(message).isBookmarked);
-                setCafeInfoContainer({
+                dispatch(setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
                     placeNum: placeNum,
                     imageList: data.placeImgList,
                     reviewList: data.placeReviewList,
                     isBookmarked: data.isBookmarked
-                });
+                }));
                 dispatch(setIsOpenedCafeInfo(true));
                 // moveMapAfterPost(data.y, data.x);
             }).catch(err => console.log(err));
@@ -551,10 +554,13 @@ const KakaoMap = ({
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            if (!isPostedCafe) {
+            if (!needToFocus) {
                 mapState.setBounds(bounds);
             } else {
-                setIsPostedCafe(!isPostedCafe)
+                if (cafeInfoContainer !== undefined) {
+                    moveToPosition(cafeInfoContainer.data.y, cafeInfoContainer.data.x);
+                    dispatch(setNeedToFocus(!needToFocus));
+                }
             }
 
             // if(keyword === "" && currentFilter.length > 0){
@@ -608,13 +614,14 @@ const KakaoMap = ({
     }
 
     //카페등록 후 등록한 위치로 이동시키는 함수
-    function moveMapAfterPost(x: number, y: number) {
+    function moveToPosition(x: number, y: number) {
         const bounds = new window.kakao.maps.LatLngBounds();
         const placePosition = new window.kakao.maps.LatLng(x, y)
         bounds.extend(placePosition);
         mapState.setBounds(bounds);
         mapState.setCenter(placePosition);
-        mapState.setLevel(4);
+        mapState.setLevel(2);
+        console.log("무브무브")
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
@@ -669,7 +676,6 @@ const KakaoMap = ({
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
                                   searchPlaces={searchPlaces}
                                   removeMarker={removeMarker}
-                                  moveMapAfterPost={moveMapAfterPost}
                                   removeMarkerAPI={removeMarkerAPI}
                                   setNeedToRemove={setNeedToRemove}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
@@ -678,14 +684,12 @@ const KakaoMap = ({
                                   mapState={mapState}
                                   markersTmp={markersTmp}
                                   setDBData={setDBData}
-                                  setIsPostedCafe={setIsPostedCafe}
                     />
                 )
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}
-                              fetchPlaceDetail={fetchPlaceDetail}/>
+                    <CafeInfo fetchPlaceDetail={fetchPlaceDetail}/>
                 )
             }
             {/* 북마크 버튼 */}

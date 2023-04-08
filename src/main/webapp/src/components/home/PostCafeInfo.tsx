@@ -4,8 +4,9 @@ import {useDispatch, useSelector} from "react-redux";
 
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
-import {setIsOpenedPostCafe} from "../../modules/viewReducer";
+import {setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import {RootState} from "../../modules";
+import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
 
 const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   background-color: #fff;
@@ -160,7 +161,6 @@ interface FnProps {
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
     removeMarker: () => void;
-    moveMapAfterPost: (x: number, y: number) => void;
     displayDBPlaces: (data: any[], filter?: any[]) => void;
     dbData: any[];
     dbFilterData: any[];
@@ -171,7 +171,6 @@ interface FnProps {
     mapState: any;
     markersTmp: any[];
     setDBData: React.Dispatch<SetStateAction<any[]>>;
-    setIsPostedCafe: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -179,7 +178,6 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          moveMapAfterPost,
                           displayDBPlaces, dbData, dbFilterData,
                           removeMarkerAPI,
                           setNeedToRemove,
@@ -188,7 +186,6 @@ const PostCafeInfo = ({
                           mapState,
                           markersTmp,
                           setDBData,
-                          setIsPostedCafe
                       }: FnProps) => {
     const dispatch = useDispatch();
 
@@ -327,11 +324,16 @@ const PostCafeInfo = ({
                     // });
                     // marker.setMap(mapState);
                     settingKeywordPostCafeName(loadData);
-                    setIsPostedCafe(true);
+                    dispatch(setNeedToFocus(true))
+                    console.log(placeInfo)
                     return placeInfo;
+
+                    dispatch(setCafeInfoContainer({
+                        data: placeInfo
+                    }));
+
                 })
                 .then((placeInfo) => {
-                    moveMapAfterPost(placeInfo.y, placeInfo.x);
                 });
         }
     }
