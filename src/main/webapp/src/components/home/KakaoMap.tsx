@@ -347,11 +347,12 @@ const KakaoMap = ({
                         itemEl.onclick = function () {
                             setClickMarkerCafeInfo(data);
                             setSearchCafeInfo("")
+                            infowindow.close();
                         }
 
                         window.kakao.maps.event.addListener(marker, 'click', function () {
                             setClickMarkerCafeInfo(data);
-                            setSearchCafeInfo("")
+                            setSearchCafeInfo("");
                         });
                     })(marker, places[i])
                     fragment.appendChild(itemEl);
@@ -674,12 +675,9 @@ const KakaoMap = ({
                                   removeMarker={removeMarker}
                                   moveMapAfterPost={moveMapAfterPost}
                                   removeMarkerAPI={removeMarkerAPI}
-                                  setNeedToRemove={setNeedToRemove}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                                   searchCafeInfo={searchCafeInfo}
                                   setSearchCafeInfo={setSearchCafeInfo}
-                                  mapState={mapState}
-                                  markersTmp={markersTmp}
                                   setDBData={setDBData}
                                   setIsPostedCafe={setIsPostedCafe}
                     />
