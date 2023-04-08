@@ -6,6 +6,7 @@ import {RootState} from "../../modules";
 import Card from "./Card";
 import {Icon} from "../../styles/common";
 import Pagination from "./Pagination";
+import Modal from "../Modal";
 
 const Base = styled.div`
   display: grid;
@@ -102,14 +103,17 @@ const PhotoReview = () => {
                 .catch(err => console.log("에러", err));
         }
     }
+
+
+
     return (
         reviewImgData.length > 0 ? (
             <Base>
                 {
                     reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
-                        <CardWrapper key={idx}>
-                            <Card height={200}>
-                                <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                        <CardWrapper key={idx} >
+                            <Card height={200} >
+                                <img src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src} />
                             </Card>
                             <ReviewHeader>
                                 <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
