@@ -107,15 +107,12 @@ const BookmarkBtn = styled(Button)<{ isBookmarkMode: boolean }>`
   align-items: center;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
+  background-color: ${props => props.theme.color.white};
 
-  ${props => props.isBookmarkMode ? css`
-    background-color: ${props => props.theme.color.primary};
-
+  ${props => props.isBookmarkMode === false && css`
     & span {
-      color: ${props => props.theme.color.white};
+      font-variation-settings: 'FILL' 0;
     }
-  ` : css`
-    background-color: ${props => props.theme.color.white};
   `}
   &:hover {
     transform: scale(110%);
@@ -487,13 +484,13 @@ const KakaoMap = ({
     //         }).catch(err => console.log("에러", err));
     // }
 
-    function fetchPlaceDetail(placeNum:string):void{
-        fetch('/api/place/selectDetailPlaceInfo',{
-            method:'POST',
-            headers:{
+    function fetchPlaceDetail(placeNum: string): void {
+        fetch('/api/place/selectDetailPlaceInfo', {
+            method: 'POST',
+            headers: {
                 'Content-Type': "application/json"
             },
-            body:JSON.stringify({
+            body: JSON.stringify({
                 place_num: placeNum,
                 user_num: sessionStorage.getItem("id") === null ? "" : sessionStorage.getItem("id")
             }),
@@ -554,7 +551,7 @@ const KakaoMap = ({
                 setMarkers(markersTmp);
             }
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-            if(!isPostedCafe){
+            if (!isPostedCafe) {
                 mapState.setBounds(bounds);
             } else {
                 setIsPostedCafe(!isPostedCafe)
