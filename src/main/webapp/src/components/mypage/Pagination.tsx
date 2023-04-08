@@ -50,19 +50,10 @@ const Pagination = ({dataLength, limit, page, setPage}: PaginationProps) => {
     //페이지 개수 = 전체 요소 개수 / 한페이지에 보여줄 개수 올림
     const numPages = Math.ceil(total / limit);
 
-    const onPageClick = (e: React.MouseEvent<HTMLSpanElement>) => {
-        if (e.target instanceof Element) {
-            if (e.target.id === "prev") {
-                setPage(page - 1)
-            } else if (e.target.id === "next") {
-                setPage(page + 1)
-            }
-        }
-    }
     return (
         <Base>
             <PageButton
-                onClick={onPageClick}
+                onClick={() => setPage(page - 1)}
                 disabled={page === 1}>
                 <Icon
                     id={"prev"}
@@ -70,7 +61,7 @@ const Pagination = ({dataLength, limit, page, setPage}: PaginationProps) => {
             </PageButton>
             <CurrentPageNum>{page}</CurrentPageNum>
             <PageButton
-                onClick={onPageClick}
+                onClick={() => setPage(page + 1)}
                 disabled={page === numPages}>
                 <Icon
                     id={"next"}
