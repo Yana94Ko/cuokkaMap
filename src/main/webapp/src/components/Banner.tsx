@@ -26,7 +26,7 @@ const CloseBtn = styled(Icon)`
   right: 1rem;
   color: white;
   display: block;
-  z-index: 100;
+  z-index: 10011;
   padding: 0.5rem;
   transition: all 0.2s ease-in-out;
   &:hover {

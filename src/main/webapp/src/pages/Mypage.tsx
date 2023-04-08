@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react';
-import Header from "../components/mypage/Header";
 import styled, {css} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
+
 import {RootState} from "../modules";
 import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../modules/viewReducer";
+import Header from "../components/mypage/Header";
 import PhotoReview from "../components/mypage/PhotoReview";
 import Review from "../components/mypage/Review";
 import Bookmark from "../components/mypage/Bookmark";
@@ -12,18 +13,20 @@ import Bookmark from "../components/mypage/Bookmark";
 const Base = styled.main`
   width: 100vw;
   height: 100vh;
-  padding: 3rem 8rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  padding: 3rem 8rem 8rem 8rem;
+  display: grid;
+  grid-template-rows: 0.5fr 1fr 6fr;
   @media ${props => props.theme.windowSize.laptop} {
-    padding: 2rem 5rem;
+    padding: 2rem 5rem 8rem 5rem;
+
   }
   @media ${props => props.theme.windowSize.tablet} {
-    padding: 2rem 4rem;
+    padding: 2rem 4rem 8rem 4rem;
+    
   }
   @media ${props => props.theme.windowSize.mobile} {
-    padding: 2rem;
+    padding: 2rem 2rem 8rem 2rem;
+    
 
     /* mobile viewport bug fix */
     /* iOS only */
@@ -73,10 +76,10 @@ const Tab = styled.div<{ active: boolean }>`
 const MyPageContent = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
-  margin-top: 50px;
+  margin-top: 2rem;
   overflow-y: auto;
   padding: 1rem;
+  padding-bottom: 2rem;
 
   &::-webkit-scrollbar {
     display: none;
@@ -115,8 +118,13 @@ const MyPage = () => {
     } = useSelector((state: RootState) => state.viewReducer);
 
     useEffect(() => {
+        dispatch(setCurrentMyPageView("photo"));
+    }, []);
+
+    useEffect(() => {
         if (!isLoggedin) {
             navigate("/");
+            window.location.reload();
         }
         if (isOpenedPostCafe) {
             dispatch(setIsOpenedPostCafe(false));

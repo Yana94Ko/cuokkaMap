@@ -1,8 +1,9 @@
 import React, {FormEvent, SetStateAction, useEffect, useRef, useState} from 'react';
 import styled, {css} from "styled-components";
+import {useDispatch, useSelector} from "react-redux";
+
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
-import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedPostCafe} from "../../modules/viewReducer";
 import {RootState} from "../../modules";
 
@@ -116,16 +117,16 @@ const Label = styled.label`
   display: block;
   margin-bottom: 10px;
 `;
+
 const TagWrapper = styled.ul`
   display: flex;
   flex-wrap: wrap;
 `;
 
-const SearchInput = styled(Input)``;
 const SearchInputWrapper = styled.div`
   position: relative;
-
 `;
+
 const AddCafeBtn = styled(Button)`
   width: 100%;
   margin-top: 3rem;
@@ -170,7 +171,7 @@ interface FnProps {
     mapState: any;
     markersTmp: any[];
     setDBData: React.Dispatch<SetStateAction<any[]>>;
-    setIsPostedCafe:React.Dispatch<SetStateAction<boolean>>;
+    setIsPostedCafe: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const PostCafeInfo = ({
@@ -216,14 +217,16 @@ const PostCafeInfo = ({
         e.preventDefault()
         if (e.target instanceof Element) {
             // tag 안에 클릭한 값이 없을때만 setTag
-            if (!tag.includes(e.target.id)) {
-                setTag([...tag, e.target.id])
-            } else {
-                // tag 안에 클릭한 태그 값이 있을 때 해당 값 빼기
-                const copiedTag = [...tag];
-                const index = copiedTag.indexOf(e.target.id);
-                copiedTag.splice(index, 1);
-                setTag([...copiedTag])
+            if (e.target.id !== "") {
+                if (!tag.includes(e.target.id)) {
+                    setTag([...tag, e.target.id])
+                } else {
+                    // tag 안에 클릭한 태그 값이 있을 때 해당 값 빼기
+                    const copiedTag = [...tag];
+                    const index = copiedTag.indexOf(e.target.id);
+                    copiedTag.splice(index, 1);
+                    setTag([...copiedTag]);
+                }
             }
         }
     };
@@ -360,7 +363,7 @@ const PostCafeInfo = ({
                     <SearchCafe>
                         <Label>카페찾기</Label>
                         <SearchInputWrapper>
-                            <SearchInput
+                            <Input
                                 ref={PostCafeInput}
                                 value={searchCafeInfo || ""}
                                 name="search"
@@ -369,7 +372,7 @@ const PostCafeInfo = ({
                                 placeholder="카페 이름으로 검색해주세요."
                                 onKeyPress={activeEnter}
                             >
-                            </SearchInput>
+                            </Input>
                             <SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>
                             {searchedListCheck && <SearchedListContainer setSearchedListCheck={setSearchedListCheck}/>}
                         </SearchInputWrapper>
