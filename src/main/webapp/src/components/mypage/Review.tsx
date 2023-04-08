@@ -80,7 +80,7 @@ const Review = () => {
     const [reviewData, setReviewData] = useState<any[]>([]);
     const [reviewDataLength, setReviewDataLength] = useState<number>();
     //한 페이지에서 보여줄 게시물의 게수
-    let limit = 8;
+    let limit = 12;
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
