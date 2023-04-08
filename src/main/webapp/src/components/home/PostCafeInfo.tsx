@@ -160,7 +160,7 @@ interface FnProps {
     clickMarkerCafeInfo: markerInfo;
     searchPlaces: () => void;
     removeMarker: () => void;
-    moveMapAfterPost: (x: number, y: number) => void;
+    moveToPosition: (x: number, y: number) => void;
     displayDBPlaces: (data: any[], filter?: any[]) => void;
     dbData: any[];
     dbFilterData: any[];
@@ -176,7 +176,7 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          moveMapAfterPost,
+                          moveToPosition,
                           displayDBPlaces, dbData, dbFilterData,
                           removeMarkerAPI,
                           searchCafeInfo,
@@ -325,7 +325,7 @@ const PostCafeInfo = ({
                     return placeInfo;
                 })
                 .then((placeInfo) => {
-                    moveMapAfterPost(placeInfo.y, placeInfo.x);
+                    moveToPosition(placeInfo.y, placeInfo.x);
                 });
         }
     }

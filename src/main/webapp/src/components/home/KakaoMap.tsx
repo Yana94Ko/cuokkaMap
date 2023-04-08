@@ -543,6 +543,7 @@ const KakaoMap = ({
                 (function (marker: any, data: any, filter?: any, placeNum?: string) {
                     window.kakao.maps.event.addListener(marker, 'click', function () {
                         fetchPlaceDetail(placeNum);
+                        moveToPosition(data.y, data.x);
                     });
                     window.kakao.maps.event.addListener(marker, 'mouseover', function () {
                         displayInfowindow(marker, data.place_name);
@@ -612,7 +613,7 @@ const KakaoMap = ({
     }
 
     //카페등록 후 등록한 위치로 이동시키는 함수
-    function moveMapAfterPost(x: number, y: number) {
+    function moveToPosition(x: number, y: number) {
         const bounds = new window.kakao.maps.LatLngBounds();
         const placePosition = new window.kakao.maps.LatLng(x, y)
         bounds.extend(placePosition);
@@ -673,7 +674,7 @@ const KakaoMap = ({
                     <PostCafeInfo setKeyword={setKeyword} clickMarkerCafeInfo={clickMarkerCafeInfo}
                                   searchPlaces={searchPlaces}
                                   removeMarker={removeMarker}
-                                  moveMapAfterPost={moveMapAfterPost}
+                                  moveToPosition={moveToPosition}
                                   removeMarkerAPI={removeMarkerAPI}
                                   displayDBPlaces={displayDBPlaces} dbData={dbData} dbFilterData={dbFilterData}
                                   searchCafeInfo={searchCafeInfo}
