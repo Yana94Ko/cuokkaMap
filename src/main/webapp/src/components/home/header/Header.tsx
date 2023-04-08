@@ -54,9 +54,15 @@ const SearchInput = styled(Input)`
   background-color: transparent;
   border: none;
   font-weight: 500;
+  padding: 0 2rem;
 
   &:focus {
     border: none;
+  }
+  
+  &::placeholder{
+    color: ${props => props.theme.color.text};
+    font-weight: 300;
   }
 
   @media ${props => props.theme.windowSize.mobile} {
@@ -176,7 +182,9 @@ const Header = ({
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
                 <SearchInput autoComplete="off" type="text" id="search" value={searchValue} ref={searchInput}
                              onKeyPress={activeEnter}
-                             onChange={searchInputChangeHandler}/>
+                             onChange={searchInputChangeHandler}
+                             placeholder="커카맵에 등록된 카페를 검색해보세요!"
+                />
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
             <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
