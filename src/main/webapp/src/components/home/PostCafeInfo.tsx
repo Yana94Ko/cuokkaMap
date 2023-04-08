@@ -165,11 +165,8 @@ interface FnProps {
     dbData: any[];
     dbFilterData: any[];
     removeMarkerAPI: () => void;
-    setNeedToRemove: React.Dispatch<SetStateAction<boolean>>;
     searchCafeInfo: string;
     setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
-    mapState: any;
-    markersTmp: any[];
     setDBData: React.Dispatch<SetStateAction<any[]>>;
     setIsPostedCafe: React.Dispatch<SetStateAction<boolean>>;
 }
@@ -182,13 +179,10 @@ const PostCafeInfo = ({
                           moveMapAfterPost,
                           displayDBPlaces, dbData, dbFilterData,
                           removeMarkerAPI,
-                          setNeedToRemove,
                           searchCafeInfo,
                           setSearchCafeInfo,
-                          mapState,
-                          markersTmp,
                           setDBData,
-                          setIsPostedCafe
+                          setIsPostedCafe,
                       }: FnProps) => {
     const dispatch = useDispatch();
 
