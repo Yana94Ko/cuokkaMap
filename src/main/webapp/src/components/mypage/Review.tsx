@@ -9,7 +9,7 @@ import Pagination from "./Pagination";
 
 const Base = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 2rem;
 `;
 const ReviewHeader = styled.div`
@@ -66,7 +66,7 @@ const Review = () => {
     const [reviewData, setReviewData] = useState<any[]>([]);
     const [reviewDataLength, setReviewDataLength] = useState<number>();
     //한 페이지에서 보여줄 게시물의 게수
-    let limit = 6;
+    let limit = 8;
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
@@ -147,7 +147,7 @@ const Review = () => {
                 reviewData.length > 0 ? (
                     <>
                     {reviewData.slice(offset, offset+limit).map((review: any, idx: number) => (
-                        <Card key={idx}>
+                        <Card height={200} key={idx}>
                             <ReviewHeader>
                                 <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
                                 <DeleteBtn className="material-symbols-rounded"

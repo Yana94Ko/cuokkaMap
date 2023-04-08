@@ -9,7 +9,7 @@ import Pagination from "./Pagination";
 
 const Base = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 2rem;
 `;
 
@@ -49,7 +49,7 @@ const PhotoReview = () => {
     const [imgDataLength, setImgDataLength] = useState<number>();
 
     //한 페이지에서 보여줄 게시물의 게수
-    let limit = 6;
+    let limit = 8;
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
@@ -108,7 +108,7 @@ const PhotoReview = () => {
                 {
                     reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
                         <CardWrapper key={idx}>
-                            <Card>
+                            <Card height={200}>
                                 <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
                             </Card>
                             <ReviewHeader>
