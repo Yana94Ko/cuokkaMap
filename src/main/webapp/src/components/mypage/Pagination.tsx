@@ -14,7 +14,6 @@ const Base = styled.div`
   background-color: #fff;
   padding: 2rem 0 1rem 0;
   justify-content: center;
-  z-index: 5555;
   align-items: center;
 `;
 
