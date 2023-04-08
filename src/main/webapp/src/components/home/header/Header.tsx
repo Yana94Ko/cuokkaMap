@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {Link} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
 
@@ -9,6 +9,7 @@ import MyPageList from "./MyPageList";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
+import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../../modules/viewReducer";
 
 
 const Base = styled.div`
@@ -70,9 +71,11 @@ const NavBtn = styled(Button)`
   padding: 0.5rem;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
-  &:hover{
+
+  &:hover {
     transform: scale(110%);
   }
+
   a {
     color: white;
     text-decoration: none !important;
@@ -82,7 +85,8 @@ const NavBtn = styled(Button)`
 const NavIcon = styled(Icon)`
   color: ${props => props.theme.color.primary};
   transition: all 0.1s ease-in-out;
-  &:hover{
+
+  &:hover {
     transform: scale(110%);
   }
 `;
@@ -96,16 +100,18 @@ interface PropsToKaKaoMap {
 }
 
 const Header = ({
-                              setSearchedPlaceInfoInNav,
-                              removeMarker,
-                              setDBData,
-                              setSearchDBKeyword
-                          }: PropsToKaKaoMap) => {
+                    setSearchedPlaceInfoInNav,
+                    removeMarker,
+                    setDBData,
+                    setSearchDBKeyword
+                }: PropsToKaKaoMap) => {
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
 
     const dispatch = useDispatch();
 
     const searchInput = useRef<HTMLInputElement>(null);
+
+    const navigate = useNavigate();
 
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
@@ -158,6 +164,12 @@ const Header = ({
         }
     }
 
+    const onMyPageClick = () => {
+        dispatch(setIsOpenedCafeInfo(false));
+        dispatch(setIsOpenedPostCafe(false));
+        dispatch(setCurrentMyPageView("bookmark"))
+        navigate("/mypage");
+    }
     return (
         <Base>
             <InputWrapper>
@@ -169,20 +181,19 @@ const Header = ({
             </InputWrapper>
             <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>
-                        <div onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
-                            <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
-                                {
-                                    isLoggedin ? (
-                                        <Link to="/mypage">
-                                            <NavIcon className="material-symbols-rounded">person</NavIcon>
-                                        </Link>
-                                    ) : (
-                                        <NavIcon onClick={() => dispatch(setIsOpenedLoginModal(true))} className="material-symbols-rounded">person</NavIcon>
-                                    )
-                                }
-                            </NavBtn>
-                            {isMypage && <MyPageList/>}
-                        </div>
+                <div onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
+                    <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList} onClick={onMyPageClick}>
+                        {
+                            isLoggedin ? (
+                                <NavIcon className="material-symbols-rounded">person</NavIcon>
+                            ) : (
+                                <NavIcon onClick={() => dispatch(setIsOpenedLoginModal(true))}
+                                         className="material-symbols-rounded">person</NavIcon>
+                            )
+                        }
+                    </NavBtn>
+                    {isMypage && <MyPageList/>}
+                </div>
             </NavLoginOrMyPage>
         </Base>
     );
