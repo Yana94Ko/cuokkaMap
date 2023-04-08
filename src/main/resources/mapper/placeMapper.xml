@@ -136,6 +136,7 @@
                  JOIN place_img pi
                      ON p.place_num = pi.place_num
         WHERE p.place_num = #{param1}
+        ORDER 	BY placeImg_num DESC
     </select>
     <select id="selectPlaceReviewByPlaceNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         SELECT p.place_num, pr.user_num, pr.placeReview_num, pr.placeReview, pr.placeReview_emoji, pr.placeReview_writedate
@@ -143,6 +144,7 @@
                  JOIN place_review pr
                       ON p.place_num = pr.place_num
         WHERE p.place_num = #{param1}
+        ORDER 	BY placeReview_num DESC
     </select>
     <select id="selectPlaceFilterByPlaceNum" resultType="String">
         SELECT GROUP_CONCAT(pf.filter_type SEPARATOR ', ') AS filter_types
@@ -155,19 +157,22 @@
         SELECT pi.*, p.place_info
         FROM place_img pi
         JOIN place p ON pi.place_num = p.place_num
-        WHERE pi.user_num = #{param1};
+        WHERE pi.user_num = #{param1}
+        ORDER 	BY pi.placeImg_num DESC
     </select>
     <select id="selectAllPlaceReviewWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         SELECT pr.*, p.place_info
         FROM place_review pr
         JOIN place p on pr.place_num = p.place_num
-        WHERE pr.user_num = #{param1};
+        WHERE pr.user_num = #{param1}
+        ORDER 	BY pr.placeReview_num DESC
     </select>
     <select id="selectAllFavoritePlaceWithUserNum" resultType="com.bside.cuokkamap.vo.PlaceVO">
         SELECT fp.*, p.place_info
         FROM favorite_place fp
                  JOIN place p on fp.place_num = p.place_num
-        WHERE fp.user_num = #{param1};
+        WHERE fp.user_num = #{param1}
+        ORDER 	BY fp.favoritePlace_num DESC
     </select>
 
     <delete id="deletePlaceImg">

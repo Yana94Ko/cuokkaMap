@@ -213,30 +213,34 @@ const CafeInfoReview = () => {
     }
 
     const onSubmit = (e: React.FormEvent) => {
-        const formData = new FormData();
+        e.preventDefault();
+        const result = window.confirm("후기를 등록하시겠습니까?");
+        if (result) {
+            const formData = new FormData();
 
-        e.preventDefault()
+            e.preventDefault()
 
-        formData.append('place_num', copiedData.placeNum);
-        formData.append('user_num', userId);
-        formData.append('placeReview', reviewText);
-        formData.append('placeReview_emoji', JSON.stringify(reviewEmoji));
+            formData.append('place_num', copiedData.placeNum);
+            formData.append('user_num', userId);
+            formData.append('placeReview', reviewText);
+            formData.append('placeReview_emoji', JSON.stringify(reviewEmoji));
 
-        if (!isLoggedin) {
-            dispatch(setIsOpenedLoginModal(true));
-        } else {
-            fetch('/api/place/uploadPlaceReview', {
-                method: 'POST',
-                body: formData,
-            })
-                .then(res => console.log(res.text()))
-                .then(() => {
-                    setReviewText("");
-                    setReviewEmoji(0);
+            if (!isLoggedin) {
+                dispatch(setIsOpenedLoginModal(true));
+            } else {
+                fetch('/api/place/uploadPlaceReview', {
+                    method: 'POST',
+                    body: formData,
                 })
-                .then(() => fetchCafeInfo())
-                .catch(err => console.log(err));
-        }
+                    .then(res => console.log(res.text()))
+                    .then(() => {
+                        setReviewText("");
+                        setReviewEmoji(0);
+                    })
+                    .then(() => fetchCafeInfo())
+                    .catch(err => console.log(err));
+            }
+        } else return;
     }
     const onDeleteClick = (
         e: React.MouseEvent<HTMLSpanElement>,
@@ -286,7 +290,12 @@ const CafeInfoReview = () => {
                 }));
             })
     }
+const onFocusTextarea = () => {
+        if(!isLoggedin) {
+            dispatch(setIsOpenedLoginModal(true));
+        } else return;
 
+}
     return (
         <Base>
             <ReviewForm onSubmit={onSubmit}>
@@ -306,7 +315,7 @@ const CafeInfoReview = () => {
                 </ItemWrapper>
                 <ItemWrapper>
                     <Label>후기</Label>
-                    <ReviewTextarea minLength={5} maxLength={50} placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
+                    <ReviewTextarea onFocus={onFocusTextarea} minLength={5} maxLength={49} placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
                                     onChange={onChange}/>
                     <ReviewLength>{reviewText.length}/50</ReviewLength>
                 </ItemWrapper>

@@ -178,7 +178,7 @@ const ReviewTab = styled.div`
   position: sticky;
   position: -webkit-sticky;
   z-index: 1111;
-  top: 50px;
+  top: 60px;
   background-color: #fff;
   padding: 2rem 0 0 0;
   justify-content: space-between;
