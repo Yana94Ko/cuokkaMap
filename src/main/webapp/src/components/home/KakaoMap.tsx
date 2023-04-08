@@ -502,7 +502,6 @@ const KakaoMap = ({
             .then(response => response.text())
             .then((message) => {
                 const data = JSON.parse(message);
-                console.log(JSON.parse(message).isBookmarked);
                 dispatch(setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
@@ -622,7 +621,6 @@ const KakaoMap = ({
         mapState.setBounds(bounds);
         mapState.setCenter(placePosition);
         mapState.setLevel(2);
-        console.log("무브무브")
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/
@@ -656,7 +654,6 @@ const KakaoMap = ({
             dispatch(setIsOpenedLoginModal(true));
         }
     }
-
 
     return (
         <Base>

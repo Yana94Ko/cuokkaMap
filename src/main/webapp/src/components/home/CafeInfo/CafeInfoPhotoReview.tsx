@@ -85,7 +85,6 @@ const CafeInfoPhotoReview = () => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
     const dispatch = useDispatch();
-    console.log(cafeInfoContainer);
     const {isLoggedin} = useSelector((state: RootState) => state.userReducer)
 
     const sessionId = sessionStorage.getItem("id");

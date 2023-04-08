@@ -7,6 +7,8 @@ import {Button, Icon, Input, Tag} from "../../styles/common";
 import {setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import {RootState} from "../../modules";
 import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import {Simulate} from "react-dom/test-utils";
+import load = Simulate.load;
 
 const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   background-color: #fff;
@@ -306,28 +308,17 @@ const PostCafeInfo = ({
                     const placeInfo = JSON.parse(loadData.place_info);
                     alert("카페등록이 완료되었습니다.");
                     removeMarker();
-                    //settingKeywordPostCafeName(placeInfo.place_name);
                     dispatch(setIsOpenedPostCafe(false));
-                    settingKeywordPostCafeName(placeInfo);
-
-                    // var markerPosition = new window.kakao.maps.LatLng(placeInfo.y, placeInfo.x);
-                    // var marker = new window.kakao.maps.Markers({
-                    //     image:filterMarkerImg,
-                    //     position:markerPosition,
-                    //     title:placeInfo.place_name
-                    // });
-                    // marker.setMap(mapState);
                     settingKeywordPostCafeName(loadData);
                     dispatch(setNeedToFocus(true))
-                    console.log(placeInfo)
-                    return placeInfo;
-
                     dispatch(setCafeInfoContainer({
-                        data: placeInfo
+                        data: placeInfo,
+                        filter: loadData.filterList,
+                        placeNum: loadData.place_num,
+                        imageList: null,
+                        reviewList: null,
+                        isBookmarked: false
                     }));
-
-                })
-                .then((placeInfo) => {
                 });
         }
     }

@@ -267,7 +267,6 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
             })
                 .then(response => response.text())
                 .then(function (data) {
-                    console.log(JSON.parse(data));
                     fetchPlaceDetail(placeNum);
                 })
                 .catch(err => console.log("에러", err));
@@ -291,7 +290,6 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
             })
                 .then(response => response.text())
                 .then(function (data) {
-                    console.log(data);
                     fetchPlaceDetail(placeNum);
                     dispatch(setCurrentFilter([]));
                 })
