@@ -30,8 +30,11 @@ const GlobalStyle = createGlobalStyle`
     color: #000;
     font-family: 'Noto Sans KR', sans-serif;
     font-size: 15px;
-    @media ${(props) => props.theme.windowSize.tablet} {
+    @media ${(props) => props.theme.windowSize.laptop} {
       font-size: 14px;
+    }
+    @media ${(props) => props.theme.windowSize.tablet} {
+      font-size: 13px;
     }
     @media ${(props) => props.theme.windowSize.mobile} {
       font-size: 12px;
@@ -63,8 +66,6 @@ const GlobalStyle = createGlobalStyle`
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     font-size: ${props => props.theme.fontSize.base};
   }
-
 `;
-
 
 export default GlobalStyle;

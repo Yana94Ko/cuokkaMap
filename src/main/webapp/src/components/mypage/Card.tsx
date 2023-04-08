@@ -1,9 +1,9 @@
 import React, {ReactNode} from "react";
 import styled from "styled-components";
 
-const Base = styled.div`
+const Base = styled.div<{ height: number }>`
   width: 100%;
-  height: 200px;
+  height: ${props => props.height}px;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
@@ -16,10 +16,11 @@ const Base = styled.div`
 
 type Props = {
     children: ReactNode;
+    height: number
 }
-const Card = ({children}: Props) => {
+const Card = ({children, height}: Props) => {
     return(
-        <Base>{children}</Base>
+        <Base height={height}>{children}</Base>
     )
 }
 
