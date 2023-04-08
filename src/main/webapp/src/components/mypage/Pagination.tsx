@@ -1,13 +1,7 @@
 import React, {SetStateAction, useState} from 'react';
 import styled, {css} from "styled-components";
-import {Button} from "../../styles/common";
+import {Button, Icon} from "../../styles/common";
 
-type PaginationProps = {
-    dataLength: number;
-    limit: number;
-    page: number;
-    setPage: React.Dispatch<SetStateAction<number>>
-}
 const Base = styled.div`
   position: fixed;
   width: 100%;
@@ -21,67 +15,67 @@ const Base = styled.div`
   padding: 2rem 0 1rem 0;
   justify-content: center;
   z-index: 5555;
+  align-items: center;
 `;
+
 const PageButton = styled(Button)`
-  border: none;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
   color: ${props => props.theme.color.primary};
-  font-size: ${props => props.theme.fontSize.base};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background-color: transparent;
 
   ${props => props.disabled && css`
-    background-color: ${props => props.theme.color.lightGray};
-    color: ${props => props.theme.color.darkGray};
-    cursor: default;
+    & span {
+      color: ${props => props.theme.color.darkGray};
+      cursor: default;
+    }
   `}
-  &.active {
-    background-color: ${props => props.theme.color.primary};
-    color: ${props => props.theme.color.white};
-  }
 `;
 
+const CurrentPageNum = styled.p`
+  font-weight: 500;
+  text-align: center;
+`;
+
+type PaginationProps = {
+    dataLength: number;
+    limit: number;
+    page: number;
+    setPage: React.Dispatch<SetStateAction<number>>
+}
 
 const Pagination = ({dataLength, limit, page, setPage}: PaginationProps) => {
     const total = dataLength;
     //페이지 개수 = 전체 요소 개수 / 한페이지에 보여줄 개수 올림
     const numPages = Math.ceil(total / limit);
-    //페이지의 넘버만큼 원소를 가지는 배열
-    const showedContent = new Array(numPages).fill(0);
 
+    const onPageClick = (e: React.MouseEvent<HTMLSpanElement>) => {
+        if (e.target instanceof Element) {
+            if (e.target.id === "prev") {
+                setPage(page - 1)
+            } else if (e.target.id === "next") {
+                setPage(page + 1)
+            }
+        }
+    }
     return (
         <Base>
-            <PageButton onClick={() => {
-                setPage(page - 1)
-                //setNeedToSet(!needToSet);
-            }} disabled={page === 1}>
-                {/*<span className="material-symbols-rounded">arrow_back_ios</span>*/}
-                {/*<span className="material-symbols-rounded">chevron_left</span>*/}
-                &lt;
+            <PageButton
+                onClick={onPageClick}
+                disabled={page === 1}>
+                <Icon
+                    id={"prev"}
+                    className="material-symbols-rounded">chevron_left</Icon>
             </PageButton>
-            {
-                showedContent.map((item, index) => (
-                    <PageButton
-                        key={index}
-                        onClick={() => {
-                            setPage(index + 1);
-                            //setNeedToSet(!needToSet);
-                        }}
-                        className={
-                            (index + 1) === page ? 'active' : ''
-                        }
-                    >
-                        {index + 1}
-                    </PageButton>
-                ))
-            }
-            <PageButton onClick={() => {
-                setPage(page + 1);
-                //setNeedToSet(!needToSet);
-            }} disabled={page === numPages}>
-                &gt;
-                {/*<span className="material-symbols-rounded">chevron_right</span>*/}
-                {/*<span className="material-symbols-rounded">arrow_forward_ios</span>*/}
+            <CurrentPageNum>{page}</CurrentPageNum>
+            <PageButton
+                onClick={onPageClick}
+                disabled={page === numPages}>
+                <Icon
+                    id={"next"}
+                    className="material-symbols-rounded">chevron_right</Icon>
             </PageButton>
         </Base>
     )
