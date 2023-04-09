@@ -13,6 +13,7 @@ import Favorite from "../components/mypage/Favorite";
 const Base = styled.main`
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
   padding: 3rem 8rem 8rem 8rem;
   display: grid;
   grid-template-rows: 0.5fr 1fr 6fr;
@@ -31,6 +32,7 @@ const Base = styled.main`
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
       min-height: -webkit-fill-available;
     }
   }
@@ -67,9 +69,12 @@ const Tab = styled.div<{ active: boolean }>`
   }
   ` : css`
     border-bottom: 2px solid transparent;
-  `}
-  &:hover {
-    background-color: ${props => props.theme.color.lightGray}80;
+  `};
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: ${props => props.theme.color.lightGray}80;
+    }
   }
 `;
 

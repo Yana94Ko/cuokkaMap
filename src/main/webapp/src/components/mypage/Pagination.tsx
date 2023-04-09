@@ -5,14 +5,14 @@ import {Button, Icon} from "../../styles/common";
 const Base = styled.div`
   position: fixed;
   width: 100%;
-  bottom: 2rem;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: 30px 30px 30px;
   gap: 1rem;
   background-color: #fff;
-  padding: 2rem 0 1rem 0;
+  padding: 2rem 0 3rem 0;
   justify-content: center;
   align-items: center;
 `;

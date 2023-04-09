@@ -32,11 +32,11 @@ const InputWrapper = styled.div`
   border-radius: 1rem;
   padding: 0.5rem 1rem;
   @media ${props => props.theme.windowSize.tablet} {
-    width: 350px;
+    width: 500px;
 
   }
   @media ${props => props.theme.windowSize.mobile} {
-    width: 70vw;
+    width: 100vw;
   }
 `;
 
@@ -62,7 +62,7 @@ const SearchInput = styled(Input)`
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    padding: 0 1.5rem;
+    padding: 0 1rem;
   }
 `;
 const NavLoginOrMyPage = styled.div`
@@ -70,6 +70,9 @@ const NavLoginOrMyPage = styled.div`
   width: 100px;
   display: flex;
   justify-content: end;
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70px;
+  }
 `;
 const NavBtn = styled(Button)`
   background-color: ${props => props.theme.color.white};
@@ -77,8 +80,10 @@ const NavBtn = styled(Button)`
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    transform: scale(110%);
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(110%);
+    }
   }
 
   a {
@@ -91,8 +96,10 @@ const NavIcon = styled(Icon)`
   color: ${props => props.theme.color.primary};
   transition: all 0.1s ease-in-out;
 
-  &:hover {
-    transform: scale(110%);
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(110%);
+    }
   }
 `;
 

@@ -7,8 +7,6 @@ import {Button, Icon, Input, Tag} from "../../styles/common";
 import {setIsOpenedCafeInfo, setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import {RootState} from "../../modules";
 import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
-import {Simulate} from "react-dom/test-utils";
-import load = Simulate.load;
 
 const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   background-color: #fff;
@@ -29,17 +27,12 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   @media ${props => props.theme.windowSize.tablet} {
     overflow-y: auto;
     width: 100%;
-    height: 400px;
-    padding: 1rem 2rem 5rem 2rem;
+    height: 450px;
+    padding: 1rem 2rem 6rem 2rem;
     justify-content: start;
     border-radius: 1.5rem 1.5rem 0 0;
-    top: calc(100% - 400px);
+    top: calc(100% - 450px);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-  }
-  /* mobile viewport bug fix */
-  /* iOS only */
-  @supports (-webkit-touch-callout: none) {
-    padding: 1rem 2rem 8rem 2rem;
   }
 
   &::-webkit-scrollbar {
@@ -50,7 +43,7 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
 const Container = styled.div`
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  //overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -74,12 +67,14 @@ const Header = styled.div`
 
 export const CloseBtn = styled(Icon)`
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 1rem;
+  top: 2rem;
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    transform: rotate(90deg);
+  @media (hover: hover) {
+    &:hover {
+      transform: rotate(90deg);
+    }
   }
 `;
 

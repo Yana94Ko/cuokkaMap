@@ -19,6 +19,9 @@ const Base = styled.div`
     right: 50%;
     transform: translateX(50%);
   }
+  @media ${props => props.theme.windowSize.mobile} {
+    bottom: 11rem;
+  }
 `;
 const CloseBtn = styled(Icon)`
   position: absolute;
@@ -29,8 +32,10 @@ const CloseBtn = styled(Icon)`
   z-index: 10011;
   padding: 0.5rem;
   transition: all 0.2s ease-in-out;
-  &:hover {
-    transform: rotate(90deg);
+  @media (hover: hover) {
+    &:hover {
+      transform: rotate(90deg);
+    }
   }
 `;
 

@@ -31,9 +31,11 @@ const LogoutButton = styled(Button)`
   color: ${props => props.theme.color.text};
   font-weight: 700;
 
-  &:hover {
-    background-color: ${props => props.theme.color.primary};
-    color: ${props => props.theme.color.white};
+  @media (hover: hover) {
+    &:hover {
+      background-color: ${props => props.theme.color.primary};
+      color: ${props => props.theme.color.white};
+    }
   }
 `;
 

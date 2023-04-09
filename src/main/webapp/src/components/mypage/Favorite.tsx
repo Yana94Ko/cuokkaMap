@@ -16,6 +16,10 @@ const Base = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
+
+  @media ${props => props.theme.windowSize.mobile} {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
 `;
 
 const CardWrapper = styled.div``;
@@ -61,9 +65,11 @@ const GoToMapBtn = styled(Button)`
     margin-right: 10px;
   }
 
-  &:hover {
-    &::before {
-      display: inline;
+  @media (hover: hover) {
+    &:hover {
+      &::before {
+        display: inline;
+      }
     }
   }
 `;
@@ -77,8 +83,10 @@ const DeleteBtn = styled(Icon)`
   color: ${props => props.theme.color.darkGray};
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    color: ${props => props.theme.color.zero};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.zero};
+    }
   }
 `;
 
@@ -175,22 +183,22 @@ const Favorite = () => {
                     //움직이는 바 숨기기
                     mapZoomBar.style.display = "none";
                     //전체 감싸는 div 움직이는 css
-                    mapContent.style.position = "absolute";
-                    mapContent.style.bottom = "0";
-                    mapContent.style.right = "0";
-                    mapContent.style.marginTop = "16vh";
-                    mapContent.style.marginLeft = "-4vw";
-                    //아래에 가로로 놓자해서 돌린것
-                    mapContent.style.transform = "rotate(270deg)";
-                    //위 코드에 맞춰서 돌린것
-                    mapZoomIn.style.transform="rotate(-90deg)";
-                    mapZoomOut.style.transform="rotate(90deg)";
+                    // mapContent.style.position = "absolute";
+                    // mapContent.style.top = "0";
+                    // mapContent.style.right = "0";
+                    mapContent.style.marginTop = "20px";
+                    mapContent.style.marginLeft = "-20px";
+                    // //아래에 가로로 놓자해서 돌린것
+                    // mapContent.style.transform = "rotate(270deg)";
+                    // //위 코드에 맞춰서 돌린것
+                    // mapZoomIn.style.transform="rotate(-90deg)";
+                    // mapZoomOut.style.transform="rotate(90deg)";
 
                     //반응형 해보려고했던것
-                    if(document.body.offsetWidth <= 768){
-                        mapContent.style.marginTop = "-2vh";
-                        mapContent.style.marginLeft = "-7vw";
-                    };
+                    // if(document.body.offsetWidth <= 768){
+                    //     mapContent.style.marginTop = "-2vh";
+                    //     mapContent.style.marginLeft = "-7vw";
+                    // };
                 }
             }
         }
