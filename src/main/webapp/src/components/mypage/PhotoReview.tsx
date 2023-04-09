@@ -12,6 +12,9 @@ const Base = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 2rem;
+  @media ${props => props.theme.windowSize.mobile} {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
 `;
 
 const CardWrapper = styled.div``;
@@ -37,8 +40,10 @@ const DeleteBtn = styled(Icon)`
   color: ${props => props.theme.color.darkGray};
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    color: ${props => props.theme.color.zero};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.zero};
+    }
   }
 `;
 

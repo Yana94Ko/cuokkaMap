@@ -32,10 +32,9 @@ const Base = styled.div`
   }
   @media ${props => props.theme.windowSize.tablet} {
     border-radius: 1.5rem 1.5rem 0 0;
-
     width: 100%;
-    height: 350px;
-    top: calc(100% - 350px);
+    height: 450px;
+    top: calc(100% - 450px);
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
@@ -49,8 +48,10 @@ const CloseBtn = styled(Icon)`
   right: 2rem;
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    transform: rotate(90deg);
+  @media (hover: hover) {
+    &:hover {
+      transform: rotate(90deg);
+    }
   }
 `;
 const CafeInfoWrapper = styled.div``;
@@ -75,8 +76,10 @@ const PlaceName = styled.a`
   transition: all 0.3s ease-in-out;
   text-decoration: none;
 
-  &:hover {
-    color: ${props => props.theme.color.primary};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.primary};
+    }
   }
 `;
 
@@ -218,9 +221,14 @@ const CafeReviewContent = styled.div`
 
 type CafeInfoProps = {
     fetchPlaceDetail: (placeNum: string) => void;
+    openPhotoModal:boolean
+    setOpenPhotoModal:React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc:string
+    setModalImgSrc:React.Dispatch<SetStateAction<string>>;
+
 }
 
-const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
+const CafeInfo = ({fetchPlaceDetail, openPhotoModal, setOpenPhotoModal, modalImgSrc, setModalImgSrc }: CafeInfoProps) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
@@ -290,8 +298,9 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
             })
                 .then(response => response.text())
                 .then(function (data) {
-                    fetchPlaceDetail(placeNum);
+                    // fetchPlaceDetail(placeNum);
                     dispatch(setCurrentFilter([]));
+                    dispatch(setIsOpenedCafeInfo(false));
                 })
                 .catch(err => console.log("에러", err));
         } else {
@@ -358,7 +367,10 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview/> : <CafeInfoReview/>}
+                {currentView === "photo" ? <CafeInfoPhotoReview openPhotoModal={openPhotoModal}
+                                                                setOpenPhotoModal={setOpenPhotoModal}
+                                                                modalImgSrc={modalImgSrc}
+                                                                setModalImgSrc={setModalImgSrc}/> : <CafeInfoReview/>}
             </CafeReviewContent>
         </Base>
     )

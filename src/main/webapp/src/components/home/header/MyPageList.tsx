@@ -16,6 +16,10 @@ const Base = styled.div`
   border-radius: 0.5rem;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70px;
+    left: 0;
+  }
 `;
 
 const List = styled.ul``;
@@ -33,9 +37,16 @@ const Item = styled.li`
     margin-bottom: 0;
   }
 
-  &:hover {
-    color: ${props => props.theme.color.primary};
-    background-color: ${props => props.theme.color.lightGray};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.primary};
+      background-color: ${props => props.theme.color.lightGray};
+    }
+  }
+
+  @media ${props => props.theme.windowSize.mobile} {
+    padding: 1rem 0;
+  
   }
 `;
 
@@ -48,8 +59,10 @@ const StyledA = styled.a`
     color: ${props => props.theme.color.text};
   }
 
-  &:hover {
-    color: ${props => props.theme.color.primary};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.primary};
+    }
   }
 `;
 

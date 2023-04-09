@@ -30,19 +30,21 @@ const PhotoUl = styled.ul`
   gap: 1rem;
 `;
 const PhotoLi = styled.li`
+  height: 130px;
   overflow: hidden;
   position: relative;
   border-radius: 1rem;
 
 `;
 const PhotoImg = styled.img`
-  width: 120%;
-  height: 130px;
+  width: 100%;
+  height: 100%;
   border-radius: 1rem;
   object-fit: cover;
+  object-position: center;
   z-index: 100;
   position: relative;
-  cursor:pointer;
+  cursor: pointer;
 `;
 const DeleteBtn = styled(Button)`
   position: absolute;
@@ -58,8 +60,10 @@ const DeleteBtn = styled(Button)`
   & span {
     color: ${props => props.theme.color.darkGray};
 
-    &:hover {
-      color: ${props => props.theme.color.zero};
+    @media (hover: hover) {
+      &:hover {
+        color: ${props => props.theme.color.zero};
+      }
     }
   }
 `;
@@ -72,43 +76,14 @@ const NoReview = styled.p`
   margin-top: 2rem;
 `;
 
-const ModalContainer = styled.div`
-  width:40vw;
-  height:60vh;
-  display:flex;
-  justify-content: center;
-  align-items:center;
-  border-radius:20px;
-  overflow:hidden;
-`;
-
-const ModalImg = styled.img`
-  width:100%;
-  height:100%;
-  object-fit: contain;
-`;
-const ModalCloseBtn = styled.span`
-  position:absolute;
-  z-index:1000;
-  bottom:15vh;
-  cursor:pointer;
-  color:white;
-`;
-
-type PhotoReview = {
-    cafeInfoContainer: object;
-    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>;
+type PropsType = {
+    openPhotoModal: boolean
+    setOpenPhotoModal: React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc: string
+    setModalImgSrc: React.Dispatch<SetStateAction<string>>;
 }
-type dataType = {
-    placeImg_num: number;
-    placeImg_src: string;
-    placeImg_writedate: string;
-    place_num: number;
-    user_num: number;
-}
-const CafeInfoPhotoReview = () => {
-    const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
-    const [modalImgSrc,setModalImgSrc] = useState<string>("#");
+
+const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, setModalImgSrc}: PropsType) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
     const dispatch = useDispatch();
@@ -240,16 +215,13 @@ const CafeInfoPhotoReview = () => {
         }
     }
 
-    const openPhotoModalHandler = (e:React.MouseEvent<HTMLImageElement>) => {
+    const openPhotoModalHandler = (e: React.MouseEvent<HTMLImageElement>) => {
         if (e.target instanceof Element) {
             setModalImgSrc(e.target.id);
         }
         setOpenPhotoModal(true);
     }
 
-    const closePhotoModal = () => {
-        setOpenPhotoModal(false);
-    }
 
     return (
         <>
@@ -278,12 +250,6 @@ const CafeInfoPhotoReview = () => {
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) => removePhotoReview(e, image)}>
                                             <Icon className="material-symbols-rounded">delete</Icon>
                                         </DeleteBtn>)}
-                                    {openPhotoModal && (<Modal>
-                                        <ModalContainer>
-                                            <ModalImg src={modalImgSrc}/>
-                                            <ModalCloseBtn className="material-symbols-rounded" onClick={closePhotoModal}>Close</ModalCloseBtn>
-                                        </ModalContainer>
-                                    </Modal>)}
                                 </PhotoLi>
                             ))}
                         </PhotoUl>
