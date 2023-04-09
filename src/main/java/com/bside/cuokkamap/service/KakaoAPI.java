@@ -12,10 +12,10 @@ import java.util.HashMap;
 
 @Service
 public class KakaoAPI {
-    @Value("${KAKAO_LOGIN_REST_API_KEY}")
+    @Value("${kakao.login.rest-api-key}")
     private String KAKAO_LOGIN_REST_API_KEY;
 
-    @Value("${KAKAO_LOGIN_REDIRECT_URI}")
+    @Value("${kakao.login.redirect-uri}")
     private String KAKAO_LOGIN_REDIRECT_URI;
 
     public JSONObject getToken (String authorizeCode) {
