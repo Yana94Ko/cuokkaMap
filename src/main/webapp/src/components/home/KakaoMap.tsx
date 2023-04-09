@@ -22,6 +22,7 @@ const Base = styled.div`
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
       min-height: -webkit-fill-available;
     }
   }
