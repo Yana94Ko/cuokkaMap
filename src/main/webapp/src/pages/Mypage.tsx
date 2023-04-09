@@ -4,11 +4,11 @@ import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 
 import {RootState} from "../modules";
-import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../modules/viewReducer";
+import {setCurrentMyPageView} from "../modules/viewReducer";
 import Header from "../components/mypage/Header";
 import PhotoReview from "../components/mypage/PhotoReview";
 import Review from "../components/mypage/Review";
-import Bookmark from "../components/mypage/Bookmark";
+import Favorite from "../components/mypage/Favorite";
 
 const Base = styled.main`
   width: 100vw;
@@ -90,14 +90,9 @@ const MyPageContent = styled.div`
   }
 `;
 
-const Notice = styled.h1`
-  position: absolute;
-  text-align: center;
-  width: 100vw;
-  top: 50%;
-  left: 0;
-  font-size: ${props => props.theme.fontSize.lg};
-  word-break: keep-all;
+export const ContentCount = styled.h4`
+  margin-bottom: 2rem;
+  font-weight: 700;
 `;
 
 type TabProps = {
@@ -122,8 +117,8 @@ const MyPage = () => {
 
     const myPageContent: TabProps[] = [
         {
-            name: "북마크",
-            id: "bookmark"
+            name: "즐겨찾기",
+            id: "favorite"
         },
         {
             name: "사진",
@@ -153,7 +148,7 @@ const MyPage = () => {
             <MyPageContent>
                 {currentMyPageView === "photo" ? <PhotoReview/>
                     : currentMyPageView === "review" ? <Review/>
-                        : <Bookmark/>}
+                        : <Favorite/>}
             </MyPageContent>
         </Base>
     )

@@ -40,7 +40,7 @@ const initialState: ViewState = {
     isOpenedCafeInfo: false,
     isOpenedPostCafe: false,
     needToFocus: false,
-    currentMyPageView: "bookmark"
+    currentMyPageView: "favorite"
 }
 
 function viewReducer(

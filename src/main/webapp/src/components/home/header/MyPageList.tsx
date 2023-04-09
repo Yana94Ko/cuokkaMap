@@ -78,9 +78,9 @@ const MyPageList: React.FC = () => {
             {
                 isLoggedin ? (
                     <List onClick={onItemClick}>
+                        <Item id="favorite">내 즐겨찾기</Item>
                         <Item id="photo">내 사진</Item>
                         <Item id="review">내 후기</Item>
-                        <Item id="bookmark">내 북마크</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
                             <Item>

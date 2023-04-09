@@ -6,6 +6,7 @@ import {RootState} from "../../modules";
 import Card from "./Card";
 import {Icon} from "../../styles/common";
 import Pagination from "./Pagination";
+import {ContentCount} from "../../pages/Mypage";
 
 const Base = styled.div`
   display: grid;
@@ -104,24 +105,28 @@ const PhotoReview = () => {
     }
     return (
         reviewImgData.length > 0 ? (
-            <Base>
-                {
-                    reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
-                        <CardWrapper key={idx}>
-                            <Card height={200}>
-                                <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
-                            </Card>
-                            <ReviewHeader>
-                                <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
-                                <DeleteBtn className="material-symbols-rounded"
-                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
-                                >delete</DeleteBtn>
-                            </ReviewHeader>
-                        </CardWrapper>
-                    ))
-                }
-                <Pagination dataLength={imgDataLength} limit={limit} page={page} setPage={setPage}/>
-            </Base>
+            <>
+                <ContentCount>{reviewImgData.length}개 사진</ContentCount>
+                <Base>
+                    {
+                        reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
+                            <CardWrapper key={idx}>
+                                <Card height={200}>
+                                    <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                                </Card>
+                                <ReviewHeader>
+                                    <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
+                                    <DeleteBtn className="material-symbols-rounded"
+                                               onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
+                                    >delete</DeleteBtn>
+                                </ReviewHeader>
+                            </CardWrapper>
+                        ))
+                    }
+                    <Pagination dataLength={imgDataLength} limit={limit} page={page} setPage={setPage}/>
+                </Base>
+            </>
+
         ) : (
             <Notice>등록하신 사진 후기가 없습니다.</Notice>
         )
