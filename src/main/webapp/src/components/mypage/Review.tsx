@@ -6,6 +6,7 @@ import {RootState} from "../../modules";
 import {Icon} from "../../styles/common";
 import Card from "./Card";
 import Pagination from "./Pagination";
+import {ContentCount} from "../../pages/Mypage";
 
 const Base = styled.div`
   display: grid;
@@ -156,38 +157,36 @@ const Review = () => {
         }
     }
     return (
-        <Base>
-            {
-                reviewData.length > 0 ? (
-                    <>
-                        {reviewData.slice(offset, offset + limit).map((review: any, idx: number) => (
-                            <Card height={200} key={idx}>
-                                <ReviewHeader>
-                                    <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
-                                    <DeleteBtn className="material-symbols-rounded"
-                                               onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review)}>delete</DeleteBtn>
-                                </ReviewHeader>
-                                {
-                                    emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
-                                        <Emoji key={emoji.id}>
-                                            <EmojiImg src={emoji.imgSrc}/>
-                                            <EmojiText>{emoji.name}</EmojiText>
-                                        </Emoji>
+        reviewData.length > 0 ? (
+            <>
+                <ContentCount>{reviewData.length}개 후기</ContentCount>
+                <Base>
+                    {reviewData.slice(offset, offset + limit).map((review: any, idx: number) => (
+                        <Card height={200} key={idx}>
+                            <ReviewHeader>
+                                <PlaceName>{JSON.parse(review.place_info).place_name}</PlaceName>
+                                <DeleteBtn className="material-symbols-rounded"
+                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review)}>delete</DeleteBtn>
+                            </ReviewHeader>
+                            {
+                                emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
+                                    <Emoji key={emoji.id}>
+                                        <EmojiImg src={emoji.imgSrc}/>
+                                        <EmojiText>{emoji.name}</EmojiText>
+                                    </Emoji>
 
-                                    ))
-                                }
-                                <ReviewText>{review.placeReview}</ReviewText>
-                                <ReviewDate>{review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
-                            </Card>
-                        ))}
-                        <Pagination dataLength={reviewDataLength} limit={limit} page={page} setPage={setPage}/>
-                    </>
-
-                ) : (
-                    <Notice>등록하신 후기가 없습니다.</Notice>
-                )
-            }
-        </Base>
+                                ))
+                            }
+                            <ReviewText>{review.placeReview}</ReviewText>
+                            <ReviewDate>{review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
+                        </Card>
+                    ))}
+                    <Pagination dataLength={reviewDataLength} limit={limit} page={page} setPage={setPage}/>
+                </Base>
+            </>
+        ) : (
+            <Notice>등록하신 후기가 없습니다.</Notice>
+        )
     )
 }
 
