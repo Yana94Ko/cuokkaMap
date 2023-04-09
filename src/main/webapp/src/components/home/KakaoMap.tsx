@@ -554,6 +554,7 @@ const KakaoMap = ({
             .then(response => response.text())
             .then((message) => {
                 const data = JSON.parse(message);
+                const placeInfo = JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info)
                 dispatch(setCafeInfoContainer({
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
@@ -563,7 +564,7 @@ const KakaoMap = ({
                     isBookmarked: data.isBookmarked
                 }));
                 dispatch(setIsOpenedCafeInfo(true));
-                // moveMapAfterPost(data.y, data.x);
+                moveToPosition(placeInfo.y, placeInfo.x);
             }).catch(err => console.log(err));
     }
 
@@ -683,7 +684,7 @@ const KakaoMap = ({
         bounds.extend(placePosition);
         mapState.setBounds(bounds);
         mapState.setCenter(placePosition);
-        mapState.setLevel(2);
+        mapState.setLevel(3);
     }
 
     /*============================================== [ END ] 위치 관련 ============================================*/

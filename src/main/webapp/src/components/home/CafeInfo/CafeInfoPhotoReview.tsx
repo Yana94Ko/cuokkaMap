@@ -30,14 +30,15 @@ const PhotoUl = styled.ul`
   gap: 1rem;
 `;
 const PhotoLi = styled.li`
+  height: 130px;
   overflow: hidden;
   position: relative;
   border-radius: 1rem;
 
 `;
 const PhotoImg = styled.img`
-  width: 120%;
-  height: 130px;
+  width: 100%;
+  height: 100%;
   border-radius: 1rem;
   object-fit: cover;
   object-position: center;
