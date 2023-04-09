@@ -32,10 +32,9 @@ const Base = styled.div`
   }
   @media ${props => props.theme.windowSize.tablet} {
     border-radius: 1.5rem 1.5rem 0 0;
-
     width: 100%;
-    height: 350px;
-    top: calc(100% - 350px);
+    height: 450px;
+    top: calc(100% - 450px);
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
@@ -49,8 +48,10 @@ const CloseBtn = styled(Icon)`
   right: 2rem;
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    transform: rotate(90deg);
+  @media (hover: hover) {
+    &:hover {
+      transform: rotate(90deg);
+    }
   }
 `;
 const CafeInfoWrapper = styled.div``;
@@ -75,8 +76,10 @@ const PlaceName = styled.a`
   transition: all 0.3s ease-in-out;
   text-decoration: none;
 
-  &:hover {
-    color: ${props => props.theme.color.primary};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.primary};
+    }
   }
 `;
 

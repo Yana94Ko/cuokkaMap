@@ -10,11 +10,11 @@ import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
 import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
-import cafeInfo from "../home/CafeInfo";
 
 const Base = styled.div`
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
   position: relative;
   display: flex;
   justify-content: end;
@@ -27,16 +27,23 @@ const Base = styled.div`
     }
   }
 `;
-const MapContainer = styled.div<{ isOpenedPostCafe: boolean }>`
+const MapContainer = styled.div<{ isOpenedPostCafe: boolean, isOpenedCafeInfo: boolean }>`
   width: 100vw;
   min-height: 100vh;
   ${props => props.isOpenedPostCafe && css`
-    width: calc(100vw - 300px);
+    width: calc(100vw - 450px);
 
     @media ${props => props.theme.windowSize.tablet} {
       width: 100vw;
-      height: calc(100vh - 300px);
-      min-height: calc(100vh - 300px);
+      height: calc(100vh - 350px);
+      min-height: calc(100vh - 350px);
+    }
+  `}
+
+  ${props => props.isOpenedCafeInfo && css`
+    @media ${props => props.theme.windowSize.tablet} {
+      height: calc(100vh - 350px);
+      min-height: calc(100vh - 350px);
     }
   `}
 `;
@@ -79,22 +86,24 @@ const AddCafeButton = styled(Button)`
     transition: all 0.2s ease-in-out;
   }
 
-  &:hover {
-    background-color: ${props => props.theme.color.primary};
-    color: ${props => props.theme.color.white};
-
-    & span {
+  @media (hover: hover) {
+    &:hover {
+      background-color: ${props => props.theme.color.primary};
       color: ${props => props.theme.color.white};
+
+      & span {
+        color: ${props => props.theme.color.white};
+      }
     }
   }
 
   @media ${props => props.theme.windowSize.mobile} {
-    bottom: 5rem;
+    bottom: 6rem;
   }
   @media not all and (min-resolution: .001dpcm) {
     @supports (-webkit-appearance:none) {
       /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
-      bottom: 8rem;
+      bottom: 6rem;
     }
   }
 `;
@@ -116,12 +125,7 @@ const BookmarkBtn = styled(Button)<{ isBookmarkMode: boolean }>`
     & span {
       font-variation-settings: 'FILL' 0;
     }
-  `}
-  &:hover {
-    transform: scale(110%);
-  }
-
-  @media ${props => props.theme.windowSize.mobile} {
+  `} @media ${props => props.theme.windowSize.mobile} {
     right: 2rem;
   }
 `;
@@ -129,8 +133,10 @@ const BookmarkIcon = styled(Icon)`
   color: ${props => props.theme.color.primary};
   transition: all 0.1s ease-in-out;
 
-  &:hover {
-    transform: scale(110%);
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(110%);
+    }
   }
 `;
 
@@ -258,6 +264,15 @@ const KakaoMap = ({
         markers = [];
         //setMarkers([]);
     }
+
+    // 카페추가창(웹, 모바일), 카페 정보창(모바일) 여닫을때 지도 크기 변경에 따른 지도 relayout
+    useEffect(() => {
+        if (mapState !== undefined) {
+            mapState.relayout();
+            const center = mapState.getCenter();
+            mapState.setCenter(center)
+        } else return;
+    }, [isOpenedCafeInfo, isOpenedPostCafe]);
 
     /*====================================== [ END ] 마커 공통 =====================================*/
 
@@ -557,7 +572,7 @@ const KakaoMap = ({
             // 검색된 장소 위치를 기준으로 지도 범위를 재설정
             if (!needToFocus) {
                 mapState.setBounds(bounds);
-                if(mapState.getLevel() > 9){
+                if (mapState.getLevel() > 9) {
                     // [YANA] : 한반도 곳곳에 장소가 추가됬을 시 첫 화면에서 시청 중심으로 적절한 레벨로 보여주기
                     const newBounds = new window.kakao.maps.LatLngBounds();
                     newBounds.extend(new window.kakao.maps.LatLng(37.56646421202285, 126.98104067102928));
@@ -583,7 +598,8 @@ const KakaoMap = ({
 
         }
     }
-    if(mapState !== undefined){
+
+    if (mapState !== undefined) {
         console.log(mapState.getCenter())
     }
 
@@ -668,7 +684,7 @@ const KakaoMap = ({
 
     return (
         <Base>
-            <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe}/>
+            <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe} isOpenedCafeInfo={isOpenedCafeInfo}/>
             <Header setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                     removeMarker={removeMarker} setDBData={setDBData}
                     setSearchDBKeyword={setSearchDBKeyword}/>

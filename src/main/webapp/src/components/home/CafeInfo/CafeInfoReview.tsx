@@ -106,8 +106,10 @@ const DeleteBtn = styled(Icon)`
   right: 1rem;
   color: ${props => props.theme.color.darkGray};
 
-  &:hover {
-    color: ${props => props.theme.color.zero};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.zero};
+    }
   }
 `;
 
@@ -204,14 +206,6 @@ const CafeInfoReview = () => {
         }
     }
 
-    const onFilterClick = (e: React.MouseEvent<HTMLLIElement>) => {
-        setCopiedData({
-            ...copiedData,
-            reviewList: copiedData.reviewList.filter((i: any) => i.placeReview_emoji === parseInt(e.currentTarget.id)
-            )
-        })
-    }
-
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const result = window.confirm("후기를 등록하시겠습니까?");
@@ -290,12 +284,13 @@ const CafeInfoReview = () => {
                 }));
             })
     }
-const onFocusTextarea = () => {
-        if(!isLoggedin) {
+
+    const onFocusTextarea = () => {
+        if (!isLoggedin) {
             dispatch(setIsOpenedLoginModal(true));
         } else return;
 
-}
+    }
     return (
         <Base>
             <ReviewForm onSubmit={onSubmit}>
@@ -315,7 +310,8 @@ const onFocusTextarea = () => {
                 </ItemWrapper>
                 <ItemWrapper>
                     <Label>후기</Label>
-                    <ReviewTextarea onFocus={onFocusTextarea} minLength={5} maxLength={49} placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
+                    <ReviewTextarea onFocus={onFocusTextarea} minLength={5} maxLength={49}
+                                    placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
                                     onChange={onChange}/>
                     <ReviewLength>{reviewText.length}/50</ReviewLength>
                 </ItemWrapper>
@@ -334,7 +330,7 @@ const onFocusTextarea = () => {
                             <EmojiPickerWrapper mode="filter">
                                 {
                                     emojiContent.map(item => (
-                                        <Emoji mode="filter" onClick={onFilterClick} key={item.id}
+                                        <Emoji mode="filter" key={item.id}
                                                id={item.id.toString()}
                                                reviewEmoji={reviewEmoji}>
                                             <EmojiImg src={item.imgSrc} alt={item.name}/>
