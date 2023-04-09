@@ -4,10 +4,10 @@ import styled, {css} from "styled-components"
 import {Icon, Tag} from "../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {setIsOpenedCafeInfo} from "../../modules/viewReducer";
-import CafeInfoPhotoReview from "./review/CafeInfoPhotoReview";
-import CafeInfoReview from "./review/CafeInfoReview";
+import CafeInfoPhotoReview from "./CafeInfo/CafeInfoPhotoReview";
+import CafeInfoReview from "./CafeInfo/CafeInfoReview";
 import {RootState} from "../../modules";
-import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
+import {setCurrentFilter} from "../../modules/filterReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -18,9 +18,6 @@ const Base = styled.div`
   top: 15vh;
   left: 3rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   border-radius: 1.5rem;
   overflow-y: scroll;
 
@@ -34,17 +31,15 @@ const Base = styled.div`
     transform: translateY(-48%);
   }
   @media ${props => props.theme.windowSize.tablet} {
-    width: 350px;
+    border-radius: 1.5rem 1.5rem 0 0;
 
-  }
-  @media ${props => props.theme.windowSize.mobile} {
     width: 100%;
-    top: calc(100% - 375px);
+    height: 350px;
+    top: calc(100% - 350px);
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
-    padding: 2rem 1rem 8rem 2rem;
   }
 `;
 
@@ -59,15 +54,18 @@ const CloseBtn = styled(Icon)`
   }
 `;
 const CafeInfoWrapper = styled.div``;
+
 const TitleWrapper = styled.div`
   display: flex;
   position: sticky;
   position: -webkit-sticky;
-  z-index: 11;
+  z-index: 1111;
   top: 0;
   left: 0;
   background-color: #fff;
   padding: 2rem;
+  display: flex;
+  align-items: center;
 `;
 
 const PlaceName = styled.a`
@@ -80,6 +78,33 @@ const PlaceName = styled.a`
   &:hover {
     color: ${props => props.theme.color.primary};
   }
+`;
+
+const InstaBtn = styled.a`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1rem;
+
+  & img {
+    width: 22px;
+    height: 22px;
+  }
+`;
+
+const BookmarkBtn = styled(Icon)<{ isLoggedin: boolean, isBookmarked: boolean }>`
+  cursor: pointer;
+  margin-left: 1rem;
+
+  ${props => props.isLoggedin && css`
+    display: block;
+  `}
+  ${props => props.isBookmarked === false && css`
+    font-variation-settings: 'FILL' 0,
+    'wght' 700,
+    'GRAD' 0,
+    'opsz' 48;
+  `}
 `;
 
 const Item = styled.div`
@@ -152,8 +177,8 @@ const ReviewTab = styled.div`
   display: flex;
   position: sticky;
   position: -webkit-sticky;
-  z-index: 11;
-  top: 70px;
+  z-index: 1111;
+  top: 60px;
   background-color: #fff;
   padding: 2rem 0 0 0;
   justify-content: space-between;
@@ -177,19 +202,26 @@ const Tab = styled.div<{ currentView: string }>`
 
 const CafeReviewContent = styled.div`
   padding: 2rem;
+  @media ${props => props.theme.windowSize.tablet} {
+    padding-bottom: 3rem;
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    padding-bottom: 5rem;
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      padding-bottom: 8rem;
+    }
+  }
 `;
 
-const BookmarkBtn = styled.span`
-  cursor:pointer;
-`;
 
 type CafeInfoProps = {
-    cafeInfoContainer: object;
-    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
-    fetchPlaceDetail:(placeNum:string) => void;
+    fetchPlaceDetail: (placeNum: string) => void;
 }
 
-const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: CafeInfoProps) => {
+const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
+    const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
     //로그인 되었는지 상태 가져오기
@@ -197,11 +229,11 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     //아이디 조회
     const userNum = sessionStorage.getItem('id');
     //장소넘버 조회
-    let placeNum:string, isBookmarked:boolean;
-    if(cafeInfoContainer !== undefined){
-        placeNum = Object.values(cafeInfoContainer)[2]
+    let placeNum: string, isBookmarked: boolean;
+    if (cafeInfoContainer !== undefined) {
+        placeNum = cafeInfoContainer.placeNum;
         //북마크 여부 확인
-        isBookmarked = Object.values(cafeInfoContainer)[5];
+        isBookmarked = cafeInfoContainer.isBookmarked;
     }
 
     let dataObject: any = {};
@@ -213,7 +245,6 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     const closeCafeInfo = () => {
         dispatch(setIsOpenedCafeInfo(false));
     };
-
     const onReviewTabClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target instanceof Element) {
             if (e.target.id !== '') {
@@ -223,50 +254,47 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
     }
 
     const addBookMark = () => {
-        if(window.confirm("북마크를 추가하시겠습니까?")){
-            fetch('/api/place/uploadFavoritePlace',{
-                method:'POST',
+        if (window.confirm("북마크를 추가하시겠습니까?")) {
+            fetch('/api/place/uploadFavoritePlace', {
+                method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "place_num" : placeNum,
-                    "user_num" : userNum,
+                    "place_num": placeNum,
+                    "user_num": userNum,
                 }),
             })
                 .then(response => response.text())
                 .then(function (data) {
-                    console.log(JSON.parse(data));
                     fetchPlaceDetail(placeNum);
                 })
                 .catch(err => console.log("에러", err));
 
-        }else{
+        } else {
             return;
         }
 
     }
-    console.log(placeNum);
     const removeBookMarker = () => {
-        if(window.confirm("북마크를 삭제하시겠습니까?")){
-            fetch('/api/place/deleteFavoritePlace',{
-                method:'POST',
+        if (window.confirm("북마크를 삭제하시겠습니까?")) {
+            fetch('/api/place/deleteFavoritePlace', {
+                method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "place_num" : placeNum,
-                    "user_num" : userNum,
+                    "place_num": placeNum,
+                    "user_num": userNum,
                 }),
             })
                 .then(response => response.text())
                 .then(function (data) {
-                    console.log(data);
                     fetchPlaceDetail(placeNum);
                     dispatch(setCurrentFilter([]));
                 })
                 .catch(err => console.log("에러", err));
-        }else{
+        } else {
             return;
         }
     }
@@ -276,29 +304,26 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 cafeInfoContainer !== undefined && (
                     <>
                         {
-                                <TitleWrapper>
-                                    <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
-                                    {
-                                        isLoggedin && (isBookmarked ? (
-                                            <BookmarkBtn className="material-icons-rounded" onClick={removeBookMarker}>bookmark</BookmarkBtn>
-                                        ) : (
-                                            <BookmarkBtn className="material-icons-rounded" onClick={addBookMark}>Bookmark_Border</BookmarkBtn>
-                                        ))
-                                    }
-                                    <PlaceName href={dataObject.data.place_url} target="_blank">
-                                        {dataObject.data.place_name}
-                                    </PlaceName>&emsp;
-                                    {
-                                        dataObject.data.insta&&(
-                                            <a href={dataObject.data.insta} target="_blank">
-                                                <img className="insta"
-                                                     src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
-                                                     width="30px" alt="insta"/>
-                                            </a>
-                                        )
-                                    }
+                            <TitleWrapper>
+                                <CloseBtn className="material-symbols-rounded" onClick={closeCafeInfo}>close</CloseBtn>
 
-                                </TitleWrapper>
+                                <PlaceName href={dataObject.data.place_url} target="_blank">
+                                    {dataObject.data.place_name}
+                                </PlaceName>
+                                {
+                                    dataObject.data.insta && (
+                                        <InstaBtn href={dataObject.data.insta} target="_blank">
+                                            <img className="insta"
+                                                 src={process.env.PUBLIC_URL + "/assets/images/markers/insta.png"}
+                                                 width="30px" alt="insta"/>
+                                        </InstaBtn>
+                                    )
+                                }
+                                <BookmarkBtn className="material-symbols-rounded" isLoggedin={isLoggedin}
+                                             isBookmarked={isBookmarked}
+                                             onClick={isBookmarked ? removeBookMarker : addBookMark
+                                             }>star</BookmarkBtn>
+                            </TitleWrapper>
                         }
 
                         <CafeInfoWrapper>
@@ -332,11 +357,8 @@ const CafeInfo = ({cafeInfoContainer, setCafeInfoContainer, fetchPlaceDetail}: C
                 <Tab id="photo" currentView={currentView}>사진</Tab>
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
-            {/*TODO [FE] : 사진 후기창이랑 일반 후기창이랑 간격 다른것 */}
-            {/*assignees: SeongSilver, hwanyb 중에서 해결해줬으면 좋겠는 사람 태그하기*/}
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/> :
-                    <CafeInfoReview cafeInfoContainer={cafeInfoContainer} setCafeInfoContainer={setCafeInfoContainer}/>}
+                {currentView === "photo" ? <CafeInfoPhotoReview/> : <CafeInfoReview/>}
             </CafeReviewContent>
         </Base>
     )

@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import MyPageList from "./components/home/MyPageList";
-import KakaoOauth2RedirectHandler from "./components/home/header/KakaoOauth2RedirectHandler";
+import MyPageList from "./components/home/header/MyPageList";
+import KakaoOauth2RedirectHandler from "./components/KakaoOauth2RedirectHandler";
 import {useDispatch} from "react-redux";
 import {setIsLoggedin, setUserId} from "./modules/userReducer";
-import Banner from "./components/home/Banner";
+import Banner from "./components/Banner";
 import MyPage from "./pages/Mypage";
 
 function App() {
@@ -27,7 +27,6 @@ function App() {
 
     useEffect(() => {
         setOpenBanner(true);
-        sessionStorage.setItem("id", "2");
     },[])
 
     return (

@@ -19,7 +19,7 @@ import java.io.PrintWriter;
 
 @Controller
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "http://cuokkamap.com:3000", allowedHeaders = "*")
+@CrossOrigin(origins = {"http://localhost:80", "http://localhost:3000"}, allowedHeaders = "*")
 public class UserController {
     @Autowired
     KakaoAPI kakao;

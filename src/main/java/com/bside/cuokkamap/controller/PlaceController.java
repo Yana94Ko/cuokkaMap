@@ -25,14 +25,14 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/api/place/")
-@CrossOrigin(origins = "http://cuokkamap.com:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class PlaceController {
 
     @Autowired
     PlaceService placeService;
 
-//    @Value("${spring.servlet.multipart.location}")
-//    private String uploadPath;
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadPath;
 
     @PostMapping("placeInsert")
     public ResponseEntity saveCafeInfo(@RequestBody String response) {
@@ -74,41 +74,47 @@ public class PlaceController {
 
     @PostMapping("/getAllPlaceInfo")
     public ResponseEntity getALLPlaceWithFilterAndKeyword(@RequestBody String res) {
-        System.out.println("DB에 저장된 카페 정보 받으러옴");
-        JsonParser parser = new JsonParser();
-        JsonObject jobj = (JsonObject)parser.parse(res);
-        List <String> filters = null;;
-        List<String> keywords = null;
-        int filterCnt = 0;
-        int keywordCnt = 0;
-        int user_num = 0;
+        try {
+            System.out.println("DB에 저장된 카페 정보 받으러옴");
+            JsonParser parser = new JsonParser();
+            JsonObject jobj = (JsonObject)parser.parse(res);
+            List <String> filters = null;;
+            List<String> keywords = null;
+            int filterCnt = 0;
+            int keywordCnt = 0;
+            int user_num = 0;
 
-        //filters
-        if(jobj.get("place_filter") != null && ! (jobj.get("place_filter").toString()).equals("[]")) {
-            filters = Arrays.asList((jobj.get("place_filter")
-                                            .toString().replaceAll("[\\[\\]\"]","")
-                                            .split(",")));
-            filterCnt = filters.size();
-        }
-        //keyword
-        if(jobj.get("keywords") != null && ! jobj.get("keywords").toString().equals("\"\"")) {
-            keywords =  Arrays.asList((jobj.get("keywords")
-                                .toString().replaceAll("[\\[\\]\"]","")
-                                .split(" ")));
-            keywordCnt = keywords.size();
-        }
-        //user_num
-        if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")) {
-            user_num = jobj.get("user_num")
-                    .getAsInt();
-        }
-        System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt + "/" + user_num);
-        List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt, user_num);
+            //filters
+            if(jobj.get("place_filter") != null && ! (jobj.get("place_filter").toString()).equals("[]")) {
+                filters = Arrays.asList((jobj.get("place_filter")
+                        .toString().replaceAll("[\\[\\]\"]","")
+                        .split(",")));
+                filterCnt = filters.size();
+            }
+            //keyword
+            if(jobj.get("keywords") != null && ! jobj.get("keywords").toString().equals("\"\"")) {
+                keywords =  Arrays.asList((jobj.get("keywords")
+                        .toString().replaceAll("[\\[\\]\"]","")
+                        .split(" ")));
+                keywordCnt = keywords.size();
+            }
+            //user_num
+            if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")) {
+                user_num = jobj.get("user_num")
+                        .getAsInt();
+            }
+            System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt + "/" + user_num);
+            List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt, user_num);
 //        for(PlaceVO place : placeList){
 //            System.out.println(place.getFilter_type());
 //        }
 
-        return new ResponseEntity( placeList, HttpStatus.OK);
+            return new ResponseEntity( placeList, HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity("DB열람 실패", HttpStatus.EXPECTATION_FAILED);
+        }
+
     }
 
     @PostMapping("/isThereSamePlaceDB")
@@ -147,14 +153,8 @@ public class PlaceController {
                             file
                                     .getOriginalFilename()
                                     .lastIndexOf(".") + 1);
-//            //배포/ 비배포에 따른 path 분리
-//            String path;
-//            if(System.getenv("isNotDevVer") == "Y"){
-//                path = uploadPath;
-//            } else {
-//                path = request.getServletContext().getRealPath("/public/upload");
-//            }
-            File f = new File( request.getServletContext().getRealPath("public/upload") + "/" + newFileName + "." + ext);
+
+            File f = new File( uploadPath + "/" + newFileName + "." + ext);
 
             try {
                 file.transferTo(f);

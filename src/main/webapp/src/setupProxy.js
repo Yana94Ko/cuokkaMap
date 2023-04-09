@@ -5,7 +5,7 @@ module.exports = function(app) {
     app.use(
         '/api',
         createProxyMiddleware({
-            target: 'http://cuokkamap.com/:8021',
+            target: process.env.REACT_APP_PROXY_TARGET,
             changeOrigin: true,
         })
     );
