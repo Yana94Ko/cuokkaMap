@@ -16,17 +16,23 @@ const Base = styled.div`
 
 const CardWrapper = styled.div``;
 
-const ReviewHeader = styled.div`
+const ReviewFooter = styled.div`
   display: flex;
   justify-content: space-between;
-  align-content: center;
+  align-items: center;
   margin-top: 1rem;
+  padding: 0 0.5rem;
+`;
+
+const Left = styled.div`
 `;
 
 const PlaceName = styled.p`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 700;
+  margin-bottom: 5px;
 `;
+
 const DeleteBtn = styled(Icon)`
   color: ${props => props.theme.color.darkGray};
   transition: all 0.2s ease-in-out;
@@ -36,8 +42,17 @@ const DeleteBtn = styled(Icon)`
   }
 `;
 
+const ReviewDate = styled.p`
+  font-size: ${props => props.theme.fontSize.sm};
+  font-weight: 300;
+`;
+
 const ReviewImg = styled.img`
-  width: 110%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background-color: ${props => props.theme.color.lightGray};
 `;
 
 const Notice = styled.h1`
@@ -111,15 +126,18 @@ const PhotoReview = () => {
                     {
                         reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
                             <CardWrapper key={idx}>
-                                <Card height={200}>
+                                <Card height={250}>
                                     <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
                                 </Card>
-                                <ReviewHeader>
-                                    <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
+                                <ReviewFooter>
+                                    <Left>
+                                        <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
+                                        <ReviewDate>{reviewImg.placeImg_writedate.slice(0, 10)} {reviewImg.placeImg_writedate.slice(11)}</ReviewDate>
+                                    </Left>
                                     <DeleteBtn className="material-symbols-rounded"
                                                onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
                                     >delete</DeleteBtn>
-                                </ReviewHeader>
+                                </ReviewFooter>
                             </CardWrapper>
                         ))
                     }
