@@ -6,7 +6,7 @@ import Modal from "../components/Modal";
 import KakaoMap from "../components/home/KakaoMap";
 import KakaoLogin from "../components/KakaoLogin";
 import {setIsBookmarkMode} from "../modules/filterReducer";
-
+import Guide from "../components/Guide";
 
 function HomePage() {
     const dispatch = useDispatch();
@@ -70,9 +70,12 @@ function HomePage() {
     }
 
     const isOpenedLoginModal = useSelector((state: RootState) => state.userReducer.isOpenedLoginModal);
+    const isLoggedIn = useSelector((state: RootState) => state.userReducer.isLoggedin);
+
 
     return (
         <>
+            {isLoggedIn || <Guide/>}
             {
                 isOpenedLoginModal && (
                     <Modal>
@@ -83,7 +86,6 @@ function HomePage() {
             {dbData && <KakaoMap dbData={dbData} setDBData={setDBData} setSearchDBKeyword={setSearchDBKeyword}
                                  markers={markers} setMarkers={setMarkers} removeMarker={removeMarker}
                                  dbFilterData={dbFilterData} searchDB={searchDB}/>}
-
         </>
     )
 }

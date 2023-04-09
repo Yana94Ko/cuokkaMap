@@ -1,4 +1,4 @@
-import React, {SetStateAction} from "react";
+import React, {SetStateAction, useState} from "react";
 import styled from "styled-components";
 
 import {Button, Icon} from "../../../styles/common";
@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCafeInfoContainer} from "../../../modules/cafeInfoReducer";
+import Modal from "../../Modal";
 
 const UploadButton = styled(Button)`
   width: 100%;
@@ -70,6 +71,27 @@ const NoReview = styled.p`
   margin-top: 2rem;
 `;
 
+const ModalContainer = styled.div`
+  width:40vw;
+  height:60vh;
+  display:flex;
+  justify-content: center;
+  align-items:center;
+`;
+
+const ModalImg = styled.img`
+  width:100%;
+  height:100%;
+  object-fit: contain;
+`;
+const ModalCloseBtn = styled.span`
+  position:absolute;
+  z-index:1000;
+  bottom:15vh;
+  cursor:pointer;
+  color:white;
+`;
+
 type PhotoReview = {
     cafeInfoContainer: object;
     setCafeInfoContainer: React.Dispatch<SetStateAction<object>>;
@@ -82,6 +104,8 @@ type dataType = {
     user_num: number;
 }
 const CafeInfoPhotoReview = () => {
+    const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
+    const [modalImgSrc,setModalImgSrc] = useState<string>("#");
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
     const dispatch = useDispatch();
@@ -213,6 +237,17 @@ const CafeInfoPhotoReview = () => {
         }
     }
 
+    const openPhotoModalHandler = (e:React.MouseEvent<HTMLImageElement>) => {
+        if (e.target instanceof Element) {
+            setModalImgSrc(e.target.id);
+        }
+        setOpenPhotoModal(true);
+    }
+
+    const closePhotoModal = () => {
+        setOpenPhotoModal(false);
+    }
+
     return (
         <>
             <UploadButton onClick={onUploadBtnClick}>
@@ -231,12 +266,21 @@ const CafeInfoPhotoReview = () => {
                             {cafeInfoContainer.imageList.map((image: any, idx: number) => (
                                 <PhotoLi key={idx}>
                                     <PhotoImg src={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
-                                              alt={image.placeImg_src}/>
+                                              id={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
+                                              alt={image.placeImg_src}
+                                              onClick={openPhotoModalHandler}
+                                    />
                                     {Number(sessionId) === image.user_num && (
                                         <DeleteBtn
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) => removePhotoReview(e, image)}>
                                             <Icon className="material-symbols-rounded">delete</Icon>
                                         </DeleteBtn>)}
+                                    {openPhotoModal && (<Modal>
+                                        <ModalContainer>
+                                            <ModalImg src={modalImgSrc}/>
+                                            <ModalCloseBtn className="material-symbols-rounded" onClick={closePhotoModal}>Close</ModalCloseBtn>
+                                        </ModalContainer>
+                                    </Modal>)}
                                 </PhotoLi>
                             ))}
                         </PhotoUl>
