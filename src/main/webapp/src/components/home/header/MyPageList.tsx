@@ -69,8 +69,10 @@ const MyPageList: React.FC = () => {
 
     const onItemClick = (e: React.MouseEvent<HTMLUListElement>) => {
         if (e.target instanceof Element) {
-            navigate('/mypage');
-            dispatch(setCurrentMyPageView(e.target.id))
+            if (e.target.id !== "") {
+                navigate('/mypage');
+                dispatch(setCurrentMyPageView(e.target.id));
+            } else return;
         }
     }
     return (
@@ -83,9 +85,7 @@ const MyPageList: React.FC = () => {
                         <Item id="review">내 후기</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
-                            <Item>
-                                고객센터
-                            </Item>
+                            <Item>고객센터</Item>
                         </StyledA>
                         <Item onClick={onLogoutClick}>로그아웃</Item>
                     </List>
@@ -94,9 +94,7 @@ const MyPageList: React.FC = () => {
                         <Item onClick={() => dispatch(setIsOpenedLoginModal(true))}>로그인</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
-                            <Item>
-                                고객센터
-                            </Item>
+                            <Item>고객센터</Item>
                         </StyledA>
                     </List>
                 )
