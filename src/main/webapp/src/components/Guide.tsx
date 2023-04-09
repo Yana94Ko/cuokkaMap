@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import styled from "styled-components";
 
 const Base = styled.div`
-  width:210vh;
+  width:100vw;
   height:100vh;
   background-color: rgba(0,0,0,0.5);
   z-index:99999;
@@ -18,23 +18,23 @@ const CloseBtn = styled.span`
   position:absolute;
   top:5rem;
   right:10rem;
-  @media ${props => props.theme.windowSize.mobile} {
-    left:25rem;
-    top:65rem !important;
+  @media ${props => props.theme.windowSize.laptop} {
+    right:5rem;
   }
 `;
 
 const FilterGuide1 = styled.div`
   position:absolute;
   top:8rem;
-  left:58rem;
+  left:50%;
+  transform: translateX(-25%);
   border:2px solid white;
   width:fit-content;
   padding:20px;
   border-radius:15px;
-  @media ${props => props.theme.windowSize.mobile} {
-    top:10rem;
-    left:0.25rem;
+  @media ${props => props.theme.windowSize.laptop} {
+    width:55%;
+    top:12rem;
   }
 `;
 
@@ -46,8 +46,9 @@ const FilterGuide2 = styled.div`
   width:fit-content;
   padding:20px;
   border-radius:15px;
-  @media ${props => props.theme.windowSize.mobile} {
-    left:2.8rem;
+  @media ${props => props.theme.windowSize.laptop} {
+    
+    left:16rem;
   }
 `;
 const Guide = () => {

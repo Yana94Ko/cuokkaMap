@@ -42,6 +42,7 @@ const PhotoImg = styled.img`
   object-fit: cover;
   z-index: 100;
   position: relative;
+  cursor:pointer;
 `;
 const DeleteBtn = styled(Button)`
   position: absolute;
@@ -77,6 +78,8 @@ const ModalContainer = styled.div`
   display:flex;
   justify-content: center;
   align-items:center;
+  border-radius:20px;
+  overflow:hidden;
 `;
 
 const ModalImg = styled.img`
