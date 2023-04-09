@@ -278,8 +278,10 @@ const PostCafeInfo = ({
                         setCopiedClickedInfo({
                             ...clickMarkerCafeInfo,
                         })
+                        setTag([]);
                     } else {
                         setCopiedClickedInfo({})
+                        setTag([]);
                         alert("이미 DB에 저장된 카페입니다")
                     }
                 });
@@ -338,7 +340,6 @@ const PostCafeInfo = ({
             alert("카페찾기를 먼저 완료해 주세요.");
         }
     }
-
 
     return (
         <Base isOpenedPostCafe={isOpenedPostCafe}>
