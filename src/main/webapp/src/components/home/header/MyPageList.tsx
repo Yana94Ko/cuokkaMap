@@ -8,9 +8,10 @@ import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCurrentMyPageView} from "../../../modules/viewReducer";
 
 const Base = styled.div`
+  width: 100px;
   position: absolute;
-  top: 105%;
-  left: -90%;
+  top: 110%;
+  left: 30%;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -26,7 +27,7 @@ const Item = styled.li`
   cursor: pointer;
   text-align: center;
   white-space: nowrap;
-  padding: 1rem 1.5rem;
+  padding: 1rem;
 
   &:last-child {
     margin-bottom: 0;
