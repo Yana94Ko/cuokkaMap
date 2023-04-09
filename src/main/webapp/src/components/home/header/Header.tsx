@@ -1,15 +1,11 @@
 import React, {useRef, useState} from 'react';
-import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import styled from "styled-components";
 
 import FilterContainer from "./FilterContainer";
 import {Button, Icon, Input} from "../../../styles/common";
 import MyPageList from "./MyPageList";
-import {RootState} from "../../../modules";
-import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
-import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../../modules/viewReducer";
 
 
 const Base = styled.div`
@@ -54,9 +50,15 @@ const SearchInput = styled(Input)`
   background-color: transparent;
   border: none;
   font-weight: 500;
+  padding: 0 2rem;
 
   &:focus {
     border: none;
+  }
+
+  &::placeholder {
+    color: ${props => props.theme.color.text};
+    font-weight: 300;
   }
 
   @media ${props => props.theme.windowSize.mobile} {
@@ -65,6 +67,9 @@ const SearchInput = styled(Input)`
 `;
 const NavLoginOrMyPage = styled.div`
   position: relative;
+  width: 100px;
+  display: flex;
+  justify-content: end;
 `;
 const NavBtn = styled(Button)`
   background-color: ${props => props.theme.color.white};
@@ -105,13 +110,10 @@ const Header = ({
                     setDBData,
                     setSearchDBKeyword
                 }: PropsToKaKaoMap) => {
-    const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
-
     const dispatch = useDispatch();
 
     const searchInput = useRef<HTMLInputElement>(null);
 
-    const navigate = useNavigate();
 
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
@@ -132,15 +134,7 @@ const Header = ({
         dispatch(setCurrentFilter([]));
         setSearchDBKeyword(searchValue);
         setSearchedPlaceInfoInNav([]);
-
-
         setSearchValue("")
-    }
-    const openMyPageList = (): void => {
-        setIsMypage(true);
-    }
-    const closeMyPageList = (): void => {
-        setIsMypage(false);
     }
 
     //카페찾기 input에 enter 이벤트
@@ -164,36 +158,23 @@ const Header = ({
         }
     }
 
-    const onMyPageClick = () => {
-        dispatch(setIsOpenedCafeInfo(false));
-        dispatch(setIsOpenedPostCafe(false));
-        dispatch(setCurrentMyPageView("bookmark"))
-        navigate("/mypage");
-    }
     return (
         <Base>
             <InputWrapper>
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"}/>
                 <SearchInput autoComplete="off" type="text" id="search" value={searchValue} ref={searchInput}
                              onKeyPress={activeEnter}
-                             onChange={searchInputChangeHandler}/>
+                             onChange={searchInputChangeHandler}
+                             placeholder="커카맵에 등록된 카페를 검색해보세요!"
+                />
                 <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
             </InputWrapper>
             <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>
-                <div onMouseMove={openMyPageList} onMouseOut={closeMyPageList}>
-                    <NavBtn onMouseMove={openMyPageList} onMouseOut={closeMyPageList} onClick={onMyPageClick}>
-                        {
-                            isLoggedin ? (
-                                <NavIcon className="material-symbols-rounded">person</NavIcon>
-                            ) : (
-                                <NavIcon onClick={() => dispatch(setIsOpenedLoginModal(true))}
-                                         className="material-symbols-rounded">person</NavIcon>
-                            )
-                        }
-                    </NavBtn>
-                    {isMypage && <MyPageList/>}
-                </div>
+                <NavBtn onClick={() => setIsMypage(!isMypage)}>
+                    <NavIcon className="material-symbols-rounded">person</NavIcon>
+                </NavBtn>
+                {isMypage && <MyPageList/>}
             </NavLoginOrMyPage>
         </Base>
     );

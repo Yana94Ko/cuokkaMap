@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 
 import SearchedListContainer from "./SearchedListContainer";
 import {Button, Icon, Input, Tag} from "../../styles/common";
-import {setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
+import {setIsOpenedCafeInfo, setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
 import {RootState} from "../../modules";
 import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
 import {Simulate} from "react-dom/test-utils";
@@ -278,8 +278,10 @@ const PostCafeInfo = ({
                         setCopiedClickedInfo({
                             ...clickMarkerCafeInfo,
                         })
+                        setTag([]);
                     } else {
                         setCopiedClickedInfo({})
+                        setTag([]);
                         alert("이미 DB에 저장된 카페입니다")
                     }
                 });
@@ -309,14 +311,15 @@ const PostCafeInfo = ({
                     alert("카페등록이 완료되었습니다.");
                     removeMarker();
                     dispatch(setIsOpenedPostCafe(false));
+                    dispatch(setIsOpenedCafeInfo(true));
                     settingKeywordPostCafeName(loadData);
                     dispatch(setNeedToFocus(true))
                     dispatch(setCafeInfoContainer({
                         data: placeInfo,
                         filter: loadData.filterList,
                         placeNum: loadData.place_num,
-                        imageList: null,
-                        reviewList: null,
+                        imageList: [],
+                        reviewList: [],
                         isBookmarked: false
                     }));
                 });
@@ -337,7 +340,6 @@ const PostCafeInfo = ({
             alert("카페찾기를 먼저 완료해 주세요.");
         }
     }
-
 
     return (
         <Base isOpenedPostCafe={isOpenedPostCafe}>

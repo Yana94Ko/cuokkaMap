@@ -6,6 +6,7 @@ import {RootState} from "../../modules";
 import Card from "./Card";
 import {Icon} from "../../styles/common";
 import Pagination from "./Pagination";
+import {ContentCount} from "../../pages/Mypage";
 
 const Base = styled.div`
   display: grid;
@@ -15,17 +16,23 @@ const Base = styled.div`
 
 const CardWrapper = styled.div``;
 
-const ReviewHeader = styled.div`
+const ReviewFooter = styled.div`
   display: flex;
   justify-content: space-between;
-  align-content: center;
+  align-items: center;
   margin-top: 1rem;
+  padding: 0 0.5rem;
+`;
+
+const Left = styled.div`
 `;
 
 const PlaceName = styled.p`
   font-size: ${props => props.theme.fontSize.lg};
   font-weight: 700;
+  margin-bottom: 5px;
 `;
+
 const DeleteBtn = styled(Icon)`
   color: ${props => props.theme.color.darkGray};
   transition: all 0.2s ease-in-out;
@@ -35,8 +42,17 @@ const DeleteBtn = styled(Icon)`
   }
 `;
 
+const ReviewDate = styled.p`
+  font-size: ${props => props.theme.fontSize.sm};
+  font-weight: 300;
+`;
+
 const ReviewImg = styled.img`
-  width: 110%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background-color: ${props => props.theme.color.lightGray};
 `;
 
 const Notice = styled.h1`
@@ -49,7 +65,7 @@ const PhotoReview = () => {
     const [imgDataLength, setImgDataLength] = useState<number>();
 
     //한 페이지에서 보여줄 게시물의 게수
-    let limit = 8;
+    let limit = 12;
     //page 현재 페이지의 번호
     const [page, setPage] = useState<number>(1);
     //첫 게시물의 인덱스 1페이지일때 0, 2페이지일때 10, 3페이지일 때 20...
@@ -104,24 +120,31 @@ const PhotoReview = () => {
     }
     return (
         reviewImgData.length > 0 ? (
-            <Base>
-                {
-                    reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
-                        <CardWrapper key={idx}>
-                            <Card height={200}>
-                                <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
-                            </Card>
-                            <ReviewHeader>
-                                <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
-                                <DeleteBtn className="material-symbols-rounded"
-                                           onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
-                                >delete</DeleteBtn>
-                            </ReviewHeader>
-                        </CardWrapper>
-                    ))
-                }
-                <Pagination dataLength={imgDataLength} limit={limit} page={page} setPage={setPage}/>
-            </Base>
+            <>
+                <ContentCount>{reviewImgData.length}개 사진</ContentCount>
+                <Base>
+                    {
+                        reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
+                            <CardWrapper key={idx}>
+                                <Card height={250}>
+                                    <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                                </Card>
+                                <ReviewFooter>
+                                    <Left>
+                                        <PlaceName>{JSON.parse(reviewImg.place_info).place_name}</PlaceName>
+                                        <ReviewDate>{reviewImg.placeImg_writedate.slice(0, 10)} {reviewImg.placeImg_writedate.slice(11)}</ReviewDate>
+                                    </Left>
+                                    <DeleteBtn className="material-symbols-rounded"
+                                               onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, reviewImg)}
+                                    >delete</DeleteBtn>
+                                </ReviewFooter>
+                            </CardWrapper>
+                        ))
+                    }
+                    <Pagination dataLength={imgDataLength} limit={limit} page={page} setPage={setPage}/>
+                </Base>
+            </>
+
         ) : (
             <Notice>등록하신 사진 후기가 없습니다.</Notice>
         )

@@ -8,9 +8,10 @@ import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCurrentMyPageView} from "../../../modules/viewReducer";
 
 const Base = styled.div`
+  width: 100px;
   position: absolute;
-  top: 105%;
-  left: -90%;
+  top: 110%;
+  left: 30%;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -26,7 +27,7 @@ const Item = styled.li`
   cursor: pointer;
   text-align: center;
   white-space: nowrap;
-  padding: 1rem 1.5rem;
+  padding: 1rem;
 
   &:last-child {
     margin-bottom: 0;
@@ -69,8 +70,10 @@ const MyPageList: React.FC = () => {
 
     const onItemClick = (e: React.MouseEvent<HTMLUListElement>) => {
         if (e.target instanceof Element) {
-            navigate('/mypage');
-            dispatch(setCurrentMyPageView(e.target.id))
+            if (e.target.id !== "") {
+                navigate('/mypage');
+                dispatch(setCurrentMyPageView(e.target.id));
+            } else return;
         }
     }
     return (
@@ -78,14 +81,12 @@ const MyPageList: React.FC = () => {
             {
                 isLoggedin ? (
                     <List onClick={onItemClick}>
+                        <Item id="favorite">내 즐겨찾기</Item>
                         <Item id="photo">내 사진</Item>
                         <Item id="review">내 후기</Item>
-                        <Item id="bookmark">내 북마크</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
-                            <Item>
-                                고객센터
-                            </Item>
+                            <Item>고객센터</Item>
                         </StyledA>
                         <Item onClick={onLogoutClick}>로그아웃</Item>
                     </List>
@@ -94,9 +95,7 @@ const MyPageList: React.FC = () => {
                         <Item onClick={() => dispatch(setIsOpenedLoginModal(true))}>로그인</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
-                            <Item>
-                                고객센터
-                            </Item>
+                            <Item>고객센터</Item>
                         </StyledA>
                     </List>
                 )

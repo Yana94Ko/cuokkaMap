@@ -178,7 +178,7 @@ const ReviewTab = styled.div`
   position: sticky;
   position: -webkit-sticky;
   z-index: 1111;
-  top: 50px;
+  top: 60px;
   background-color: #fff;
   padding: 2rem 0 0 0;
   justify-content: space-between;
@@ -254,7 +254,7 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
     }
 
     const addBookMark = () => {
-        if (window.confirm("북마크를 추가하시겠습니까?")) {
+        if (window.confirm("즐겨찾기를 추가하시겠습니까?")) {
             fetch('/api/place/uploadFavoritePlace', {
                 method: 'POST',
                 headers: {
@@ -277,7 +277,7 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
 
     }
     const removeBookMarker = () => {
-        if (window.confirm("북마크를 삭제하시겠습니까?")) {
+        if (window.confirm("즐겨찾기를 삭제하시겠습니까?")) {
             fetch('/api/place/deleteFavoritePlace', {
                 method: 'POST',
                 headers: {
