@@ -136,10 +136,16 @@ const Favorite = () => {
 
                     // 지도의 우측에 확대 축소 컨트롤을 추가한다
                     // map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
                     let markerPosition = new window.kakao.maps.LatLng(y, x);
 
+                    let favoriteMarkerSrc = process.env.PUBLIC_URL + "/assets/images/markers/bookmark.png",
+                        favoriteMarkerSize = new window.kakao.maps.Size(38, 38),
+                        favoriteMarkerImg = new window.kakao.maps.MarkerImage(favoriteMarkerSrc, favoriteMarkerSize);
+
                     let marker = new window.kakao.maps.Marker({
-                        position: markerPosition
+                        position: markerPosition,
+                        image: favoriteMarkerImg
                     });
 
                     marker.setMap(map);
