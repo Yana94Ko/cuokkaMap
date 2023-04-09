@@ -10,6 +10,7 @@ import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
 import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
 import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
+import Modal from "../Modal";
 
 const Base = styled.div`
   width: 100vw;
@@ -136,6 +137,41 @@ const BookmarkIcon = styled(Icon)`
   @media (hover: hover) {
     &:hover {
       transform: scale(110%);
+    }
+  }
+`;
+
+const ModalContainer = styled.div`
+  width:50vw;
+  display:flex;
+  justify-content: center;
+  align-items:center;
+  border-radius: 2rem;
+  overflow:hidden;
+  isolation: isolate;
+  
+  @media ${props => props.theme.windowSize.mobile} {
+    width:90vw;
+    
+  }
+`;
+
+const ModalImg = styled.img`
+  width:100%;
+  height:100%;
+  object-fit: cover;
+`;
+const ModalCloseBtn = styled(Icon)`
+  position:absolute;
+  z-index:1000;
+  cursor:pointer;
+  top: 3rem;
+  right: 3rem;
+  transition: all 0.2s ease-in-out;
+
+  @media (hover: hover) {
+    &:hover {
+      transform: rotate(90deg);
     }
   }
 `;
@@ -654,6 +690,19 @@ const KakaoMap = ({
     /*=========================================================================================================*/
 
 
+    /*=========================================================================================================*/
+    /*============================================== CafeInfo 사진 후기 관련 START ==============================================*/
+    const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
+    const [modalImgSrc,setModalImgSrc] = useState<string>("#");
+
+    //사진모달 닫는 함수
+    const closePhotoModal = () => {
+        setOpenPhotoModal(false);
+    }
+    /*============================================== [ END ] CafeInfo 사진 후기 관련 ============================================*/
+    /*=========================================================================================================*/
+
+
     // 카페 추가 버튼 클릭 이벤트
     const onPostCafeBtnClick = () => {
         // removeMarker();
@@ -711,7 +760,12 @@ const KakaoMap = ({
             }
             {
                 isOpenedCafeInfo && (
-                    <CafeInfo fetchPlaceDetail={fetchPlaceDetail}/>
+                    <CafeInfo fetchPlaceDetail={fetchPlaceDetail}
+                              openPhotoModal={openPhotoModal}
+                              setOpenPhotoModal={setOpenPhotoModal}
+                              modalImgSrc={modalImgSrc}
+                              setModalImgSrc={setModalImgSrc}
+                    />
                 )
             }
             {/* 북마크 버튼 */}
@@ -723,6 +777,12 @@ const KakaoMap = ({
             {/*<CurrentLocationBtn onClick={currentLocation}>*/}
             {/*    <Icon className="material-symbols-rounded">my_location</Icon>*/}
             {/*</CurrentLocationBtn>*/}
+            {openPhotoModal && (<Modal>
+                <ModalContainer>
+                    <ModalImg src={modalImgSrc}/>
+                    <ModalCloseBtn className="material-symbols-rounded" onClick={closePhotoModal}>Close</ModalCloseBtn>
+                </ModalContainer>
+            </Modal>)}
         </Base>
     )
 }

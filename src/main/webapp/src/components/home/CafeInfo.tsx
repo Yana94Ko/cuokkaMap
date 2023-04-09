@@ -221,9 +221,14 @@ const CafeReviewContent = styled.div`
 
 type CafeInfoProps = {
     fetchPlaceDetail: (placeNum: string) => void;
+    openPhotoModal:boolean
+    setOpenPhotoModal:React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc:string
+    setModalImgSrc:React.Dispatch<SetStateAction<string>>;
+
 }
 
-const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
+const CafeInfo = ({fetchPlaceDetail, openPhotoModal, setOpenPhotoModal, modalImgSrc, setModalImgSrc }: CafeInfoProps) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
@@ -362,7 +367,10 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview/> : <CafeInfoReview/>}
+                {currentView === "photo" ? <CafeInfoPhotoReview openPhotoModal={openPhotoModal}
+                                                                setOpenPhotoModal={setOpenPhotoModal}
+                                                                modalImgSrc={modalImgSrc}
+                                                                setModalImgSrc={setModalImgSrc}/> : <CafeInfoReview/>}
             </CafeReviewContent>
         </Base>
     )

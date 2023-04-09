@@ -40,6 +40,7 @@ const PhotoImg = styled.img`
   height: 130px;
   border-radius: 1rem;
   object-fit: cover;
+  object-position: center;
   z-index: 100;
   position: relative;
   cursor: pointer;
@@ -74,51 +75,14 @@ const NoReview = styled.p`
   margin-top: 2rem;
 `;
 
-// const ModalContainer = styled.div`
-//   width: 40vw;
-//   height: 60vh;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
-const DDD = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 9999999999;
-  width: 100vw;
-  height: 100vh;
-`;
-const ModalImg = styled.img`
-  border-radius: 2rem;
-  height: 80vh;
-`;
-const ModalCloseBtn = styled(Icon)`
-  position: absolute;
-  top: 5rem;
-  right: 5rem;
-  transition: all 0.2s ease-in-out;
-  @media (hover: hover) {
-    &:hover {
-      transform: rotate(90deg);
-    }
-  }
-`;
+type PropsType = {
+    openPhotoModal: boolean
+    setOpenPhotoModal: React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc: string
+    setModalImgSrc: React.Dispatch<SetStateAction<string>>;
+}
 
-type PhotoReview = {
-    cafeInfoContainer: object;
-    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>;
-}
-type dataType = {
-    placeImg_num: number;
-    placeImg_src: string;
-    placeImg_writedate: string;
-    place_num: number;
-    user_num: number;
-}
-const CafeInfoPhotoReview = () => {
-    const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
-    const [modalImgSrc, setModalImgSrc] = useState<string>("#");
+const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, setModalImgSrc}: PropsType) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
     const dispatch = useDispatch();
@@ -257,9 +221,6 @@ const CafeInfoPhotoReview = () => {
         setOpenPhotoModal(true);
     }
 
-    const closePhotoModal = () => {
-        setOpenPhotoModal(false);
-    }
 
     return (
         <>
@@ -294,15 +255,6 @@ const CafeInfoPhotoReview = () => {
                     )
                 }
             </PhotoContainer>
-            {openPhotoModal && (
-                <DDD>
-                <Modal>
-                    <ModalImg src={modalImgSrc}/>
-                    <ModalCloseBtn className="material-symbols-rounded"
-                                   onClick={closePhotoModal}>close</ModalCloseBtn>
-                </Modal>
-                </DDD>
-            )}
         </>
     )
 }

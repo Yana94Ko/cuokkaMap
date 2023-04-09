@@ -118,6 +118,7 @@ const Favorite = () => {
 
     const userId = useSelector((state: RootState) => state.userReducer.userId);
 
+
     useEffect(() => {
         if (needToSet) {
             fetchMyBookmark();
@@ -133,7 +134,7 @@ const Favorite = () => {
                             center: new window.kakao.maps.LatLng(y, x), // 지도의 중심좌표
                             level: 4, // 지도의 확대 레벨
                             mapTypeId: window.kakao.maps.MapTypeId.ROADMAP, // 지도종류
-                            // draggable: false,//마우스 드래그, 휠, 모바일 터치를 이용한 시점 변경(이동, 확대, 축소) 가능 여부
+                            draggable: false,//마우스 드래그, 휠, 모바일 터치를 이용한 시점 변경(이동, 확대, 축소) 가능 여부
                             scrollwheel: false,//마우스 휠, 모바일 터치를 이용한 확대 및 축소 가능 여부
                             disableDoubleClick: false,//더블클릭 이벤트 및 더블클릭 확대 가능 여부
                             keyboardShortcuts: false
@@ -157,9 +158,51 @@ const Favorite = () => {
                     });
 
                     marker.setMap(map);
+                    // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+                    var zoomControl = new window.kakao.maps.ZoomControl();
+                    map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
+                    const mapDiv = document.getElementById(`map${i}`);
+                    //전체 감싸고있는 div
+                    const mapContent = mapDiv.lastChild.childNodes[0] as HTMLDivElement;
+                    //읍면동, 시, 도 움직이는 바
+                    const mapZoomBar = mapDiv.lastChild.childNodes[0].childNodes[1] as HTMLDivElement;
+                    //줌인 버튼 +
+                    const mapZoomIn = mapDiv.lastChild.childNodes[0].childNodes[0] as HTMLButtonElement;
+                    //줌아웃버튼 -
+                    const mapZoomOut = mapDiv.lastChild.childNodes[0].childNodes[2] as HTMLButtonElement;
+                    //div 호버시 나오는 읍면동, 시, 도 텍스트 숨기기
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[0] as HTMLDivElement).style.display='none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[1] as HTMLDivElement).style.display='none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[2] as HTMLDivElement).style.display='none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[3] as HTMLDivElement).style.display='none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[4] as HTMLDivElement).style.display='none';
+
+
+                    // mapContent.style.cssText = 'position:absolute; bottom:0; right:0; margin-top:16vh; margin-right:-4vw; transform:rotate(270deg)';
+                    //움직이는 바 숨기기
+                    mapZoomBar.style.display = "none";
+                    //전체 감싸는 div 움직이는 css
+                    // mapContent.style.position = "absolute";
+                    // mapContent.style.top = "0";
+                    // mapContent.style.right = "0";
+                    mapContent.style.marginTop = "20px";
+                    mapContent.style.marginLeft = "-20px";
+                    // //아래에 가로로 놓자해서 돌린것
+                    // mapContent.style.transform = "rotate(270deg)";
+                    // //위 코드에 맞춰서 돌린것
+                    // mapZoomIn.style.transform="rotate(-90deg)";
+                    // mapZoomOut.style.transform="rotate(90deg)";
+
+                    //반응형 해보려고했던것
+                    // if(document.body.offsetWidth <= 768){
+                    //     mapContent.style.marginTop = "-2vh";
+                    //     mapContent.style.marginLeft = "-7vw";
+                    // };
                 }
             }
         }
+
 
     }, [needToSet, offset])
 
@@ -243,6 +286,8 @@ const Favorite = () => {
             })
             .catch(err => console.log(err));
     }
+
+
 
     return (
         bookmarkData.length > 0 ? (
