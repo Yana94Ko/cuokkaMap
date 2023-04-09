@@ -59,7 +59,7 @@ function HomePage() {
                     if (!isBookmarkMode) {
                         alert("검색어가 존재하지 않습니다");
                     } else {
-                        alert("등록된 북마크가 없습니다!\n먼저 북마크를 등록해주세요!")
+                        alert("등록된 즐겨찾기가 없습니다!\n먼저 즐겨찾기를 등록해주세요!")
                         dispatch(setIsBookmarkMode(false))
                     }
                 } else {

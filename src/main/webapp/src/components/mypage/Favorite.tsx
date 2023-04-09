@@ -10,6 +10,7 @@ import {setIsBookmarkMode} from "../../modules/filterReducer";
 import {useNavigate} from "react-router-dom";
 import {setCafeInfoContainer} from "../../modules/cafeInfoReducer";
 import {setIsOpenedCafeInfo, setNeedToFocus} from "../../modules/viewReducer";
+import {ContentCount} from "../../pages/Mypage";
 
 const Base = styled.div`
   display: grid;
@@ -92,7 +93,7 @@ declare global {
     }
 }
 
-const Bookmark = () => {
+const Favorite = () => {
     const [bookmarkData, setBookmarkData] = useState<any[]>([]);
     const [bookmarkLength, setBookmarkLength] = useState<number>();
     const [needToSet, setNeedToSet] = useState<boolean>(true);
@@ -135,10 +136,16 @@ const Bookmark = () => {
 
                     // 지도의 우측에 확대 축소 컨트롤을 추가한다
                     // map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
                     let markerPosition = new window.kakao.maps.LatLng(y, x);
 
+                    let favoriteMarkerSrc = process.env.PUBLIC_URL + "/assets/images/markers/bookmark.png",
+                        favoriteMarkerSize = new window.kakao.maps.Size(38, 38),
+                        favoriteMarkerImg = new window.kakao.maps.MarkerImage(favoriteMarkerSrc, favoriteMarkerSize);
+
                     let marker = new window.kakao.maps.Marker({
-                        position: markerPosition
+                        position: markerPosition,
+                        image: favoriteMarkerImg
                     });
 
                     marker.setMap(map);
@@ -171,7 +178,7 @@ const Bookmark = () => {
         if (!(e.target instanceof Element)) {
             return
         }
-        if (window.confirm("북마크를 삭제하시겠습니까?")) {
+        if (window.confirm("즐겨찾기를 삭제하시겠습니까?")) {
             fetch('/api/place/deleteFavoritePlace', {
                 method: "POST",
                 headers: {
@@ -230,41 +237,40 @@ const Bookmark = () => {
     }
 
     return (
-        <Base>
-            {
-                bookmarkData.length > 0 ? (
-                    <>
-                        {bookmarkData.slice(offset, offset + limit).map((bookmarkData: any, idx: number) => (
-                            <CardWrapper id="mapCard" key={idx}>
-                                <BookmarkHeader>
-                                    <PlaceName>{JSON.parse(bookmarkData.place_info).place_name}</PlaceName>
-                                    <MapGuideText>맵에서 보기</MapGuideText>
-                                    <GoToMapBtn
-                                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => onGoToMapBtnClick(e, bookmarkData)}>
-                                        <Icon className="material-symbols-rounded">map</Icon>
-                                    </GoToMapBtn>
-                                </BookmarkHeader>
-                                <Card height={190}>
-                                    <div id={`map${offset + idx}`}
-                                         style={{width: "100%", height: "190px", margin: "auto"}}></div>
-                                </Card>
-                                <BookmarkFooter>
-                                    <PlaceAdress>{JSON.parse(bookmarkData.place_info).road_address_name}</PlaceAdress>
-                                    <DeleteBtn className="material-symbols-rounded"
-                                               id={bookmarkData.place_num}
-                                               onClick={onDeleteClick}
-                                    >delete</DeleteBtn>
-                                </BookmarkFooter>
-                            </CardWrapper>
-                        ))}
-                        <Pagination dataLength={bookmarkLength} limit={limit} page={page} setPage={setPage}/>
-                    </>
-                ) : (
-                    <Notice>등록하신 북마크가 없습니다.</Notice>
-                )
-            }
-        </Base>
+        bookmarkData.length > 0 ? (
+            <>
+                <ContentCount>{bookmarkData.length}개 즐겨찾기</ContentCount>
+                <Base>
+                    {bookmarkData.slice(offset, offset + limit).map((bookmarkData: any, idx: number) => (
+                        <CardWrapper id="mapCard" key={idx}>
+                            <BookmarkHeader>
+                                <PlaceName>{JSON.parse(bookmarkData.place_info).place_name}</PlaceName>
+                                <MapGuideText>맵에서 보기</MapGuideText>
+                                <GoToMapBtn
+                                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => onGoToMapBtnClick(e, bookmarkData)}>
+                                    <Icon className="material-symbols-rounded">map</Icon>
+                                </GoToMapBtn>
+                            </BookmarkHeader>
+                            <Card height={190}>
+                                <div id={`map${offset + idx}`}
+                                     style={{width: "100%", height: "190px", margin: "auto"}}></div>
+                            </Card>
+                            <BookmarkFooter>
+                                <PlaceAdress>{JSON.parse(bookmarkData.place_info).road_address_name}</PlaceAdress>
+                                <DeleteBtn className="material-symbols-rounded"
+                                           id={bookmarkData.place_num}
+                                           onClick={onDeleteClick}
+                                >delete</DeleteBtn>
+                            </BookmarkFooter>
+                        </CardWrapper>
+                    ))}
+                    <Pagination dataLength={bookmarkLength} limit={limit} page={page} setPage={setPage}/>
+                </Base>
+            </>
+        ) : (
+            <Notice>등록하신 즐겨찾기가 없습니다.</Notice>
+        )
     )
 }
 
-export default Bookmark;
+export default Favorite;
