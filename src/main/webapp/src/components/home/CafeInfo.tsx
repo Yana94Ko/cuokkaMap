@@ -33,12 +33,16 @@ const Base = styled.div`
   @media ${props => props.theme.windowSize.tablet} {
     border-radius: 1.5rem 1.5rem 0 0;
     width: 100%;
-    height: 450px;
-    top: calc(100% - 450px);
+    height: 550px;
+    top: calc(100% - 550px);
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    height: 450px;
+    top: calc(100% - 450px);
   }
 `;
 
@@ -206,10 +210,10 @@ const Tab = styled.div<{ currentView: string }>`
 const CafeReviewContent = styled.div`
   padding: 2rem;
   @media ${props => props.theme.windowSize.tablet} {
-    padding-bottom: 3rem;
+    padding-bottom: 5rem;
   }
   @media ${props => props.theme.windowSize.mobile} {
-    padding-bottom: 5rem;
+    padding-bottom: 8rem;
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {

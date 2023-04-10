@@ -36,6 +36,10 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean, isOpenedCafeInfo: b
 
     @media ${props => props.theme.windowSize.tablet} {
       width: 100vw;
+      height: calc(100vh - 450px);
+      min-height: calc(100vh - 450px);
+    }
+    @media ${props => props.theme.windowSize.mobile} {
       height: calc(100vh - 350px);
       min-height: calc(100vh - 350px);
     }
@@ -43,6 +47,10 @@ const MapContainer = styled.div<{ isOpenedPostCafe: boolean, isOpenedCafeInfo: b
 
   ${props => props.isOpenedCafeInfo && css`
     @media ${props => props.theme.windowSize.tablet} {
+      height: calc(100vh - 450px);
+      min-height: calc(100vh - 450px);
+    }
+    @media ${props => props.theme.windowSize.mobile} {
       height: calc(100vh - 350px);
       min-height: calc(100vh - 350px);
     }
@@ -142,47 +150,50 @@ const BookmarkIcon = styled(Icon)`
 `;
 
 const ModalContainer = styled.div`
-  width:50vw;
-  display:flex;
+  display: flex;
   justify-content: center;
-  align-items:center;
-  border-radius: 2rem;
-  overflow:hidden;
-  isolation: isolate;
-  
-  @media ${props => props.theme.windowSize.mobile} {
-    width:90vw;
-    
-  }
+  align-items: center;
 `;
 
 const ModalImg = styled.img`
-  width:100%;
-  height:100%;
-  object-fit: cover;
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  border-radius: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
+
 const ModalCloseBtn = styled(Icon)`
-  position:absolute;
-  z-index:1000;
-  cursor:pointer;
-  top: 3rem;
-  right: 3rem;
-  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  bottom: 5rem;
+  color: ${props => props.theme.color.primary};
+  transform: translate(-50%, -50%);
+  font-size: ${props => props.theme.fontSize.xl};
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  padding: 1rem;
+  transition: all 0.1s ease-in-out;
+  z-index: 9999999;
+
+  @media ${props => props.theme.windowSize.laptop} {
+    bottom: 10rem;
+  }
 
   @media (hover: hover) {
     &:hover {
-      transform: rotate(90deg);
+      background-color: rgba(255, 255, 255, 0.8);
+
     }
   }
 `;
-
 
 declare global {
     interface Window {
         kakao: any;
     }
 }
-
 
 type KakaoMapProps = {
     dbData: any[];
@@ -697,7 +708,7 @@ const KakaoMap = ({
     /*=========================================================================================================*/
     /*============================================== CafeInfo 사진 후기 관련 START ==============================================*/
     const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
-    const [modalImgSrc,setModalImgSrc] = useState<string>("#");
+    const [modalImgSrc, setModalImgSrc] = useState<string>("#");
 
     //사진모달 닫는 함수
     const closePhotoModal = () => {

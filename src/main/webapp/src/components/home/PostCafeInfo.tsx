@@ -27,12 +27,16 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   @media ${props => props.theme.windowSize.tablet} {
     overflow-y: auto;
     width: 100%;
-    height: 450px;
+    height: 550px;
     padding: 1rem 2rem 6rem 2rem;
     justify-content: start;
     border-radius: 1.5rem 1.5rem 0 0;
-    top: calc(100% - 450px);
+    top: calc(100% - 550px);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    height: 450px;
+    top: calc(100% - 450px);
   }
 
   &::-webkit-scrollbar {
