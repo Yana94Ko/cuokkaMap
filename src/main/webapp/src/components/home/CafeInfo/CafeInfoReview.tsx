@@ -363,7 +363,7 @@ const CafeInfoReview = () => {
                             {
                                 copiedData.reviewList.map((review: any, idx: number) => (
                                     <ReviewItem key={idx}>
-                                        <>
+                                        <div>
                                             <ReviewEmojiWrapper>
                                                 {
                                                     emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
@@ -377,7 +377,7 @@ const CafeInfoReview = () => {
                                             </ReviewEmojiWrapper>
                                             <ReviewText>{review.placeReview}</ReviewText>
                                             <ReviewDate>{review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
-                                        </>
+                                        </div>
                                         {
                                             review.user_num === parseInt(userId) &&
                                             <DeleteBtn className="material-symbols-rounded"
