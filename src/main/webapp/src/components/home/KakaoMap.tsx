@@ -214,10 +214,12 @@ const KakaoMap = ({
 
 
     /*------------------------------------------- 검색/ 필터링 관련 START -------------------------------------------*/
+    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     //검색어 : PostCafeInfo 컴포넌트의 카페찾기 input에서 조작
     const [keyword, setKeyword] = useState<string>("");
-    const currentFilter = useSelector((state: RootState) => state.filterReducer.currentFilter);
     const [searchCafeInfo, setSearchCafeInfo] = useState<string>("");
+    const [searchedListCheck, setSearchedListCheck] = useState<boolean>(false);
+
     /*------------------------------------------- [ END ] 검색 필터링 관련 -------------------------------------------*/
 
     /*------------------------------------------- 지도, 마커 등 맵 관련 START -------------------------------------------*/
@@ -344,6 +346,7 @@ const KakaoMap = ({
 
             } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
                 alert("검색 결과가 존재하지 않습니다");
+                setSearchedListCheck(false)
                 return;
             } else if (status === window.kakao.maps.services.Status.ERROR) {
                 alert("검색 결과 중 오류가 발생했습니다.");
@@ -756,6 +759,8 @@ const KakaoMap = ({
                                   searchCafeInfo={searchCafeInfo}
                                   setSearchCafeInfo={setSearchCafeInfo}
                                   setDBData={setDBData}
+                                  searchedListCheck={searchedListCheck}
+                                  setSearchedListCheck={setSearchedListCheck}
                     />
                 )
             }
