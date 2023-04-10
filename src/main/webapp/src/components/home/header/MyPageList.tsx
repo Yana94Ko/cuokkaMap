@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
-import {setCurrentMyPageView} from "../../../modules/viewReducer";
+import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../../modules/viewReducer";
 
 const Base = styled.div`
   width: 100px;
@@ -86,6 +86,8 @@ const MyPageList: React.FC = () => {
             if (e.target.id !== "") {
                 navigate('/mypage');
                 dispatch(setCurrentMyPageView(e.target.id));
+                dispatch(setIsOpenedCafeInfo(false));
+                dispatch(setIsOpenedPostCafe(false));
             } else return;
         }
     }
