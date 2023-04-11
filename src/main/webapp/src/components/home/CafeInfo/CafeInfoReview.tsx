@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCafeInfoContainer} from "../../../modules/cafeInfoReducer";
+import {badWordArr} from "../../../bad_word_list";
 
 const Base = styled.div``;
 
@@ -221,9 +222,15 @@ const CafeInfoReview = () => {
             setReviewEmoji(parseInt(e.currentTarget.id));
         }
     }
-
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        for(let bw = 0; bw< badWordArr.length -1; bw++){
+            if(reviewText.includes(badWordArr[bw])){
+                alert("등록할 수 없는 단어가 포함되어있습니다.");
+                return;
+            }
+        }
+
         const result = window.confirm("후기를 등록하시겠습니까?");
         if (result) {
             const formData = new FormData();
