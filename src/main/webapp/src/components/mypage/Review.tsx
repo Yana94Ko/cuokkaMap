@@ -66,8 +66,10 @@ const EmojiText = styled.p`
   font-weight: 500;
 `;
 const ReviewText = styled.p`
-  padding-left: 2rem;
+  padding: 0 2rem;
   font-size: ${props => props.theme.fontSize.md};
+  white-space: pre-wrap;
+  word-break: keep-all;
 `;
 
 const ReviewDate = styled.p`

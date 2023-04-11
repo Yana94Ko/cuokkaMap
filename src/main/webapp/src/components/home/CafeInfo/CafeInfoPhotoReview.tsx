@@ -14,9 +14,10 @@ const UploadButton = styled(Button)`
   display: flex;
   justify-content: center;
 
-  & label div {
+  & label {
     width: 100%;
     padding: 1rem;
+    cursor: pointer;
   }
 `;
 const PhotoContainer = styled.div`
@@ -200,6 +201,7 @@ const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, se
             .then((message) => {
                 const data = JSON.parse(message);
                 dispatch(setCafeInfoContainer({
+                    ...cafeInfoContainer,
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
                     placeNum: cafeInfoContainer.placeNum,
@@ -227,7 +229,7 @@ const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, se
         <>
             <UploadButton onClick={onUploadBtnClick}>
                 <label htmlFor="file">
-                    <div className="btn-upload" style={{cursor: "pointer"}}>사진 올리기</div>
+                    사진 올리기
                 </label>
                 <input type="file" name="file" id="file" disabled={!isLoggedin} style={{display: "none"}}
                        onChange={uploadFileReview}/>

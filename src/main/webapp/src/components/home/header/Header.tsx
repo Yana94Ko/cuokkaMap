@@ -1,11 +1,13 @@
 import React, {useRef, useState} from 'react';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
 
 import FilterContainer from "./FilterContainer";
 import {Button, Icon, Input} from "../../../styles/common";
 import MyPageList from "./MyPageList";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
+import {RootState} from "../../../modules";
+import {setIsOpenedMyPageList} from "../../../modules/viewReducer";
 
 
 const Base = styled.div`
@@ -33,7 +35,6 @@ const InputWrapper = styled.div`
   padding: 0.5rem 1rem;
   @media ${props => props.theme.windowSize.tablet} {
     width: 500px;
-
   }
   @media ${props => props.theme.windowSize.mobile} {
     width: 100vw;
@@ -119,13 +120,15 @@ const Header = ({
                 }: PropsToKaKaoMap) => {
     const dispatch = useDispatch();
 
+    const isOpenedMyPageList = useSelector((state: RootState) => state.viewReducer.isOpenedMyPageList);
+
     const searchInput = useRef<HTMLInputElement>(null);
 
 
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
     //마이페이지 마우스 호버 여부
-    const [isMypage, setIsMypage] = useState<boolean>(false);
+    // const [isMypage, setIsMypage] = useState<boolean>(false);
     const searchInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
     }
@@ -178,10 +181,10 @@ const Header = ({
             </InputWrapper>
             <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>
-                <NavBtn onClick={() => setIsMypage(!isMypage)}>
-                    <NavIcon className="material-symbols-rounded">person</NavIcon>
+                <NavBtn className="myPageList" onClick={() => dispatch(setIsOpenedMyPageList(!isOpenedMyPageList))}>
+                    <NavIcon className="material-symbols-rounded myPageList">person</NavIcon>
                 </NavBtn>
-                {isMypage && <MyPageList/>}
+                {isOpenedMyPageList && <MyPageList/>}
             </NavLoginOrMyPage>
         </Base>
     );

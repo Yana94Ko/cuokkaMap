@@ -4,13 +4,13 @@ import styled from "styled-components";
 import {Icon} from "../styles/common";
 
 const Base = styled.div`
-  width:100vw;
-  height:100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index:999;
-  position:absolute;
-  left:0;
-  top:0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  top: 0;
 `;
 
 const CloseBtn = styled(Icon)`
@@ -25,6 +25,15 @@ const CloseBtn = styled(Icon)`
   border-radius: 50%;
   backdrop-filter: blur(2px);
   padding: 1rem;
+  @media ${props => props.theme.windowSize.mobile} {
+    @media not all and (min-resolution: .001dpcm) {
+      @supports (-webkit-appearance:none) {
+        /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
+        top: 40%;
+        transform: translate(0, -50%);
+      }
+    }
+  }
 `;
 
 const FilterGuide1 = styled.div`
@@ -65,9 +74,16 @@ const FilterGuide2 = styled.div`
   backdrop-filter: blur(5px);
   @media ${props => props.theme.windowSize.tablet} {
     width: 90%;
+
   }
   @media ${props => props.theme.windowSize.mobile} {
     bottom: 11rem;
+    @media not all and (min-resolution: .001dpcm) {
+      @supports (-webkit-appearance:none) {
+        /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
+        bottom: 12rem;
+      }
+    }
   }
 `;
 const Guide = () => {

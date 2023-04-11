@@ -51,7 +51,7 @@ const MapGuideText = styled.p`
 `;
 
 const GoToMapBtn = styled(Button)`
-  padding: 0.2rem 0.5rem;
+  padding: 0;
   font-size: ${props => props.theme.fontSize.sm};
   background-color: transparent;
   display: flex;
@@ -77,6 +77,13 @@ const GoToMapBtn = styled(Button)`
 const PlaceAdress = styled.p`
   font-size: ${props => props.theme.fontSize.sm};
   font-weight: 500;
+`;
+
+const FavoriteMap = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
 `;
 
 const DeleteBtn = styled(Icon)`
@@ -172,11 +179,11 @@ const Favorite = () => {
                     //줌아웃버튼 -
                     const mapZoomOut = mapDiv.lastChild.childNodes[0].childNodes[2] as HTMLButtonElement;
                     //div 호버시 나오는 읍면동, 시, 도 텍스트 숨기기
-                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[0] as HTMLDivElement).style.display='none';
-                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[1] as HTMLDivElement).style.display='none';
-                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[2] as HTMLDivElement).style.display='none';
-                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[3] as HTMLDivElement).style.display='none';
-                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[4] as HTMLDivElement).style.display='none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[0] as HTMLDivElement).style.display = 'none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[1] as HTMLDivElement).style.display = 'none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[2] as HTMLDivElement).style.display = 'none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[3] as HTMLDivElement).style.display = 'none';
+                    (mapDiv.lastChild.childNodes[0].childNodes[3].childNodes[4] as HTMLDivElement).style.display = 'none';
 
 
                     // mapContent.style.cssText = 'position:absolute; bottom:0; right:0; margin-top:16vh; margin-right:-4vw; transform:rotate(270deg)';
@@ -288,7 +295,6 @@ const Favorite = () => {
     }
 
 
-
     return (
         bookmarkData.length > 0 ? (
             <>
@@ -304,9 +310,8 @@ const Favorite = () => {
                                     <Icon className="material-symbols-rounded">map</Icon>
                                 </GoToMapBtn>
                             </BookmarkHeader>
-                            <Card height={190}>
-                                <div id={`map${offset + idx}`}
-                                     style={{width: "100%", height: "190px", margin: "auto"}}></div>
+                            <Card height={200}>
+                                <FavoriteMap id={`map${offset + idx}`}/>
                             </Card>
                             <BookmarkFooter>
                                 <PlaceAdress>{JSON.parse(bookmarkData.place_info).road_address_name}</PlaceAdress>

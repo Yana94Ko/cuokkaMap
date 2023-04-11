@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {SetStateAction, useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import styled from "styled-components";
 
@@ -65,7 +65,12 @@ const Notice = styled.h1`
   color: ${props => props.theme.color.darkGray};
 `;
 
-const PhotoReview = () => {
+type Props = {
+    setOpenPhotoModal: React.Dispatch<SetStateAction<boolean>>;
+    setModalImgSrc: React.Dispatch<SetStateAction<string>>
+}
+
+const PhotoReview = ({setOpenPhotoModal, setModalImgSrc}: Props) => {
     const [reviewImgData, setReviewImgData] = useState<any[]>([]);
     const [imgDataLength, setImgDataLength] = useState<number>();
 
@@ -123,6 +128,14 @@ const PhotoReview = () => {
                 .catch(err => console.log("에러", err));
         }
     }
+
+    const openPhotoModalHandler = (e: React.MouseEvent<HTMLImageElement>, reviewImg: string) => {
+        if (e.target instanceof Element) {
+            setModalImgSrc(process.env.PUBLIC_URL + "/upload/" + reviewImg);
+        }
+        setOpenPhotoModal(true);
+    }
+
     return (
         reviewImgData.length > 0 ? (
             <>
@@ -132,7 +145,9 @@ const PhotoReview = () => {
                         reviewImgData.slice(offset, offset + limit).map((reviewImg: any, idx: number) => (
                             <CardWrapper key={idx}>
                                 <Card height={250}>
-                                    <ReviewImg src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                                    <ReviewImg
+                                        onClick={(e: React.MouseEvent<HTMLImageElement>) => openPhotoModalHandler(e, reviewImg.placeImg_src)}
+                                        src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
                                 </Card>
                                 <ReviewFooter>
                                     <Left>

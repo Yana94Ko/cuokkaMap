@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled, {css} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -9,6 +9,8 @@ import Header from "../components/mypage/Header";
 import PhotoReview from "../components/mypage/PhotoReview";
 import Review from "../components/mypage/Review";
 import Favorite from "../components/mypage/Favorite";
+import Modal from "../components/Modal";
+import {ModalCloseBtn, ModalContainer, ModalImg} from "../components/home/KakaoMap";
 
 const Base = styled.main`
   width: 100vw;
@@ -17,6 +19,7 @@ const Base = styled.main`
   padding: 3rem 8rem 8rem 8rem;
   display: grid;
   grid-template-rows: 0.5fr 1fr 6fr;
+
   @media ${props => props.theme.windowSize.laptop} {
     padding: 2rem 5rem 8rem 5rem;
 
@@ -26,7 +29,8 @@ const Base = styled.main`
 
   }
   @media ${props => props.theme.windowSize.mobile} {
-    padding: 2rem 2rem 8rem 2rem;
+    grid-template-rows: 0.5fr 0.5fr 10fr;
+    padding: 2rem 2rem 6rem 2rem;
 
 
     /* mobile viewport bug fix */
@@ -39,7 +43,7 @@ const Base = styled.main`
 `;
 
 const TabWrapper = styled.div`
-  margin-top: 50px;
+  margin-top: 5rem;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -53,6 +57,10 @@ const TabWrapper = styled.div`
     bottom: 0;
     background-color: ${props => props.theme.color.gray};
     z-index: 10;
+  }
+
+  @media ${props => props.theme.windowSize.mobile} {
+    margin-top: 2rem;
   }
 `;
 
@@ -138,6 +146,18 @@ const MyPage = () => {
     const onTabClick = (e: React.MouseEvent<HTMLDivElement>) => {
         dispatch(setCurrentMyPageView(e.currentTarget.id));
     }
+
+    /*=========================================================================================================*/
+    /*============================================== CafeInfo 사진 후기 관련 START ==============================================*/
+    const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
+    const [modalImgSrc, setModalImgSrc] = useState<string>("#");
+
+    //사진모달 닫는 함수
+    const closePhotoModal = () => {
+        setOpenPhotoModal(false);
+    }
+    /*============================================== [ END ] CafeInfo 사진 후기 관련 ============================================*/
+    /*=========================================================================================================*/
     return (
         <Base>
             <Header/>
@@ -151,10 +171,17 @@ const MyPage = () => {
                 }
             </TabWrapper>
             <MyPageContent>
-                {currentMyPageView === "photo" ? <PhotoReview/>
+                {currentMyPageView === "photo" ? <PhotoReview setOpenPhotoModal={setOpenPhotoModal}
+                                                              setModalImgSrc={setModalImgSrc}/>
                     : currentMyPageView === "review" ? <Review/>
                         : <Favorite/>}
             </MyPageContent>
+            {openPhotoModal && (<Modal>
+                <ModalContainer>
+                    <ModalImg src={modalImgSrc}/>
+                    <ModalCloseBtn className="material-symbols-rounded" onClick={closePhotoModal}>Close</ModalCloseBtn>
+                </ModalContainer>
+            </Modal>)}
         </Base>
     )
 }
