@@ -51,7 +51,7 @@ const MapGuideText = styled.p`
 `;
 
 const GoToMapBtn = styled(Button)`
-  padding: 0.2rem 0.5rem;
+  padding: 0;
   font-size: ${props => props.theme.fontSize.sm};
   background-color: transparent;
   display: flex;
