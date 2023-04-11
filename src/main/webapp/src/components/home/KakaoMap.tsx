@@ -154,13 +154,13 @@ const BookmarkIcon = styled(Icon)`
   }
 `;
 
-const ModalContainer = styled.div`
+export const ModalContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-const ModalImg = styled.img`
+export const ModalImg = styled.img`
   width: 90%;
   height: 90%;
   object-fit: contain;
@@ -168,7 +168,7 @@ const ModalImg = styled.img`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
-const ModalCloseBtn = styled(Icon)`
+export const ModalCloseBtn = styled(Icon)`
   cursor: pointer;
   position: absolute;
   left: 50%;
@@ -225,7 +225,6 @@ const KakaoMap = ({
     const isLoggedin = useSelector((state: RootState) => state.userReducer.isLoggedin);
     const {isOpenedCafeInfo, isOpenedPostCafe, needToFocus} = useSelector((state: RootState) => state.viewReducer);
     const isBookmarkMode = useSelector((state: RootState) => state.filterReducer.isBookmarkMode);
-    const [isPostedCafe, setIsPostedCafe] = useState<boolean>(false);
     /*------------------------------------------- [ END ] 상태 관련 -------------------------------------------*/
 
 
