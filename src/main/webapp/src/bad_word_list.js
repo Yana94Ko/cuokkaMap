@@ -1545,4 +1545,6 @@ export const badWordArr = [
     'damn',
     'asshole',
     '귀두',
+    '거지',
+    '그지',
 ]
