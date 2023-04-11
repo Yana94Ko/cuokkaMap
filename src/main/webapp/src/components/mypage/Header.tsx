@@ -16,6 +16,11 @@ const Logo = styled.img`
   width: 100px;
   height: 50px;
   object-fit: contain;
+  object-position: left;
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70px;
+    height: 40px;
+  }
 `;
 
 const Title = styled.h1`
@@ -30,6 +35,10 @@ const LogoutButton = styled(Button)`
   background-color: ${props => props.theme.color.gray};
   color: ${props => props.theme.color.text};
   font-weight: 700;
+
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70px;
+  }
 
   @media (hover: hover) {
     &:hover {
