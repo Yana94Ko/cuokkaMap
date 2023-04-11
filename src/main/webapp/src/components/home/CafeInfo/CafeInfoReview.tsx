@@ -1,4 +1,4 @@
-import React, {SetStateAction, useEffect, useState} from "react";
+import React, {SetStateAction, useEffect, useRef, useState} from "react";
 import styled, {css} from "styled-components";
 import {Button, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
@@ -94,17 +94,31 @@ const ReviewItem = styled.div`
   position: relative;
   padding: 1rem;
   border-bottom: 1px solid ${props => props.theme.color.gray};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   &:last-child {
     border-bottom: none;
   }
 `;
 
+const ReviewText = styled.p`
+  width: 90%;
+  white-space: pre-wrap;
+  word-break: keep-all;
+`;
+
+const ReviewDate = styled.p`
+  font-size: ${props => props.theme.fontSize.sm};
+  margin-top: 10px;
+  font-weight: 300;
+`;
+
 const DeleteBtn = styled(Icon)`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   color: ${props => props.theme.color.darkGray};
+  align-self: flex-start;
+
 
   @media (hover: hover) {
     &:hover {
@@ -114,7 +128,7 @@ const DeleteBtn = styled(Icon)`
 `;
 
 const ReviewEmojiWrapper = styled.ul`
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `;
 
 const ReviewTextarea = styled.textarea`
@@ -167,6 +181,8 @@ const CafeInfoReview = () => {
 
     const {userId, isLoggedin} = useSelector((state: RootState) => state.userReducer);
 
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
     useEffect(() => {
         setCopiedData({...cafeInfoContainer});
     }, [cafeInfoContainer]);
@@ -195,7 +211,7 @@ const CafeInfoReview = () => {
     ];
 
     const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setReviewText(e.target.value)
+        setReviewText(e.target.value.slice(0, 50));
     }
 
     const onEmojiClick = (e: React.MouseEvent<HTMLLIElement>) => {
@@ -276,6 +292,7 @@ const CafeInfoReview = () => {
                 const data = JSON.parse(message);
                 console.log(data)
                 dispatch(setCafeInfoContainer({
+                    ...cafeInfoContainer,
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
                     placeNum: copiedData.placeNum,
@@ -288,6 +305,7 @@ const CafeInfoReview = () => {
     const onFocusTextarea = () => {
         if (!isLoggedin) {
             dispatch(setIsOpenedLoginModal(true));
+            textAreaRef.current.blur();
         } else return;
 
     }
@@ -310,7 +328,8 @@ const CafeInfoReview = () => {
                 </ItemWrapper>
                 <ItemWrapper>
                     <Label>후기</Label>
-                    <ReviewTextarea onFocus={onFocusTextarea} minLength={5} maxLength={49}
+                    <ReviewTextarea ref={textAreaRef}
+                                    onFocus={onFocusTextarea} minLength={5} maxLength={50}
                                     placeholder="간략한 후기를 남겨주세요 (5자 이상)" value={reviewText}
                                     onChange={onChange}/>
                     <ReviewLength>{reviewText.length}/50</ReviewLength>
@@ -344,23 +363,26 @@ const CafeInfoReview = () => {
                             {
                                 copiedData.reviewList.map((review: any, idx: number) => (
                                     <ReviewItem key={idx}>
+                                        <div>
+                                            <ReviewEmojiWrapper>
+                                                {
+                                                    emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
+                                                        <Emoji mode="review" key={emoji.id} reviewEmoji={reviewEmoji}>
+                                                            <EmojiImg src={emoji.imgSrc}/>
+                                                            <EmojiText>{emoji.name}</EmojiText>
+                                                        </Emoji>
+
+                                                    ))
+                                                }
+                                            </ReviewEmojiWrapper>
+                                            <ReviewText>{review.placeReview}</ReviewText>
+                                            <ReviewDate>{review.placeReview_writedate.slice(0, 10)} {review.placeReview_writedate.slice(11)}</ReviewDate>
+                                        </div>
                                         {
                                             review.user_num === parseInt(userId) &&
                                             <DeleteBtn className="material-symbols-rounded"
                                                        onClick={(e: React.MouseEvent<HTMLSpanElement>) => onDeleteClick(e, review.placeReview_num)}>delete</DeleteBtn>
                                         }
-                                        <ReviewEmojiWrapper>
-                                            {
-                                                emojiContent.filter(i => i.id === review.placeReview_emoji).map((emoji: any) => (
-                                                    <Emoji mode="review" key={emoji.id} reviewEmoji={reviewEmoji}>
-                                                        <EmojiImg src={emoji.imgSrc}/>
-                                                        <EmojiText>{emoji.name}</EmojiText>
-                                                    </Emoji>
-
-                                                ))
-                                            }
-                                        </ReviewEmojiWrapper>
-                                        <p>{review.placeReview}</p>
                                     </ReviewItem>
                                 ))
                             }

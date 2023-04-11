@@ -27,12 +27,16 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
   @media ${props => props.theme.windowSize.tablet} {
     overflow-y: auto;
     width: 100%;
-    height: 450px;
+    height: 550px;
     padding: 1rem 2rem 6rem 2rem;
     justify-content: start;
     border-radius: 1.5rem 1.5rem 0 0;
-    top: calc(100% - 450px);
+    top: calc(100% - 550px);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    height: 450px;
+    top: calc(100% - 450px);
   }
 
   &::-webkit-scrollbar {
@@ -76,6 +80,11 @@ export const CloseBtn = styled(Icon)`
       transform: rotate(90deg);
     }
   }
+  
+  ${props => props.id === "searchList"  && css`
+    right: 1rem;
+    top: 0.5rem;
+  `}
 `;
 
 const Title = styled.h1`
@@ -93,6 +102,7 @@ const Form = styled.form`
 `;
 
 const SearchCafe = styled.div`
+  position: relative;
   margin-bottom: 60px;
 `;
 
@@ -153,6 +163,11 @@ type markerInfo = {
     tag?: string[],
 }
 
+type filterContentType = {
+    name: string,
+    id: string
+}[]
+
 interface FnProps {
     setKeyword: React.Dispatch<SetStateAction<string>>;
     clickMarkerCafeInfo: markerInfo;
@@ -165,6 +180,8 @@ interface FnProps {
     searchCafeInfo: string;
     setSearchCafeInfo: React.Dispatch<SetStateAction<string>>;
     setDBData: React.Dispatch<SetStateAction<any[]>>;
+    searchedListCheck: boolean;
+    setSearchedListCheck: React.Dispatch<SetStateAction<boolean>>
 }
 
 const PostCafeInfo = ({
@@ -172,11 +189,15 @@ const PostCafeInfo = ({
                           clickMarkerCafeInfo,
                           searchPlaces,
                           removeMarker,
-                          displayDBPlaces, dbData, dbFilterData,
+                          displayDBPlaces,
+                          dbData,
+                          dbFilterData,
                           removeMarkerAPI,
                           searchCafeInfo,
                           setSearchCafeInfo,
                           setDBData,
+                          searchedListCheck,
+                          setSearchedListCheck
                       }: FnProps) => {
     const dispatch = useDispatch();
 
@@ -185,23 +206,43 @@ const PostCafeInfo = ({
     const isOpenedPostCafe = useSelector((state: RootState) => state.viewReducer.isOpenedPostCafe);
 
     const [copiedClickedInfo, setCopiedClickedInfo] = useState<any>({...clickMarkerCafeInfo})
-    const [searchedListCheck, setSearchedListCheck] = useState<boolean>(false);
     const [tag, setTag] = useState<string[]>([]);
     const [needToSearch, setNeedToSearch] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (searchCafeInfo === "") {
+            setSearchedListCheck(false);
+        }
+    })
 
     function onChange(e: React.ChangeEvent<HTMLInputElement>) {
         const {target: {name, value},} = e;
         if (name === "search") {
             setSearchCafeInfo(value);
         } else {
-            setCopiedClickedInfo({
-                ...copiedClickedInfo,
-                [name]: value
-            })
+            if (name === "phone") {
+                if (/^[0-9-]*$/.test(value)) {
+                    setCopiedClickedInfo({
+                        ...copiedClickedInfo,
+                        phone: value
+                    });
+                } else {
+                    alert("숫자와 하이픈(-)만 입력 가능합니다.");
+                    setCopiedClickedInfo({
+                        ...copiedClickedInfo,
+                        phone: value.replace(/[^0-9-]/g, '')
+                    });
+                }
+            } else {
+                setCopiedClickedInfo({
+                    ...copiedClickedInfo,
+                    [name]: value
+                });
+            }
         }
     }
 
-    const onTagClick = (e: React.MouseEvent<HTMLUListElement>) => {
+    const onTagClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         if (e.target instanceof Element) {
             // tag 안에 클릭한 값이 없을때만 setTag
@@ -317,6 +358,7 @@ const PostCafeInfo = ({
                         reviewList: [],
                         isBookmarked: false
                     }));
+                    setSearchCafeInfo("");
                 });
         }
     }
@@ -329,6 +371,7 @@ const PostCafeInfo = ({
         removeMarkerAPI();
         setKeyword("");
         displayDBPlaces(dbData, dbFilterData);
+        setSearchCafeInfo("");
     }
     const onInputClick = () => {
         if (Object.keys(copiedClickedInfo).length === 0) {
@@ -336,6 +379,28 @@ const PostCafeInfo = ({
         }
     }
 
+    const filterContent: filterContentType = [
+        {
+            name: "디카페인",
+            id: "decaf"
+        },
+        {
+            name: "락토프리 우유",
+            id: "lactos"
+        },
+        {
+            name: "두유",
+            id: "soy"
+        },
+        {
+            name: "오트밀크",
+            id: "oat"
+        },
+        {
+            name: "제로시럽",
+            id: "zero"
+        },
+    ]
     return (
         <Base isOpenedPostCafe={isOpenedPostCafe}>
             <Container>
@@ -357,9 +422,16 @@ const PostCafeInfo = ({
                                 onKeyPress={activeEnter}
                             >
                             </Input>
-                            <SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>
-                            {searchedListCheck && <SearchedListContainer setSearchedListCheck={setSearchedListCheck}/>}
+                            {searchedListCheck ? <CloseBtn
+                                    id="searchList"
+                                    className="material-symbols-rounded"
+                                    onClick={() => setSearchedListCheck(false)}>close</CloseBtn> :
+                                <SearchIcon className="material-symbols-rounded"
+                                            onClick={submitKeyword}>search</SearchIcon>}
+                            {/*<SearchIcon className="material-symbols-rounded" onClick={submitKeyword}>search</SearchIcon>*/}
                         </SearchInputWrapper>
+                        {searchedListCheck && <SearchedListContainer setSearchedListCheck={setSearchedListCheck}/>}
+
                     </SearchCafe>
                     <CafeInfoWrapper>
                         <CafeInfoItem onClick={onInputClick}>
@@ -369,7 +441,7 @@ const PostCafeInfo = ({
                                 placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
                                 disabled={true}
                                 onChange={onChange}
-                                name="name"
+                                name="place_name"
                             />
                         </CafeInfoItem>
                         <CafeInfoItem onClick={onInputClick}>
@@ -379,50 +451,32 @@ const PostCafeInfo = ({
                                 placeholder="카페 찾기를 완료하시면 자동으로 입력됩니다."
                                 disabled={true}
                                 onChange={onChange}
-                                name="address"
+                                name="address_name"
                             />
                         </CafeInfoItem>
                         <CafeInfoItem>
                             <Label>옵션*</Label>
-                            <TagWrapper onClick={onTagClick}>
-                                <Tag
-                                    clickable={true}
-                                    active={tag.includes("decaf")}
-                                    id="decaf"
-                                    disabled={Object.keys(copiedClickedInfo).length === 0}
-                                >디카페인</Tag>
-                                <Tag clickable={true}
-                                     active={tag.includes("lactos")}
-                                     id="lactos"
-                                     disabled={Object.keys(copiedClickedInfo).length === 0}
-                                >락토프리 우유</Tag>
-                                <Tag clickable={true}
-                                     active={tag.includes("soy")}
-                                     id="soy"
-                                     disabled={Object.keys(copiedClickedInfo).length === 0}
-                                >두유</Tag>
-                                <Tag clickable={true}
-                                     active={tag.includes("oat")}
-                                     id="oat"
-                                     disabled={Object.keys(copiedClickedInfo).length === 0}
-                                >오트밀크</Tag>
-                                <Tag clickable={true}
-                                     active={tag.includes("zero")}
-                                     id="zero"
-                                     disabled={Object.keys(copiedClickedInfo).length === 0}
-                                >제로슈가</Tag>
+                            <TagWrapper>
+                                {
+                                    filterContent.map((filter: any, idx: number) => (
+                                        <Tag onClick={onTagClick} key={idx} clickable={true}
+                                             active={tag.includes(filter.id)} id={filter.id}
+                                             disabled={Object.keys(copiedClickedInfo).length === 0}>{filter.name}</Tag>
+                                    ))
+                                }
                             </TagWrapper>
                         </CafeInfoItem>
                         <CafeInfoItem onClick={onInputClick}>
                             <Label>연락처</Label>
                             <Input
                                 ref={PostCafeInput}
-                                defaultValue={copiedClickedInfo.phone || ""}
-                                name="contact"
+                                value={copiedClickedInfo.phone || ""}
+                                name="phone"
                                 onChange={onChange}
                                 placeholder="카페 연락처를 입력해 주세요."
                                 disabled={Object.keys(copiedClickedInfo).length === 0}
                                 onClick={onInputClick}
+                                type="text"
                             />
                         </CafeInfoItem>
                         <CafeInfoItem onClick={onInputClick}>
