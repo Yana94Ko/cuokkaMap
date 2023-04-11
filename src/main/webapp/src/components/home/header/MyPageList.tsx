@@ -1,11 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
-import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../../../modules/viewReducer";
+import {
+    setCurrentMyPageView,
+    setIsOpenedCafeInfo,
+    setIsOpenedMyPageList,
+    setIsOpenedPostCafe
+} from "../../../modules/viewReducer";
 
 const Base = styled.div`
   width: 100px;
@@ -46,7 +51,7 @@ const Item = styled.li`
 
   @media ${props => props.theme.windowSize.mobile} {
     padding: 1rem 0;
-  
+
   }
 `;
 
@@ -88,6 +93,7 @@ const MyPageList: React.FC = () => {
                 dispatch(setCurrentMyPageView(e.target.id));
                 dispatch(setIsOpenedCafeInfo(false));
                 dispatch(setIsOpenedPostCafe(false));
+                dispatch(setIsOpenedMyPageList(false));
             } else return;
         }
     }
@@ -96,21 +102,21 @@ const MyPageList: React.FC = () => {
             {
                 isLoggedin ? (
                     <List onClick={onItemClick}>
-                        <Item id="favorite">내 즐겨찾기</Item>
-                        <Item id="photo">내 사진</Item>
-                        <Item id="review">내 후기</Item>
+                        <Item className="myPageList" id="favorite">내 즐겨찾기</Item>
+                        <Item className="myPageList" id="photo">내 사진</Item>
+                        <Item className="myPageList" id="review">내 후기</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
-                            <Item>고객센터</Item>
+                            <Item className="myPageList">고객센터</Item>
                         </StyledA>
-                        <Item onClick={onLogoutClick}>로그아웃</Item>
+                        <Item className="myPageList" onClick={onLogoutClick}>로그아웃</Item>
                     </List>
                 ) : (
                     <List>
-                        <Item onClick={() => dispatch(setIsOpenedLoginModal(true))}>로그인</Item>
+                        <Item className="myPageList" onClick={() => dispatch(setIsOpenedLoginModal(true))}>로그인</Item>
                         <StyledA href="https://tough-dietician-fdf.notion.site/907b20e0956443a589d6ec3a041457cb"
                                  target="_blank">
-                            <Item>고객센터</Item>
+                            <Item className="myPageList">고객센터</Item>
                         </StyledA>
                     </List>
                 )

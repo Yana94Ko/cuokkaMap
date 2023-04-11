@@ -5,7 +5,12 @@ import Header from "./header/Header";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../modules";
 import {setIsOpenedLoginModal} from "../../modules/userReducer";
-import {setIsOpenedCafeInfo, setIsOpenedPostCafe, setNeedToFocus} from "../../modules/viewReducer";
+import {
+    setIsOpenedCafeInfo,
+    setIsOpenedMyPageList,
+    setIsOpenedPostCafe,
+    setNeedToFocus
+} from "../../modules/viewReducer";
 import PostCafeInfo from "../home/PostCafeInfo";
 import CafeInfo from "../home/CafeInfo";
 import {setCurrentFilter, setIsBookmarkMode} from "../../modules/filterReducer";
@@ -19,7 +24,7 @@ const Base = styled.div`
   position: relative;
   display: flex;
   justify-content: end;
-  @media ${props => props.theme.windowSize.mobile} {
+  @media ${props => props.theme.windowSize.tablet} {
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
@@ -746,8 +751,18 @@ const KakaoMap = ({
         }
     }
 
+    const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target instanceof Element) {
+            if (typeof e.target.className === "string" && e.target.className !== "" && e.target.className.includes("myPageList")) {
+                return;
+            } else {
+                dispatch(setIsOpenedMyPageList(false))
+            }
+        }
+    }
+
     return (
-        <Base>
+        <Base onClick={onClickHandler}>
             <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe} isOpenedCafeInfo={isOpenedCafeInfo}/>
             <Header setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                     removeMarker={removeMarker} setDBData={setDBData}
