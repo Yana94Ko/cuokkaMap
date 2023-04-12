@@ -37,6 +37,8 @@ const KakaoOauth2RedirectHandler: React.FC = () => {
             url: `${REACT_APP_REDIRECT_URI_TO_SPTRING}?code=${code}`,
         })
             .then((res) => {
+                // TODO(BE,FE) : 로그인시 id 값이 아닌 토큰을 전달
+                // assignees : Yana94Ko
                 sessionStorage.setItem("id", res.data.user_num);
                 navigate("/"); // 토큰 받았았고 로그인됐으니 화면 전환시켜줌(메인으로)
                 window.location.reload();
