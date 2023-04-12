@@ -93,6 +93,8 @@ const MyPageList: React.FC = () => {
 
     const onLogoutClick = () => {
         const result = window.confirm("로그아웃 하시겠습니까?");
+        // TODO(BE,FE) : 백엔드 로그아웃 구현 및 연동
+        // assignees : Yana94Ko
         if (result) {
             sessionStorage.removeItem("id");
             window.location.reload();
@@ -117,7 +119,7 @@ const MyPageList: React.FC = () => {
             + "\n" + "정말 탈퇴하시겠습니까?");
         if (result) {
             // TODO(FE): 탈퇴 api 연동하기
-            // assignees: hwanyb
+            // assignees: Yana94Ko
             // window.alert("탈퇴되셨습니다.");
             // sessionStorage.removeItem("id");
             // navigate("/");

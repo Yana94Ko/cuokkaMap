@@ -28,8 +28,6 @@ public class UserController {
     @GetMapping("/kakaoLogin")//, HttpSession session, HttpServletResponse res, RedirectAttributes redirect, HttpServletRequest request
     public ResponseEntity kakaoLogin(HttpServletResponse response, String code) throws IOException {
         System.out.println("로그인하러 백서버에 리다이렉트됨");
-        // TODO(BE, KAKAO_LOGIN) : 카카오 로그인 관련 사용자 인증 코드 발급 완료, oauth 토큰 발급 필요
-        // - 사용자의 인가코드를 숨길 방법이 있나?
         JSONObject tokenJson = kakao.getToken(code);
 
         String accessToken = tokenJson.getString("access_token");
@@ -40,7 +38,6 @@ public class UserController {
         // 해당하는 정보의 유저가 있는지 확인
         UserVO userInfo = userService.selectUserByLogin_id((String) kakaoUserVO.getLogin_id());
         if(userInfo != null) { // 해당하는 유저에 대한 정보가 있다면
-            System.out.println("회원정보가 있어서 로그인 하러 달려가는중");
             if(userInfo.getRole() == 9) { //블럭회원 관련
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
