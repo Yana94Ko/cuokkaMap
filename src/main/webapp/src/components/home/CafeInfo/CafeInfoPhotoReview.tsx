@@ -6,7 +6,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../modules";
 import {setIsOpenedLoginModal} from "../../../modules/userReducer";
 import {setCafeInfoContainer} from "../../../modules/cafeInfoReducer";
-import Modal from "../../Modal";
 
 const UploadButton = styled(Button)`
   width: 100%;
@@ -237,7 +236,7 @@ const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, se
             <PhotoContainer>
                 {
                     cafeInfoContainer.imageList.length === 0 ? (
-                        <NoReview>아직 등록된 후기가 없습니다!<br/>카페에 방문하셨다면 첫 후기를 올려주세요 :)</NoReview>
+                        <NoReview>아직 등록된 사진이 없습니다!<br/>카페에 방문하셨다면 첫 사진을 올려주세요 :)</NoReview>
                     ) : (
                         <PhotoUl>
                             {cafeInfoContainer.imageList.map((image: any, idx: number) => (

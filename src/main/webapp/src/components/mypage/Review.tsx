@@ -69,7 +69,6 @@ const ReviewText = styled.p`
   padding: 0 2rem;
   font-size: ${props => props.theme.fontSize.md};
   white-space: pre-wrap;
-  word-break: keep-all;
 `;
 
 const ReviewDate = styled.p`

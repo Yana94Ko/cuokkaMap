@@ -15,6 +15,10 @@ const Base = styled.div`
   padding: 2rem 0 3rem 0;
   justify-content: center;
   align-items: center;
+  @media ${props => props.theme.windowSize.mobile} {
+    padding: 2rem 0 1rem 0;
+  
+  }
 `;
 
 const PageButton = styled(Button)`
