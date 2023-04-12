@@ -20,8 +20,10 @@ const Base = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-box-align: center;
   padding: 3rem;
-  @media ${props => props.theme.windowSize.mobile} {
+  @media ${props => props.theme.windowSize.tablet} {
     padding: 2rem;
   }
 `;
@@ -66,16 +68,18 @@ const SearchInput = styled(Input)`
     padding: 0 1rem;
   }
 `;
-const NavLoginOrMyPage = styled.div`
+export const NavLoginOrMyPage = styled.div`
   position: relative;
   width: 100px;
   display: flex;
   justify-content: end;
+  -webkit-box-pack: end;
+  
   @media ${props => props.theme.windowSize.mobile} {
     width: 70px;
   }
 `;
-const NavBtn = styled(Button)`
+export const NavBtn = styled(Button)`
   background-color: ${props => props.theme.color.white};
   padding: 0.5rem;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -93,7 +97,7 @@ const NavBtn = styled(Button)`
   }
 `;
 
-const NavIcon = styled(Icon)`
+export const NavIcon = styled(Icon)`
   color: ${props => props.theme.color.primary};
   transition: all 0.1s ease-in-out;
 
@@ -116,7 +120,7 @@ const Header = ({
                     setSearchedPlaceInfoInNav,
                     removeMarker,
                     setDBData,
-                    setSearchDBKeyword
+                    setSearchDBKeyword,
                 }: PropsToKaKaoMap) => {
     const dispatch = useDispatch();
 
@@ -124,44 +128,49 @@ const Header = ({
 
     const searchInput = useRef<HTMLInputElement>(null);
 
-
     //search input 핸들링하는 state
     const [searchValue, setSearchValue] = useState<string>("");
-    //마이페이지 마우스 호버 여부
-    // const [isMypage, setIsMypage] = useState<boolean>(false);
+
     const searchInputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
     }
 
     const searchPlaceSubmitHandler = (event: React.FormEvent) => {
         event.preventDefault();
-        removeMarker();
-
         if (searchValue === "") {
             alert("검색어가 입력되지 않았습니다");
+            setSearchDBKeyword("")
             return;
         }
+        removeMarker();
+
         dispatch(setCurrentFilter([]));
         setSearchDBKeyword(searchValue);
         setSearchedPlaceInfoInNav([]);
+    }
+
+    // 카페찾기 닫기 버튼 클릭이벤트
+    const onCloseSearchClick = () => {
         setSearchValue("")
+        setSearchedPlaceInfoInNav([]);
+        setSearchDBKeyword("")
     }
 
     //카페찾기 input에 enter 이벤트
     const activeEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
-            removeMarker();
 
             if (searchValue === "") {
                 alert("검색어가 입력되지 않았습니다");
+                setSearchDBKeyword("")
                 return;
             }
+            removeMarker();
             dispatch(setCurrentFilter([]));
             setSearchDBKeyword(searchValue);
             setSearchedPlaceInfoInNav([]);
             //[YANA] 키워드 검색시 북마크 해제
             dispatch(setIsBookmarkMode(false));
-            setSearchValue("")
 
             // 모바일에서 엔터키로 검색 시 키보드창이 닫기지 않는 이슈 해결하기 위한 코드
             searchInput.current.blur();
@@ -177,7 +186,11 @@ const Header = ({
                              onChange={searchInputChangeHandler}
                              placeholder="커카맵에 등록된 카페를 검색해보세요!"
                 />
-                <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
+                {searchValue === "" ? (
+                    <NavIcon className="material-symbols-rounded" onClick={searchPlaceSubmitHandler}>search</NavIcon>
+                ) : (
+                    <NavIcon className="material-symbols-rounded" onClick={onCloseSearchClick}>close</NavIcon>
+                )}
             </InputWrapper>
             <FilterContainer setSearchDBKeyword={setSearchDBKeyword}/>
             <NavLoginOrMyPage>

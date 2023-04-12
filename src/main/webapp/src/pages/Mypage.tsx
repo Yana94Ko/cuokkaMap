@@ -30,15 +30,15 @@ const Base = styled.main`
   }
   @media ${props => props.theme.windowSize.mobile} {
     grid-template-rows: 0.5fr 0.5fr 10fr;
-    padding: 2rem 2rem 6rem 2rem;
+    padding: 2rem 2rem 10rem 2rem;
 
-
-    /* mobile viewport bug fix */
-    /* iOS only */
-    @supports (-webkit-touch-callout: none) {
-      height: -webkit-fill-available;
-      min-height: -webkit-fill-available;
-    }
+  }
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+    padding: 2rem;
   }
 `;
 
@@ -90,13 +90,8 @@ const MyPageContent = styled.div`
   position: relative;
   width: 100%;
   margin-top: 2rem;
-  overflow-y: auto;
-  padding: 1rem;
-  padding-bottom: 2rem;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  overflow-y: scroll;
+  padding: 1rem 2rem 2rem 1rem;
 
   @media ${props => props.theme.windowSize.tablet} {
     margin-top: 1rem;

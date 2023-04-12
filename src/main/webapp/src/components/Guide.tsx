@@ -11,6 +11,12 @@ const Base = styled.div`
   position: absolute;
   left: 0;
   top: 0;
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
 `;
 
 const CloseBtn = styled(Icon)`
@@ -25,15 +31,6 @@ const CloseBtn = styled(Icon)`
   border-radius: 50%;
   backdrop-filter: blur(2px);
   padding: 1rem;
-  @media ${props => props.theme.windowSize.mobile} {
-    @media not all and (min-resolution: .001dpcm) {
-      @supports (-webkit-appearance:none) {
-        /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
-        top: 40%;
-        transform: translate(0, -50%);
-      }
-    }
-  }
 `;
 
 const FilterGuide1 = styled.div`
@@ -78,12 +75,11 @@ const FilterGuide2 = styled.div`
   }
   @media ${props => props.theme.windowSize.mobile} {
     bottom: 11rem;
-    @media not all and (min-resolution: .001dpcm) {
-      @supports (-webkit-appearance:none) {
-        /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
-        bottom: 12rem;
-      }
-    }
+  }
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    bottom: 8rem;
   }
 `;
 const Guide = () => {

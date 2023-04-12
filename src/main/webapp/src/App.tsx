@@ -7,6 +7,7 @@ import {useDispatch} from "react-redux";
 import {setIsLoggedin, setUserId} from "./modules/userReducer";
 import Banner from "./components/Banner";
 import MyPage from "./pages/Mypage";
+import {setIsOpenedMyPageList} from "./modules/viewReducer";
 
 function App() {
     const dispatch = useDispatch();
@@ -28,8 +29,19 @@ function App() {
         setOpenBanner(true);
     },[])
 
+    const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target instanceof Element) {
+            if (typeof e.target.className === "string" && e.target.className !== "" && e.target.className.includes("myPageList")) {
+                return;
+            } else {
+                dispatch(setIsOpenedMyPageList(false))
+            }
+        }
+    }
+
     return (
         <BrowserRouter>
+            <div onClick={onClickHandler}>
             <Routes>
                 <Route path="/" element={<HomePage />}/>
                 <Route path="/mypage" element={<MyPage />}/>
@@ -37,6 +49,7 @@ function App() {
                 <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
             </Routes>
             {openBanner && <Banner setOpenBanner={setOpenBanner}/>}
+            </div>
         </BrowserRouter>
     );
 }

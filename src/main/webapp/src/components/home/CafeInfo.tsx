@@ -8,6 +8,7 @@ import CafeInfoPhotoReview from "./CafeInfo/CafeInfoPhotoReview";
 import CafeInfoReview from "./CafeInfo/CafeInfoReview";
 import {RootState} from "../../modules";
 import {setCurrentFilter} from "../../modules/filterReducer";
+import {setIsOpenedLoginModal} from "../../modules/userReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -225,14 +226,20 @@ const CafeReviewContent = styled.div`
 
 type CafeInfoProps = {
     fetchPlaceDetail: (placeNum: string) => void;
-    openPhotoModal:boolean
-    setOpenPhotoModal:React.Dispatch<SetStateAction<boolean>>;
-    modalImgSrc:string
-    setModalImgSrc:React.Dispatch<SetStateAction<string>>;
+    openPhotoModal: boolean
+    setOpenPhotoModal: React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc: string
+    setModalImgSrc: React.Dispatch<SetStateAction<string>>;
 
 }
 
-const CafeInfo = ({fetchPlaceDetail, openPhotoModal, setOpenPhotoModal, modalImgSrc, setModalImgSrc }: CafeInfoProps) => {
+const CafeInfo = ({
+                      fetchPlaceDetail,
+                      openPhotoModal,
+                      setOpenPhotoModal,
+                      modalImgSrc,
+                      setModalImgSrc
+                  }: CafeInfoProps) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
@@ -266,27 +273,30 @@ const CafeInfo = ({fetchPlaceDetail, openPhotoModal, setOpenPhotoModal, modalImg
     }
 
     const addBookMark = () => {
-        if (window.confirm("즐겨찾기를 추가하시겠습니까?")) {
-            fetch('/api/place/uploadFavoritePlace', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "place_num": placeNum,
-                    "user_num": userNum,
-                }),
-            })
-                .then(response => response.text())
-                .then(function (data) {
-                    fetchPlaceDetail(placeNum);
+        if (isLoggedin) {
+            if (window.confirm("즐겨찾기를 추가하시겠습니까?")) {
+                fetch('/api/place/uploadFavoritePlace', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "place_num": placeNum,
+                        "user_num": userNum,
+                    }),
                 })
-                .catch(err => console.log("에러", err));
+                    .then(response => response.text())
+                    .then(function (data) {
+                        fetchPlaceDetail(placeNum);
+                    })
+                    .catch(err => console.log("에러", err));
 
+            } else {
+                return;
+            }
         } else {
-            return;
+            dispatch(setIsOpenedLoginModal(true))
         }
-
     }
     const removeBookMarker = () => {
         if (window.confirm("즐겨찾기를 삭제하시겠습니까?")) {
