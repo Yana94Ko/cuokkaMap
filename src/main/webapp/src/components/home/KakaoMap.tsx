@@ -7,7 +7,6 @@ import {RootState} from "../../modules";
 import {setIsOpenedLoginModal} from "../../modules/userReducer";
 import {
     setIsOpenedCafeInfo,
-    setIsOpenedMyPageList,
     setIsOpenedPostCafe,
     setNeedToFocus
 } from "../../modules/viewReducer";
@@ -24,13 +23,12 @@ const Base = styled.div`
   position: relative;
   display: flex;
   justify-content: end;
-  @media ${props => props.theme.windowSize.tablet} {
-    /* mobile viewport bug fix */
-    /* iOS only */
-    @supports (-webkit-touch-callout: none) {
-      height: -webkit-fill-available;
-      min-height: -webkit-fill-available;
-    }
+
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
   }
 `;
 const MapContainer = styled.div<{ isOpenedPostCafe: boolean, isOpenedCafeInfo: boolean }>`
@@ -114,11 +112,11 @@ const AddCafeButton = styled(Button)`
   @media ${props => props.theme.windowSize.mobile} {
     bottom: 6rem;
   }
-  @media not all and (min-resolution: .001dpcm) {
-    @supports (-webkit-appearance:none) {
-      /* 이 안에 Safari(10.1 이상)에서만 적용할 스타일 작성 */
-      bottom: 6rem;
-    }
+
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    bottom: 2rem;
   }
 `;
 
@@ -161,11 +159,12 @@ export const ModalContainer = styled.div`
 `;
 
 export const ModalImg = styled.img`
-  width: 90%;
-  height: 90%;
+  max-width: 90vw;
+  max-height: 90vh;
   object-fit: contain;
   border-radius: 2rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
 `;
 
 export const ModalCloseBtn = styled(Icon)`
@@ -182,14 +181,9 @@ export const ModalCloseBtn = styled(Icon)`
   transition: all 0.1s ease-in-out;
   z-index: 9999999;
 
-  @media ${props => props.theme.windowSize.laptop} {
-    bottom: 10rem;
-  }
-
   @media (hover: hover) {
     &:hover {
       background-color: rgba(255, 255, 255, 0.8);
-
     }
   }
 `;
@@ -654,10 +648,6 @@ const KakaoMap = ({
         }
     }
 
-    if (mapState !== undefined) {
-        console.log(mapState.getCenter())
-    }
-
     function addDBMarker(position: any, title: string) {
         if (mapState !== undefined) {
             // 마커 생성
@@ -750,18 +740,8 @@ const KakaoMap = ({
         }
     }
 
-    const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target instanceof Element) {
-            if (typeof e.target.className === "string" && e.target.className !== "" && e.target.className.includes("myPageList")) {
-                return;
-            } else {
-                dispatch(setIsOpenedMyPageList(false))
-            }
-        }
-    }
-
     return (
-        <Base onClick={onClickHandler}>
+        <Base>
             <MapContainer id="map" isOpenedPostCafe={isOpenedPostCafe} isOpenedCafeInfo={isOpenedCafeInfo}/>
             <Header setSearchedPlaceInfoInNav={setSearchedPlaceInfoInNav}
                     removeMarker={removeMarker} setDBData={setDBData}

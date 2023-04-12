@@ -24,7 +24,7 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
     justify-content: space-between;
     padding: 0 3rem;
   }
-  @media ${props => props.theme.windowSize.mobile} {
+  @media ${props => props.theme.windowSize.tablet} {
     top: 7rem;
     padding: 0 2rem;
   }

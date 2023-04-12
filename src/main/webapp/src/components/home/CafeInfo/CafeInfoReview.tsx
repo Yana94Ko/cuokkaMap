@@ -107,7 +107,6 @@ const ReviewItem = styled.div`
 const ReviewText = styled.p`
   width: 90%;
   white-space: pre-wrap;
-  word-break: keep-all;
 `;
 
 const ReviewDate = styled.p`
@@ -224,7 +223,7 @@ const CafeInfoReview = () => {
     }
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        for(let bw = 0; bw< badWordArr.length -1; bw++){
+        for(let bw = 0; bw< badWordArr.length; bw++){
             if(reviewText.includes(badWordArr[bw])){
                 alert("등록할 수 없는 단어가 포함되어있습니다.");
                 return;
