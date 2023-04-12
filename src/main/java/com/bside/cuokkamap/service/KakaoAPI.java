@@ -74,7 +74,7 @@ public class KakaoAPI {
 
     //oauth 통해서 받은 accessToken 으로 사용자 정보 받아오기
     public UserVO getUserInfo (String accessToken) {
-        String infoUrl = "https://kapi.kakao.com/v2/user/me";
+        String infoUrl = "https://kapi.kakao.com/v2/user/me?property_keys=[\"id\",\"kakao_account.email\"]";
         String method = "GET";
 
         UserVO userInfo = new UserVO();
@@ -86,7 +86,6 @@ public class KakaoAPI {
             con.setRequestMethod(method);
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             con.setRequestProperty("Authorization", "Bearer " + accessToken);
-            // TODO(BE, KAKAOLOGIN) : 필요없는 정보는 아예 서버에서 받아오지 않도록
 
             StringBuffer response = getResponse(con);
             JSONObject userJson = new JSONObject(response.toString());
