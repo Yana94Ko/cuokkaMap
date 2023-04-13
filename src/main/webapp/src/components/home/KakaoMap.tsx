@@ -24,11 +24,13 @@ const Base = styled.div`
   display: flex;
   justify-content: end;
 
-  /* mobile viewport bug fix */
-  /* iOS only */
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-    min-height: -webkit-fill-available;
+  @media ${props => props.theme.windowSize.mobile} {
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
+    }
   }
 `;
 const MapContainer = styled.div<{ isOpenedPostCafe: boolean, isOpenedCafeInfo: boolean }>`
@@ -111,13 +113,13 @@ const AddCafeButton = styled(Button)`
 
   @media ${props => props.theme.windowSize.mobile} {
     bottom: 6rem;
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      bottom: 2rem;
+    }
   }
 
-  /* mobile viewport bug fix */
-  /* iOS only */
-  @supports (-webkit-touch-callout: none) {
-    bottom: 2rem;
-  }
 `;
 
 const BookmarkBtn = styled(Button)<{ isBookmarkMode: boolean }>`
