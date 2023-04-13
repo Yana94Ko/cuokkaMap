@@ -74,6 +74,7 @@ export const NavLoginOrMyPage = styled.div`
   display: flex;
   justify-content: end;
   -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
   
   @media ${props => props.theme.windowSize.mobile} {
     width: 70px;

@@ -11,11 +11,13 @@ const Base = styled.div`
   position: absolute;
   left: 0;
   top: 0;
-  /* mobile viewport bug fix */
-  /* iOS only */
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-    min-height: -webkit-fill-available;
+  @media ${props => props.theme.windowSize.mobile} {
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
+    }
   }
 `;
 
@@ -71,15 +73,14 @@ const FilterGuide2 = styled.div`
   backdrop-filter: blur(5px);
   @media ${props => props.theme.windowSize.tablet} {
     width: 90%;
-
   }
   @media ${props => props.theme.windowSize.mobile} {
     bottom: 11rem;
-  }
-  /* mobile viewport bug fix */
-  /* iOS only */
-  @supports (-webkit-touch-callout: none) {
-    bottom: 8rem;
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      bottom: 8rem;
+    }
   }
 `;
 const Guide = () => {
