@@ -215,10 +215,14 @@ const CafeInfoReview = () => {
     }
 
     const onEmojiClick = (e: React.MouseEvent<HTMLLIElement>) => {
-        if (reviewEmoji === parseInt(e.currentTarget.id)) {
-            setReviewEmoji(0);
+        if(isLoggedin){
+            if (reviewEmoji === parseInt(e.currentTarget.id)) {
+                setReviewEmoji(0);
+            } else {
+                setReviewEmoji(parseInt(e.currentTarget.id));
+            }
         } else {
-            setReviewEmoji(parseInt(e.currentTarget.id));
+            dispatch(setIsOpenedLoginModal(true));
         }
     }
     const onSubmit = (e: React.FormEvent) => {
