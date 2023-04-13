@@ -7,6 +7,7 @@ import {useDispatch} from "react-redux";
 import {setIsLoggedin, setUserId} from "./modules/userReducer";
 import Banner from "./components/Banner";
 import MyPage from "./pages/Mypage";
+import AdminPage from "./pages/AdminPage";
 import {setIsOpenedMyPageList} from "./modules/viewReducer";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage />}/>
                 <Route path="/mypage" element={<MyPage />}/>
+                <Route path="/admin" element={<AdminPage />}/>
                 {/*↓로그인 콜백 라우팅용*/}
                 <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
             </Routes>
