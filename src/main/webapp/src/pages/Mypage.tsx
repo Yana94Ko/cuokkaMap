@@ -32,13 +32,13 @@ const Base = styled.main`
     grid-template-rows: 0.5fr 0.5fr 10fr;
     padding: 2rem 2rem 10rem 2rem;
 
-  }
-  /* mobile viewport bug fix */
-  /* iOS only */
-  @supports (-webkit-touch-callout: none) {
-    height: -webkit-fill-available;
-    min-height: -webkit-fill-available;
-    padding: 2rem;
+    /* mobile viewport bug fix */
+    /* iOS only */
+    @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
+      padding: 2rem;
+    }
   }
 `;
 
