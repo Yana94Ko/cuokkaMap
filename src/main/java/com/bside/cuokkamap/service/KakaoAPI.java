@@ -18,6 +18,12 @@ public class KakaoAPI {
     @Value("${kakao.login.redirect-uri}")
     private String KAKAO_LOGIN_REDIRECT_URI;
 
+    @Value("${kakao.login.admin-key}")
+    private String kakaoAdminKey;
+
+    private int TIMEOUT_VALUE = 2000;
+
+
     public JSONObject getToken (String authorizeCode) {
         StringBuffer sb = new StringBuffer();
         sb.append("grant_type=authorization_code");
@@ -37,6 +43,8 @@ public class KakaoAPI {
             URL url = new URL(tokenUrl);
 
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setConnectTimeout(TIMEOUT_VALUE);
+            con.setReadTimeout(TIMEOUT_VALUE);
             con.setDoOutput(true);
             con.setRequestMethod(method);
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -82,6 +90,8 @@ public class KakaoAPI {
             URL url = new URL(infoUrl);
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setConnectTimeout(TIMEOUT_VALUE);
+            con.setReadTimeout(TIMEOUT_VALUE);
             con.setUseCaches(false);
             con.setRequestMethod(method);
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -102,5 +112,44 @@ public class KakaoAPI {
     // TODO(BE, KAKAO_LOGIN) kakao logout, Token Refresh 의 경우 추후 스트럼에서 추가할것.
     // - 우선 우리 DB, 우리 서버에서 로그아웃 하는 기능을 구현한 후 추후에 disconnKakao, getTokenRefresh 구현
 
+    public String unlinkUser (String login_id) {
+        System.out.println("카카오 링크 해제하러 옴");
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("target_id_type=user_id&");
+        sb.append("target_id="+login_id);
+
+        System.out.println(sb.toString());
+
+        String unLinkUser = "";
+        try{
+            String unLinkUrl = "https://kapi.kakao.com/v1/user/unlink";
+            String method = "POST";
+
+            URL url = new URL(unLinkUrl);
+
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setConnectTimeout(TIMEOUT_VALUE);
+            con.setReadTimeout(TIMEOUT_VALUE);
+            con.setDoOutput(true);
+            con.setRequestMethod(method);
+            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            con.setRequestProperty("Authorization", "KakaoAK " + kakaoAdminKey);
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()));
+            bw.write(sb.toString());
+            bw.flush();
+
+            StringBuffer response = getResponse(con);
+            JSONObject userJson = new JSONObject(response.toString());
+            unLinkUser = userJson.get("id").toString();
+
+        } catch(Exception e) {
+            System.out.println("카카오 링크 해제중 에러 발생");
+            e.printStackTrace();
+        }
+
+        return unLinkUser;
+    }
 
 }

@@ -1,16 +1,18 @@
 package com.bside.cuokkamap.controller;
 
 import com.bside.cuokkamap.service.KakaoAPI;
+import com.bside.cuokkamap.service.PlaceService;
 import com.bside.cuokkamap.service.UserService;
+import com.bside.cuokkamap.vo.PlaceVO;
 import com.bside.cuokkamap.vo.UserVO;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,6 +26,8 @@ public class UserController {
     KakaoAPI kakao;
     @Autowired
     UserService userService;
+    @Autowired
+    PlaceService placeService;
 
     @GetMapping("/kakaoLogin")//, HttpSession session, HttpServletResponse res, RedirectAttributes redirect, HttpServletRequest request
     public ResponseEntity kakaoLogin(HttpServletResponse response, String code) throws IOException {
@@ -55,4 +59,34 @@ public class UserController {
 
         return new ResponseEntity(userInfo, HttpStatus.OK);
     }
+
+    @PostMapping("/kakaoWithdrawal")
+    public ResponseEntity kakaoWithdrawal(@RequestBody String response) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject)parser.parse(response);
+        int user_num = jobj.get("user_num").getAsInt();
+        System.out.println("회원탈퇴하러 옴" + user_num);
+
+        //카카오 링크 해제
+        String login_id = userService.getLogin_idByUserNum(user_num);
+        String result = kakao.unlinkUser(login_id);
+        System.out.println(login_id + " / " + result);
+        if(login_id.equals(result)) {
+            try {
+                //DB 회원정보 삭제
+                int dbResult = userService.deleteUser(user_num);
+                if( dbResult != 0) {
+                    return new ResponseEntity("회원 탈퇴 성공", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity("DB에서 회원정보를 삭제하지 못했습니다.", HttpStatus.BAD_REQUEST);
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity("DB 회원정보 삭제중 에러 발생", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity("kakao에서 삭제한 회원정보와, 입력받은 회원정보가 다릅니다", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
