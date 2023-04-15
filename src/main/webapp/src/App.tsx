@@ -46,7 +46,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage />}/>
                 <Route path="/mypage" element={<MyPage />}/>
-                <Route path="/admin" element={<AdminPage />}/>
+<!--                 <Route path="/admin" element={<AdminPage />}/> -->
                 {/*↓로그인 콜백 라우팅용*/}
                 <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
             </Routes>
