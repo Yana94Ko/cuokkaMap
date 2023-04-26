@@ -72,6 +72,8 @@ function HomePage() {
     const isOpenedLoginModal = useSelector((state: RootState) => state.userReducer.isOpenedLoginModal);
     const isLoggedIn = useSelector((state: RootState) => state.userReducer.isLoggedin);
 
+    // TODO(BE,FE) : 로그인 auth 추가(백엔드 - 로그인시 1회성 토큰 발행, 프론트에서 토큰값 auth 진행)
+    // assignees : Yana94Ko
 
     return (
         <>
