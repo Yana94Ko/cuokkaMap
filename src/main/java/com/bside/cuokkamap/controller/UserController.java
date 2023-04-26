@@ -73,13 +73,11 @@ public class UserController {
         System.out.println(login_id + " / " + result);
         if(login_id.equals(result)) {
             try {
+                //place 정보 0번 유저로 변경
+                userService.updatePlaceUserNum(0, user_num);
                 //DB 회원정보 삭제
-                int dbResult = userService.deleteUser(user_num);
-                if( dbResult != 0) {
-                    return new ResponseEntity("회원 탈퇴 성공", HttpStatus.OK);
-                } else {
-                    return new ResponseEntity("DB에서 회원정보를 삭제하지 못했습니다.", HttpStatus.BAD_REQUEST);
-                }
+                userService.deleteUser(user_num);
+                return new ResponseEntity("회원 탈퇴 성공", HttpStatus.OK);
             }catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity("DB 회원정보 삭제중 에러 발생", HttpStatus.BAD_REQUEST);

@@ -45,7 +45,6 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage />}/>
                 <Route path="/mypage" element={<MyPage />}/>
-                {/*↓로그인 콜백 라우팅용*/}
                 <Route path="/login/callback" element={<KakaoOauth2RedirectHandler/>}></Route>
             </Routes>
             {openBanner && <Banner setOpenBanner={setOpenBanner}/>}

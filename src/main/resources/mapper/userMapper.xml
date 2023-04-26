@@ -20,13 +20,14 @@
     </select>
 
     <!-- 수정 기능 -->
-
+    <update id="updatePlaceUserNum">
+        UPDATE place SET user_num = #{param1} WHERE user_num = #{param2}
+    </update>
     <!-- 삭제 기능 -->
     <delete id="deleteUser" parameterType="int">
         DELETE FROM place_img WHERE user_num = #{param1};
         DELETE FROM place_review WHERE user_num = #{param1};
         DELETE FROM favorite_place WHERE user_num = #{param1};
-        UPDATE place SET user_num = 0 WHERE user_num = #{param1};
         DELETE FROM user WHERE user_num = #{param1};
     </delete>
 </mapper>

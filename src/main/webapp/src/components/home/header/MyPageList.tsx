@@ -118,12 +118,27 @@ const MyPageList: React.FC = () => {
         const result = window.confirm("지금 탈퇴하시면 추가하신 즐겨찾기, 후기, 사진 등 정보가 모두 삭제되며, 복구 불가능합니다."
             + "\n" + "정말 탈퇴하시겠습니까?");
         if (result) {
-            // TODO(FE): 탈퇴 api 연동하기
-            // assignees: Yana94Ko
-            // window.alert("탈퇴되셨습니다.");
-            // sessionStorage.removeItem("id");
-            // navigate("/");
-            // window.location.reload();
+            fetch('/api/user/kakaoWithdrawal', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "user_num": sessionStorage.getItem("id"),
+                }),
+            })
+                .then(response => {
+                    if(response.status===200){
+                        window.alert("탈퇴되셨습니다.");
+                        sessionStorage.removeItem("id");
+                        navigate("/");
+                        window.location.reload();
+                    }else{
+                        window.alert("회원탈퇴에 실패했습니다.\nERROR_CODE : "+ response.status + " - " + response.statusText + "\n문제가 반복될시 관리자에게 문의하세요.");
+                    }
+                })
+
+
         } else return;
     }
     return (
