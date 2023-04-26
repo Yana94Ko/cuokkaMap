@@ -1,21 +1,25 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled, {css} from "styled-components";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 
 import {RootState} from "../modules";
-import {setCurrentMyPageView, setIsOpenedCafeInfo, setIsOpenedPostCafe} from "../modules/viewReducer";
+import {setCurrentMyPageView} from "../modules/viewReducer";
 import Header from "../components/mypage/Header";
 import PhotoReview from "../components/mypage/PhotoReview";
 import Review from "../components/mypage/Review";
-import Bookmark from "../components/mypage/Bookmark";
+import Favorite from "../components/mypage/Favorite";
+import Modal from "../components/Modal";
+import {ModalCloseBtn, ModalContainer, ModalImg} from "../components/home/KakaoMap";
 
 const Base = styled.main`
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
   padding: 3rem 8rem 8rem 8rem;
   display: grid;
   grid-template-rows: 0.5fr 1fr 6fr;
+
   @media ${props => props.theme.windowSize.laptop} {
     padding: 2rem 5rem 8rem 5rem;
 
@@ -25,19 +29,21 @@ const Base = styled.main`
 
   }
   @media ${props => props.theme.windowSize.mobile} {
-    padding: 2rem 2rem 8rem 2rem;
+    grid-template-rows: 0.5fr 0.5fr 10fr;
+    padding: 2rem 2rem 10rem 2rem;
 
-
-    /* mobile viewport bug fix */
-    /* iOS only */
-    @supports (-webkit-touch-callout: none) {
-      min-height: -webkit-fill-available;
-    }
+  }
+  /* mobile viewport bug fix */
+  /* iOS only */
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+    padding: 2rem;
   }
 `;
 
 const TabWrapper = styled.div`
-  margin-top: 50px;
+  margin-top: 5rem;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -51,6 +57,10 @@ const TabWrapper = styled.div`
     bottom: 0;
     background-color: ${props => props.theme.color.gray};
     z-index: 10;
+  }
+
+  @media ${props => props.theme.windowSize.mobile} {
+    margin-top: 2rem;
   }
 `;
 
@@ -67,9 +77,12 @@ const Tab = styled.div<{ active: boolean }>`
   }
   ` : css`
     border-bottom: 2px solid transparent;
-  `}
-  &:hover {
-    background-color: ${props => props.theme.color.lightGray}80;
+  `};
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: ${props => props.theme.color.lightGray}80;
+    }
   }
 `;
 
@@ -77,27 +90,17 @@ const MyPageContent = styled.div`
   position: relative;
   width: 100%;
   margin-top: 2rem;
-  overflow-y: auto;
-  padding: 1rem;
-  padding-bottom: 2rem;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  overflow-y: scroll;
+  padding: 1rem 2rem 2rem 1rem;
 
   @media ${props => props.theme.windowSize.tablet} {
     margin-top: 1rem;
   }
 `;
 
-const Notice = styled.h1`
-  position: absolute;
-  text-align: center;
-  width: 100vw;
-  top: 50%;
-  left: 0;
-  font-size: ${props => props.theme.fontSize.lg};
-  word-break: keep-all;
+export const ContentCount = styled.h4`
+  margin-bottom: 2rem;
+  font-weight: 700;
 `;
 
 type TabProps = {
@@ -122,8 +125,8 @@ const MyPage = () => {
 
     const myPageContent: TabProps[] = [
         {
-            name: "북마크",
-            id: "bookmark"
+            name: "즐겨찾기",
+            id: "favorite"
         },
         {
             name: "사진",
@@ -138,6 +141,20 @@ const MyPage = () => {
     const onTabClick = (e: React.MouseEvent<HTMLDivElement>) => {
         dispatch(setCurrentMyPageView(e.currentTarget.id));
     }
+
+    /*=========================================================================================================*/
+    /*============================================== CafeInfo 사진 후기 관련 START ==============================================*/
+    const [openPhotoModal, setOpenPhotoModal] = useState<boolean>(false);
+    const [modalImgSrc, setModalImgSrc] = useState<string>("#");
+
+    //사진모달 닫는 함수
+    const closePhotoModal = () => {
+        setOpenPhotoModal(false);
+    }
+    /*============================================== [ END ] CafeInfo 사진 후기 관련 ============================================*/
+    /*=========================================================================================================*/
+    // TODO(BE,FE) : 로그인 auth 추가(백엔드 - 로그인시 1회성 토큰 발행, 프론트에서 토큰값 auth 진행)
+    // assignees : Yana94Ko
     return (
         <Base>
             <Header/>
@@ -151,10 +168,17 @@ const MyPage = () => {
                 }
             </TabWrapper>
             <MyPageContent>
-                {currentMyPageView === "photo" ? <PhotoReview/>
+                {currentMyPageView === "photo" ? <PhotoReview setOpenPhotoModal={setOpenPhotoModal}
+                                                              setModalImgSrc={setModalImgSrc}/>
                     : currentMyPageView === "review" ? <Review/>
-                        : <Bookmark/>}
+                        : <Favorite/>}
             </MyPageContent>
+            {openPhotoModal && (<Modal>
+                <ModalContainer>
+                    <ModalImg src={modalImgSrc}/>
+                    <ModalCloseBtn className="material-symbols-rounded" onClick={closePhotoModal}>Close</ModalCloseBtn>
+                </ModalContainer>
+            </Modal>)}
         </Base>
     )
 }

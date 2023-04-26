@@ -9,8 +9,9 @@ import styled from "styled-components";
 const Base = styled.div`
   position: fixed;
   width: 100vw;
+  height: 100vh;
   min-height: 100vh;
-  z-index: 9999;
+  z-index: 999999;
   left: 0;
   top: 0;
   backdrop-filter: blur(10px);
@@ -22,6 +23,7 @@ const Base = styled.div`
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
+      height: -webkit-fill-available;
       min-height: -webkit-fill-available;
     }
   }

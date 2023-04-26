@@ -1,7 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled, {css} from "styled-components";
-import axios from "axios";
-import {Tag, Icon} from "../../../styles/common";
+import {Tag} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentFilter, setIsBookmarkMode} from "../../../modules/filterReducer";
 import {RootState} from "../../../modules";
@@ -25,7 +24,7 @@ const Base = styled.div<{ isOpenedPostCafe: boolean }>`
     justify-content: space-between;
     padding: 0 3rem;
   }
-  @media ${props => props.theme.windowSize.mobile} {
+  @media ${props => props.theme.windowSize.tablet} {
     top: 7rem;
     padding: 0 2rem;
   }

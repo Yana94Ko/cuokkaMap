@@ -1,16 +1,18 @@
 package com.bside.cuokkamap.controller;
 
 import com.bside.cuokkamap.service.KakaoAPI;
+import com.bside.cuokkamap.service.PlaceService;
 import com.bside.cuokkamap.service.UserService;
+import com.bside.cuokkamap.vo.PlaceVO;
 import com.bside.cuokkamap.vo.UserVO;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,18 +20,18 @@ import java.io.PrintWriter;
 
 @Controller
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:80"}, allowedHeaders = "*")
 public class UserController {
     @Autowired
     KakaoAPI kakao;
     @Autowired
     UserService userService;
+    @Autowired
+    PlaceService placeService;
 
     @GetMapping("/kakaoLogin")//, HttpSession session, HttpServletResponse res, RedirectAttributes redirect, HttpServletRequest request
     public ResponseEntity kakaoLogin(HttpServletResponse response, String code) throws IOException {
         System.out.println("로그인하러 백서버에 리다이렉트됨");
-        // TODO(BE, KAKAO_LOGIN) : 카카오 로그인 관련 사용자 인증 코드 발급 완료, oauth 토큰 발급 필요
-        // - 사용자의 인가코드를 숨길 방법이 있나?
         JSONObject tokenJson = kakao.getToken(code);
 
         String accessToken = tokenJson.getString("access_token");
@@ -40,7 +42,6 @@ public class UserController {
         // 해당하는 정보의 유저가 있는지 확인
         UserVO userInfo = userService.selectUserByLogin_id((String) kakaoUserVO.getLogin_id());
         if(userInfo != null) { // 해당하는 유저에 대한 정보가 있다면
-            System.out.println("회원정보가 있어서 로그인 하러 달려가는중");
             if(userInfo.getRole() == 9) { //블럭회원 관련
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
@@ -58,4 +59,32 @@ public class UserController {
 
         return new ResponseEntity(userInfo, HttpStatus.OK);
     }
+
+    @PostMapping("/kakaoWithdrawal")
+    public ResponseEntity kakaoWithdrawal(@RequestBody String response) {
+        JsonParser parser = new JsonParser();
+        JsonObject jobj = (JsonObject)parser.parse(response);
+        int user_num = jobj.get("user_num").getAsInt();
+        System.out.println("회원탈퇴하러 옴" + user_num);
+
+        //카카오 링크 해제
+        String login_id = userService.getLogin_idByUserNum(user_num);
+        String result = kakao.unlinkUser(login_id);
+        System.out.println(login_id + " / " + result);
+        if(login_id.equals(result)) {
+            try {
+                //place 정보 0번 유저로 변경
+                userService.updatePlaceUserNum(0, user_num);
+                //DB 회원정보 삭제
+                userService.deleteUser(user_num);
+                return new ResponseEntity("회원 탈퇴 성공", HttpStatus.OK);
+            }catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity("DB 회원정보 삭제중 에러 발생", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity("kakao에서 삭제한 회원정보와, 입력받은 회원정보가 다릅니다", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

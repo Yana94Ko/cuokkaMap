@@ -12,6 +12,10 @@ const Base = styled.div<{ height: number }>`
   flex-direction: column;
   justify-content: space-between;
   position: relative;
+  isolation: isolate;
+  @media ${props => props.theme.windowSize.mobile} {
+    height: ${props => props.height * 0.9}px;
+  }
 `;
 
 type Props = {

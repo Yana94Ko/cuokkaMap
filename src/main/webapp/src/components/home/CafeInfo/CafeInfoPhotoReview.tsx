@@ -1,4 +1,4 @@
-import React, {SetStateAction} from "react";
+import React, {SetStateAction, useState} from "react";
 import styled from "styled-components";
 
 import {Button, Icon} from "../../../styles/common";
@@ -13,9 +13,10 @@ const UploadButton = styled(Button)`
   display: flex;
   justify-content: center;
 
-  & label div {
+  & label {
     width: 100%;
     padding: 1rem;
+    cursor: pointer;
   }
 `;
 const PhotoContainer = styled.div`
@@ -29,18 +30,21 @@ const PhotoUl = styled.ul`
   gap: 1rem;
 `;
 const PhotoLi = styled.li`
+  height: 130px;
   overflow: hidden;
   position: relative;
   border-radius: 1rem;
 
 `;
 const PhotoImg = styled.img`
-  width: 120%;
-  height: 130px;
+  width: 100%;
+  height: 100%;
   border-radius: 1rem;
   object-fit: cover;
+  object-position: center;
   z-index: 100;
   position: relative;
+  cursor: pointer;
 `;
 const DeleteBtn = styled(Button)`
   position: absolute;
@@ -56,8 +60,10 @@ const DeleteBtn = styled(Button)`
   & span {
     color: ${props => props.theme.color.darkGray};
 
-    &:hover {
-      color: ${props => props.theme.color.zero};
+    @media (hover: hover) {
+      &:hover {
+        color: ${props => props.theme.color.zero};
+      }
     }
   }
 `;
@@ -70,18 +76,14 @@ const NoReview = styled.p`
   margin-top: 2rem;
 `;
 
-type PhotoReview = {
-    cafeInfoContainer: object;
-    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>;
+type PropsType = {
+    openPhotoModal: boolean
+    setOpenPhotoModal: React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc: string
+    setModalImgSrc: React.Dispatch<SetStateAction<string>>;
 }
-type dataType = {
-    placeImg_num: number;
-    placeImg_src: string;
-    placeImg_writedate: string;
-    place_num: number;
-    user_num: number;
-}
-const CafeInfoPhotoReview = () => {
+
+const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, setModalImgSrc}: PropsType) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
     const dispatch = useDispatch();
@@ -198,6 +200,7 @@ const CafeInfoPhotoReview = () => {
             .then((message) => {
                 const data = JSON.parse(message);
                 dispatch(setCafeInfoContainer({
+                    ...cafeInfoContainer,
                     data: JSON.parse(JSON.parse(data.selectedPlaceInfo).place_info),
                     filter: data.filterList,
                     placeNum: cafeInfoContainer.placeNum,
@@ -213,11 +216,19 @@ const CafeInfoPhotoReview = () => {
         }
     }
 
+    const openPhotoModalHandler = (e: React.MouseEvent<HTMLImageElement>) => {
+        if (e.target instanceof Element) {
+            setModalImgSrc(e.target.id);
+        }
+        setOpenPhotoModal(true);
+    }
+
+
     return (
         <>
             <UploadButton onClick={onUploadBtnClick}>
                 <label htmlFor="file">
-                    <div className="btn-upload" style={{cursor: "pointer"}}>사진 올리기</div>
+                    사진 올리기
                 </label>
                 <input type="file" name="file" id="file" disabled={!isLoggedin} style={{display: "none"}}
                        onChange={uploadFileReview}/>
@@ -225,13 +236,16 @@ const CafeInfoPhotoReview = () => {
             <PhotoContainer>
                 {
                     cafeInfoContainer.imageList.length === 0 ? (
-                        <NoReview>아직 등록된 후기가 없습니다!<br/>카페에 방문하셨다면 첫 후기를 올려주세요 :)</NoReview>
+                        <NoReview>아직 등록된 사진이 없습니다!<br/>카페에 방문하셨다면 첫 사진을 올려주세요 :)</NoReview>
                     ) : (
                         <PhotoUl>
                             {cafeInfoContainer.imageList.map((image: any, idx: number) => (
                                 <PhotoLi key={idx}>
                                     <PhotoImg src={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
-                                              alt={image.placeImg_src}/>
+                                              id={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
+                                              alt={image.placeImg_src}
+                                              onClick={openPhotoModalHandler}
+                                    />
                                     {Number(sessionId) === image.user_num && (
                                         <DeleteBtn
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) => removePhotoReview(e, image)}>

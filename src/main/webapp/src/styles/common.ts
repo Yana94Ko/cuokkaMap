@@ -46,12 +46,14 @@ export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
   ${props => props.clickable && css`
     cursor: pointer;
 
-    &:hover {
-      border: 1px solid ${props.id === "decaf" ?
-              props.theme.color.defaf : props.id === "soy" ?
-                      props.theme.color.soy : props.id === "zero" ?
-                              props.theme.color.zero : props.id === "oat" ?
-                                      props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
+    @media (hover: hover) {
+      &:hover {
+        border: 1px solid ${props.id === "decaf" ?
+                props.theme.color.defaf : props.id === "soy" ?
+                        props.theme.color.soy : props.id === "zero" ?
+                                props.theme.color.zero : props.id === "oat" ?
+                                        props.theme.color.oat : props.id === "lactos" ? props.theme.color.lacto : "black"};
+      }
     }
 
   `}
@@ -69,9 +71,10 @@ export const Tag = styled.button<{ clickable: boolean; active: boolean }>`
     background-color: ${props.theme.color.lightGray};
     color: ${props.theme.color.darkGray};
 
-    &:hover {
-      border: 1px solid ${props.theme.color.darkGray};
-
+    @media (hover: hover) {
+      &:hover {
+        border: 1px solid ${props.theme.color.darkGray};
+      }
     }
   `}
 

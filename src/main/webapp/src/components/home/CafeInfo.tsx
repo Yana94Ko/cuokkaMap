@@ -8,6 +8,7 @@ import CafeInfoPhotoReview from "./CafeInfo/CafeInfoPhotoReview";
 import CafeInfoReview from "./CafeInfo/CafeInfoReview";
 import {RootState} from "../../modules";
 import {setCurrentFilter} from "../../modules/filterReducer";
+import {setIsOpenedLoginModal} from "../../modules/userReducer";
 
 const Base = styled.div`
   background-color: #fff;
@@ -32,14 +33,17 @@ const Base = styled.div`
   }
   @media ${props => props.theme.windowSize.tablet} {
     border-radius: 1.5rem 1.5rem 0 0;
-
     width: 100%;
-    height: 350px;
-    top: calc(100% - 350px);
+    height: 550px;
+    top: calc(100% - 550px);
     bottom: 0;
     left: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
+  }
+  @media ${props => props.theme.windowSize.mobile} {
+    height: 450px;
+    top: calc(100% - 450px);
   }
 `;
 
@@ -49,8 +53,10 @@ const CloseBtn = styled(Icon)`
   right: 2rem;
   transition: all 0.2s ease-in-out;
 
-  &:hover {
-    transform: rotate(90deg);
+  @media (hover: hover) {
+    &:hover {
+      transform: rotate(90deg);
+    }
   }
 `;
 const CafeInfoWrapper = styled.div``;
@@ -75,8 +81,10 @@ const PlaceName = styled.a`
   transition: all 0.3s ease-in-out;
   text-decoration: none;
 
-  &:hover {
-    color: ${props => props.theme.color.primary};
+  @media (hover: hover) {
+    &:hover {
+      color: ${props => props.theme.color.primary};
+    }
   }
 `;
 
@@ -178,7 +186,7 @@ const ReviewTab = styled.div`
   position: sticky;
   position: -webkit-sticky;
   z-index: 1111;
-  top: 50px;
+  top: 60px;
   background-color: #fff;
   padding: 2rem 0 0 0;
   justify-content: space-between;
@@ -203,10 +211,10 @@ const Tab = styled.div<{ currentView: string }>`
 const CafeReviewContent = styled.div`
   padding: 2rem;
   @media ${props => props.theme.windowSize.tablet} {
-    padding-bottom: 3rem;
+    padding-bottom: 5rem;
   }
   @media ${props => props.theme.windowSize.mobile} {
-    padding-bottom: 5rem;
+    padding-bottom: 8rem;
     /* mobile viewport bug fix */
     /* iOS only */
     @supports (-webkit-touch-callout: none) {
@@ -218,9 +226,20 @@ const CafeReviewContent = styled.div`
 
 type CafeInfoProps = {
     fetchPlaceDetail: (placeNum: string) => void;
+    openPhotoModal: boolean
+    setOpenPhotoModal: React.Dispatch<SetStateAction<boolean>>;
+    modalImgSrc: string
+    setModalImgSrc: React.Dispatch<SetStateAction<string>>;
+
 }
 
-const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
+const CafeInfo = ({
+                      fetchPlaceDetail,
+                      openPhotoModal,
+                      setOpenPhotoModal,
+                      modalImgSrc,
+                      setModalImgSrc
+                  }: CafeInfoProps) => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
     //먼저 띄워줄 후기 탭(사진, 텍스트 이모지)
     const [currentView, setCurrentView] = useState<string>("photo");
@@ -254,30 +273,33 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
     }
 
     const addBookMark = () => {
-        if (window.confirm("북마크를 추가하시겠습니까?")) {
-            fetch('/api/place/uploadFavoritePlace', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "place_num": placeNum,
-                    "user_num": userNum,
-                }),
-            })
-                .then(response => response.text())
-                .then(function (data) {
-                    fetchPlaceDetail(placeNum);
+        if (isLoggedin) {
+            if (window.confirm("즐겨찾기를 추가하시겠습니까?")) {
+                fetch('/api/place/uploadFavoritePlace', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "place_num": placeNum,
+                        "user_num": userNum,
+                    }),
                 })
-                .catch(err => console.log("에러", err));
+                    .then(response => response.text())
+                    .then(function (data) {
+                        fetchPlaceDetail(placeNum);
+                    })
+                    .catch(err => console.log("에러", err));
 
+            } else {
+                return;
+            }
         } else {
-            return;
+            dispatch(setIsOpenedLoginModal(true))
         }
-
     }
     const removeBookMarker = () => {
-        if (window.confirm("북마크를 삭제하시겠습니까?")) {
+        if (window.confirm("즐겨찾기를 삭제하시겠습니까?")) {
             fetch('/api/place/deleteFavoritePlace', {
                 method: 'POST',
                 headers: {
@@ -290,8 +312,9 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
             })
                 .then(response => response.text())
                 .then(function (data) {
-                    fetchPlaceDetail(placeNum);
+                    // fetchPlaceDetail(placeNum);
                     dispatch(setCurrentFilter([]));
+                    dispatch(setIsOpenedCafeInfo(false));
                 })
                 .catch(err => console.log("에러", err));
         } else {
@@ -358,7 +381,10 @@ const CafeInfo = ({fetchPlaceDetail}: CafeInfoProps) => {
                 <Tab id="review" currentView={currentView}>후기</Tab>
             </ReviewTab>
             <CafeReviewContent>
-                {currentView === "photo" ? <CafeInfoPhotoReview/> : <CafeInfoReview/>}
+                {currentView === "photo" ? <CafeInfoPhotoReview openPhotoModal={openPhotoModal}
+                                                                setOpenPhotoModal={setOpenPhotoModal}
+                                                                modalImgSrc={modalImgSrc}
+                                                                setModalImgSrc={setModalImgSrc}/> : <CafeInfoReview/>}
             </CafeReviewContent>
         </Base>
     )

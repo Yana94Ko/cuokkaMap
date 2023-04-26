@@ -3,12 +3,22 @@ import styled from "styled-components";
 import {Link, useNavigate} from "react-router-dom";
 
 import {Button, Icon} from "../../styles/common";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../../modules";
+import {setIsOpenedMyPageList} from "../../modules/viewReducer";
+import MyPageList from "../home/header/MyPageList";
+import {NavBtn, NavIcon, NavLoginOrMyPage} from "../home/header/Header";
 
 const Base = styled.header`
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-box-align: center;
   width: 100%;
+  z-index: 9999;
 `;
 const StyledLink = styled(Link)``;
 
@@ -16,6 +26,11 @@ const Logo = styled.img`
   width: 100px;
   height: 50px;
   object-fit: contain;
+  object-position: left;
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70px;
+    height: 40px;
+  }
 `;
 
 const Title = styled.h1`
@@ -31,33 +46,36 @@ const LogoutButton = styled(Button)`
   color: ${props => props.theme.color.text};
   font-weight: 700;
 
-  &:hover {
-    background-color: ${props => props.theme.color.primary};
-    color: ${props => props.theme.color.white};
+  @media ${props => props.theme.windowSize.mobile} {
+    width: 70px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: ${props => props.theme.color.primary};
+      color: ${props => props.theme.color.white};
+    }
   }
 `;
 
 
 const Header = () => {
-    const onLogoutClick = () => {
-        const result = window.confirm("로그아웃 하시겠습니까?");
-        if (result) {
-            sessionStorage.removeItem("id");
-            window.location.reload();
-        }
-    }
+    const dispatch = useDispatch();
+
+    const isOpenedMyPageList = useSelector((state: RootState) => state.viewReducer.isOpenedMyPageList);
+
     return (
         <Base>
             <StyledLink to="/">
                 <Logo src={process.env.PUBLIC_URL + "/assets/images/logo/logo.png"} alt="로고이미지"/>
             </StyledLink>
             <Title>마이페이지</Title>
-            <LogoutButton onClick={onLogoutClick}>
-                로그아웃
-            </LogoutButton>
-            {/*TODO(FE): 회원탈퇴 기능 추가해야함*/}
-            {/*회원탈퇴관련 DB완료되면 기능 추가하기*/}
-            {/*assignees: hwanyb, SeongSilver*/}
+            <NavLoginOrMyPage>
+                <NavBtn className="myPageList" onClick={() => dispatch(setIsOpenedMyPageList(!isOpenedMyPageList))}>
+                    <NavIcon className="material-symbols-rounded myPageList">person</NavIcon>
+                </NavBtn>
+                {isOpenedMyPageList && <MyPageList/>}
+            </NavLoginOrMyPage>
         </Base>
     )
 }

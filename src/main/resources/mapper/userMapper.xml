@@ -14,9 +14,20 @@
         select  user_num, login_id, signup_date, email, role, login_type
         from    user where login_id = #{param1}
     </select>
+    <select id="getLogin_idByUserNum" resultType="String">
+        select  login_id
+        from    user where user_num = #{param1}
+    </select>
 
     <!-- 수정 기능 -->
-
+    <update id="updatePlaceUserNum">
+        UPDATE place SET user_num = #{param1} WHERE user_num = #{param2}
+    </update>
     <!-- 삭제 기능 -->
-
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM place_img WHERE user_num = #{param1};
+        DELETE FROM place_review WHERE user_num = #{param1};
+        DELETE FROM favorite_place WHERE user_num = #{param1};
+        DELETE FROM user WHERE user_num = #{param1};
+    </delete>
 </mapper>

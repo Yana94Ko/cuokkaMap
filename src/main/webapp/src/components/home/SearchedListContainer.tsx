@@ -6,14 +6,16 @@ const Base = styled.div`
   position: absolute;
   height: 300px;
   overflow-y: auto;
-  top: 3rem;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: ${props => props.theme.color.white};
   color: ${props => props.theme.color.text};
-  width: 100%;
+  width: 95%;
   padding: 1rem 1rem;
   border-radius: 1rem;
   z-index: 999;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 
   &::-webkit-scrollbar {
     display: none;
@@ -67,8 +69,11 @@ const Base = styled.div`
     border-bottom: 1px solid ${props => props.theme.color.gray};
     overflow: hidden;
     cursor: pointer;
-    min-height: 65px;
-    margin-top: 1rem;
+    padding: 1rem 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
   #placesList .item h5, #placesList .item .info {
@@ -165,10 +170,6 @@ interface listProps {
 
 const SearchedListContainer = ({setSearchedListCheck}: listProps) => {
     const item = document.getElementsByClassName("item");
-    const removeValue = (event: React.MouseEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setSearchedListCheck(false);
-    }
 
     // 리스트 아이템 클릭 시 리스트 안보이게
     if (item !== undefined) {
@@ -180,7 +181,6 @@ const SearchedListContainer = ({setSearchedListCheck}: listProps) => {
     }
     return (
         <Base id="search-result">
-            <CloseBtn className="material-symbols-rounded" onClick={removeValue}>close</CloseBtn>
             <ul id="placesList"></ul>
         </Base>
     )
