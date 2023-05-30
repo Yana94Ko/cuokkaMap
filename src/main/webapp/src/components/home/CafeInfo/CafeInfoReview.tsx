@@ -1,4 +1,4 @@
-import React, {SetStateAction, useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState} from "react";
 import styled, {css} from "styled-components";
 import {Button, Icon} from "../../../styles/common";
 import {useDispatch, useSelector} from "react-redux";
@@ -105,7 +105,6 @@ const ReviewItem = styled.div`
 `;
 
 const ReviewText = styled.p`
-  width: 90%;
   white-space: pre-wrap;
 `;
 
@@ -139,12 +138,11 @@ const ReviewTextarea = styled.textarea`
   width: 100%;
   height: 100px;
   padding: 1rem;
+  outline: none;
 
   &:focus {
     border: 1px solid ${props => props.theme.color.primary};
   }
-
-  outline: none;
 `;
 
 const ReviewLength = styled.p`
@@ -165,11 +163,6 @@ const NoReview = styled.p`
   line-height: 1.5rem;
 `;
 
-type Props = {
-    cafeInfoContainer: any,
-    setCafeInfoContainer: React.Dispatch<SetStateAction<object>>
-
-}
 const CafeInfoReview = () => {
     const cafeInfoContainer = useSelector((state: RootState) => state.cafeInfoReducer.cafeInfoContainer);
 
@@ -215,7 +208,7 @@ const CafeInfoReview = () => {
     }
 
     const onEmojiClick = (e: React.MouseEvent<HTMLLIElement>) => {
-        if(isLoggedin){
+        if (isLoggedin) {
             if (reviewEmoji === parseInt(e.currentTarget.id)) {
                 setReviewEmoji(0);
             } else {
@@ -227,8 +220,8 @@ const CafeInfoReview = () => {
     }
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        for(let bw = 0; bw< badWordArr.length; bw++){
-            if(reviewText.includes(badWordArr[bw])){
+        for (let bw = 0; bw < badWordArr.length; bw++) {
+            if (reviewText.includes(badWordArr[bw])) {
                 alert("등록할 수 없는 단어가 포함되어있습니다.");
                 return;
             }
