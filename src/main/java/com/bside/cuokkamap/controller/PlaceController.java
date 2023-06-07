@@ -38,7 +38,7 @@ public class PlaceController {
     public ResponseEntity saveCafeInfo(@RequestBody String response) {
         System.out.println("DB 저장하러 옴" + response);
         JsonParser parser = new JsonParser();
-        JsonObject jobj = (JsonObject)parser.parse(response);
+        JsonObject jobj = (JsonObject) parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
 
         placeVO.setUser_num(
@@ -51,16 +51,16 @@ public class PlaceController {
 
         int result = placeService.savePlaceInfo(placeVO);
 
-        if (result == 1){//저장 성공했으면
+        if (result == 1) {//저장 성공했으면
             // 방금 저장한 장소의 번호 호출
             int savedPlaceNum = placeService.getPlaceNum(placeVO.getUser_num());
             placeVO.setPlace_num(savedPlaceNum);
             placeVO.setFilterList(
                     Arrays.asList((jobj.get("place_filter")
-                            .toString().replaceAll("[\\[\\]\"]","")
+                            .toString().replaceAll("[\\[\\]\"]", "")
                             .split(","))));
 
-            if(placeVO.getFilterList()!=null){
+            if (placeVO.getFilterList() != null) {
                 placeService.insertFilterList(placeVO);
             }
 
@@ -76,59 +76,63 @@ public class PlaceController {
     public ResponseEntity getALLPlaceWithFilterAndKeyword(@RequestBody String res) {
         System.out.println("DB에 저장된 카페 정보 받으러옴");
         JsonParser parser = new JsonParser();
-        JsonObject jobj = (JsonObject)parser.parse(res);
-        List <String> filters = null;;
+        JsonObject jobj = (JsonObject) parser.parse(res);
+        List<String> filters = null;
+        ;
         List<String> keywords = null;
         int filterCnt = 0;
         int keywordCnt = 0;
         int user_num = 0;
 
         //filters
-        if(jobj.get("place_filter") != null && ! (jobj.get("place_filter").toString()).equals("[]")) {
+        if (jobj.get("place_filter") != null && !(jobj.get("place_filter").toString()).equals(
+                "[]")) {
             filters = Arrays.asList((jobj.get("place_filter")
-                                            .toString().replaceAll("[\\[\\]\"]","")
-                                            .split(",")));
+                    .toString().replaceAll("[\\[\\]\"]", "")
+                    .split(",")));
             filterCnt = filters.size();
         }
         //keyword
-        if(jobj.get("keywords") != null && ! jobj.get("keywords").toString().equals("\"\"")) {
-            keywords =  Arrays.asList((jobj.get("keywords")
-                                .toString().replaceAll("[\\[\\]\"]","")
-                                .split(" ")));
+        if (jobj.get("keywords") != null && !jobj.get("keywords").toString().equals("\"\"")) {
+            keywords = Arrays.asList((jobj.get("keywords")
+                    .toString().replaceAll("[\\[\\]\"]", "")
+                    .split(" ")));
             keywordCnt = keywords.size();
         }
         //user_num
-        if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")) {
+        if (jobj.get("user_num") != null && !jobj.get("user_num").toString().equals("\"\"")) {
             user_num = jobj.get("user_num")
                     .getAsInt();
         }
-        System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt + "/" + user_num);
-        List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters, filterCnt, keywords, keywordCnt, user_num);
+        System.out.println(filters + " / " + filterCnt + " / " + keywords + " / " + keywordCnt + "/"
+                + user_num);
+        List<PlaceVO> placeList = placeService.selectALLPlaceWithFilterAndKeyword(filters,
+                filterCnt, keywords, keywordCnt, user_num);
 //        for(PlaceVO place : placeList){
 //            System.out.println(place.getFilter_type());
 //        }
 
-        return new ResponseEntity( placeList, HttpStatus.OK);
+        return new ResponseEntity(placeList, HttpStatus.OK);
     }
 
     @PostMapping("/isThereSamePlaceDB")
     public ResponseEntity cntSamePlace(@RequestBody String res) {
         System.out.println("DB에 해당 좌표의 장소가 이미 등록되어있는지 확인");
         JsonParser parser = new JsonParser();
-        JsonObject jobj = (JsonObject)parser.parse(res);
+        JsonObject jobj = (JsonObject) parser.parse(res);
         String x = jobj
                 .get("x").toString();
         String y = jobj
                 .get("y").toString();
         System.out.println(x + " , " + y);
-        int cnt = placeService.cntSamePlace(x,y);
+        int cnt = placeService.cntSamePlace(x, y);
 //        System.out.println(placeService.cntSamePlace(x,y));
 //        System.out.println(cnt);
         return new ResponseEntity(cnt, HttpStatus.OK);
     }
 
     @PostMapping("/uploadPlaceImg")
-    public ResponseEntity uploadPlaceImg (PlaceVO placeVO, HttpServletRequest request) {
+    public ResponseEntity uploadPlaceImg(PlaceVO placeVO, HttpServletRequest request) {
         try {
             //파일 업로드 구현
             // TODO(BE, image_upload) : 가능하면 파일업로드 함수를 외부에 별도로 빼두기(추후 프로필 이미지 업로드 등에 사용)
@@ -154,13 +158,16 @@ public class PlaceController {
 //            } else {
 //                path = request.getServletContext().getRealPath("/public/upload");
 //            }
-            File f = new File( request.getServletContext().getRealPath("public/upload") + "/" + newFileName + "." + ext);
+            File f = new File(
+                    request.getServletContext().getRealPath("public/upload") + "/" + newFileName
+                            + "." + ext);
 
             try {
                 file.transferTo(f);
             } catch (IllegalStateException e) {
                 e.printStackTrace();
-                return new ResponseEntity("이미지 업로드 실패 IllegalStateException", HttpStatus.EXPECTATION_FAILED);
+                return new ResponseEntity("이미지 업로드 실패 IllegalStateException",
+                        HttpStatus.EXPECTATION_FAILED);
             } catch (IOException e) {
                 e.printStackTrace();
                 return new ResponseEntity("이미지 업로드 실패 IOException", HttpStatus.EXPECTATION_FAILED);
@@ -168,11 +175,16 @@ public class PlaceController {
 
             //이미지 업로드 성공 후, DB 저장
             placeVO.setPlaceImg_src(newFileName + "." + ext);
-            System.out.println("저장할 데이터 : " + placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceImg_src());
+            System.out.println(
+                    "저장할 데이터 : " + placeVO.getPlace_num() + "   " + placeVO.getUser_num() + "   "
+                            + placeVO.getPlaceImg_src());
             int result = placeService.savePlaceImg(placeVO);
             if (result != 0) {
-                PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(placeVO.getUser_num());
-                System.out.println("저장완료한 데이터 ==> "+ savedPlaceImg.getPlaceImg_num() +"   " + savedPlaceImg.getPlace_num() +"   "+ savedPlaceImg.getUser_num() +"   "+ savedPlaceImg.getPlaceImg_src());
+                PlaceVO savedPlaceImg = placeService.selectResentPlaceImgByUserNum(
+                        placeVO.getUser_num());
+                System.out.println("저장완료한 데이터 ==> " + savedPlaceImg.getPlaceImg_num() + "   "
+                        + savedPlaceImg.getPlace_num() + "   " + savedPlaceImg.getUser_num() + "   "
+                        + savedPlaceImg.getPlaceImg_src());
                 return new ResponseEntity(savedPlaceImg, HttpStatus.OK);
             } else {
                 return new ResponseEntity("DB 저장 실패", HttpStatus.EXPECTATION_FAILED);
@@ -184,7 +196,7 @@ public class PlaceController {
     }
 
     @PostMapping("/deletePlaceImg")
-    public ResponseEntity deletePlaceImg (@RequestBody String response, HttpServletRequest request) {
+    public ResponseEntity deletePlaceImg(@RequestBody String response, HttpServletRequest request) {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
@@ -194,39 +206,44 @@ public class PlaceController {
                 .getAsInt());
         placeVO.setPlaceImg_src(jobj.get("placeImg_src")
                 .toString().replaceAll("\"", ""));
-        System.out.println("이미지 삭제하러 옴 : " + placeVO.getPlaceImg_num() + " / " + placeVO.getUser_num() + " / " + placeVO.getPlaceImg_src());
+        System.out.println(
+                "이미지 삭제하러 옴 : " + placeVO.getPlaceImg_num() + " / " + placeVO.getUser_num() + " / "
+                        + placeVO.getPlaceImg_src());
         try {
-            File file = new File( request.getServletContext().getRealPath("public/upload/") + placeVO.getPlaceImg_src());
+            File file = new File(request.getServletContext().getRealPath("public/upload/")
+                    + placeVO.getPlaceImg_src());
 
             int result = placeService.deletePlaceImg(placeVO);
 
-            if(result != 0) {
-                if( file.exists() ){
-                    if(file.delete()){
+            if (result != 0) {
+                if (file.exists()) {
+                    if (file.delete()) {
 
                         return new ResponseEntity("이미지 삭제 성공", HttpStatus.OK);
-                    }else{
+                    } else {
                         return new ResponseEntity("이미지 파일 삭제 실페", HttpStatus.EXPECTATION_FAILED);
                     }
-                }else{
+                } else {
                     return new ResponseEntity("이미지 파일이 존재하지 않습니다", HttpStatus.EXPECTATION_FAILED);
                 }
             } else {
                 return new ResponseEntity("파일 삭제중 에러발생", HttpStatus.EXPECTATION_FAILED);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("이미지 삭제 전 에러 발생", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @PostMapping("/uploadPlaceReview")
-    public ResponseEntity uploadPlaceIReview (PlaceVO placeVO) {
+    public ResponseEntity uploadPlaceIReview(PlaceVO placeVO) {
         //placeReview 저장
-        System.out.println(placeVO.getPlace_num() +"   "+ placeVO.getUser_num() +"   "+ placeVO.getPlaceReview_emoji() +"   "+ placeVO.getPlaceReview());
+        System.out.println(placeVO.getPlace_num() + "   " + placeVO.getUser_num() + "   "
+                + placeVO.getPlaceReview_emoji() + "   " + placeVO.getPlaceReview());
         int result = placeService.savePlaceReview(placeVO);
         if (result != 0) {
-            PlaceVO savedOlaceReview = placeService.selectResentPlaceReviewByUserNum(placeVO.getUser_num());
+            PlaceVO savedOlaceReview = placeService.selectResentPlaceReviewByUserNum(
+                    placeVO.getUser_num());
             return new ResponseEntity(savedOlaceReview, HttpStatus.OK);
         } else {
             return new ResponseEntity("리뷰쓰기 실패", HttpStatus.EXPECTATION_FAILED);
@@ -234,33 +251,34 @@ public class PlaceController {
     }
 
     @PostMapping("/deletePlaceReview")
-    public ResponseEntity deletePlaceReview (@RequestBody String response) {
+    public ResponseEntity deletePlaceReview(@RequestBody String response) {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
-        placeVO.setPlaceReview_num( jobj.get("placeReview_num")
-                .getAsInt()) ;
-        placeVO.setUser_num( jobj.get("user_num")
+        placeVO.setPlaceReview_num(jobj.get("placeReview_num")
                 .getAsInt());
-        System.out.println("리뷰 삭제하러 옴 : " + placeVO.getPlaceReview_num() + " / " + placeVO.getUser_num() );
+        placeVO.setUser_num(jobj.get("user_num")
+                .getAsInt());
+        System.out.println(
+                "리뷰 삭제하러 옴 : " + placeVO.getPlaceReview_num() + " / " + placeVO.getUser_num());
         try {
             int result = placeService.deletePlaceReview(placeVO);
-            if( result != 0 ) {
+            if (result != 0) {
                 return new ResponseEntity("리뷰 삭제 성공", HttpStatus.OK);
             } else {
                 return new ResponseEntity("리뷰 DB 삭제 실패", HttpStatus.EXPECTATION_FAILED);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("리뷰 삭제 중 에러 발생", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @PostMapping("/selectDetailPlaceInfo")
-    public ResponseEntity selectDetailPlaceInfo (@RequestBody String response) {
+    public ResponseEntity selectDetailPlaceInfo(@RequestBody String response) {
         try {
             JsonParser parser = new JsonParser();
-            JsonObject jobj = (JsonObject)parser.parse(response);
+            JsonObject jobj = (JsonObject) parser.parse(response);
             int place_num = jobj.get("place_num")
                     .getAsInt();
 
@@ -271,10 +289,10 @@ public class PlaceController {
 
             //user_num으로 해당 카페 북마크 여부 판단
             boolean isBookmarked = false;
-            if(jobj.get("user_num") != null && ! jobj.get("user_num").toString().equals("\"\"")){
+            if (jobj.get("user_num") != null && !jobj.get("user_num").toString().equals("\"\"")) {
                 int user_num = jobj.get("user_num")
                         .getAsInt();
-                if(placeService.isFavoritePlace(user_num, place_num) != 0){
+                if (placeService.isFavoritePlace(user_num, place_num) != 0) {
                     isBookmarked = true;
                 }
             }
@@ -282,17 +300,19 @@ public class PlaceController {
             placeDetailInfo.put("isBookmarked", isBookmarked);
 
             //place_num으로 place의 filter_type 리스트 열람
-            placeDetailInfo.put("filterList", placeService.selectPlaceFilterByPlaceNum(place_num).split(", "));
+            placeDetailInfo.put("filterList",
+                    placeService.selectPlaceFilterByPlaceNum(place_num).split(", "));
             //place_num으로 place 의 기본정보 열람
             PlaceVO selectedPlaceInfo = placeService.selectPlaceByPlaceNum(place_num);
             jsonObject.put("place_num", selectedPlaceInfo.getPlace_num());
             jsonObject.put("place_info", selectedPlaceInfo.getPlace_info());
             jsonObject.put("user_num", selectedPlaceInfo.getUser_num());
-            placeDetailInfo.put("selectedPlaceInfo",jsonObject.toString());
+            placeDetailInfo.put("selectedPlaceInfo", jsonObject.toString());
             //place_num으로 place의 place_img 리스트 열람
-            placeDetailInfo.put("placeImgList",placeService.selectPlaceImgByPlaceNum(place_num));
+            placeDetailInfo.put("placeImgList", placeService.selectPlaceImgByPlaceNum(place_num));
             //place_num으로 place의 place_review 리스트 열람
-            placeDetailInfo.put("placeReviewList", placeService.selectPlaceReviewByPlaceNum(place_num));
+            placeDetailInfo.put("placeReviewList",
+                    placeService.selectPlaceReviewByPlaceNum(place_num));
 
             return new ResponseEntity(placeDetailInfo.toString(), HttpStatus.OK);
         } catch (Exception e) {
@@ -302,54 +322,58 @@ public class PlaceController {
     }
 
     @PostMapping("/uploadFavoritePlace")
-    public ResponseEntity uploadFavoritePlace (@RequestBody String response) {
+    public ResponseEntity uploadFavoritePlace(@RequestBody String response) {
         JsonParser parser = new JsonParser();
-        JsonObject jobj = (JsonObject)parser.parse(response);
+        JsonObject jobj = (JsonObject) parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
         placeVO.setPlace_num(jobj.get("place_num")
-                                    .getAsInt());
+                .getAsInt());
         placeVO.setUser_num(jobj.get("user_num")
-                                    .getAsInt());
-        System.out.println("즐겨찾기 추가하러 옴 : 유저 - " + placeVO.getUser_num() + ", 장소 번호 - " + placeVO.getPlace_num());
+                .getAsInt());
+        System.out.println("즐겨찾기 추가하러 옴 : 유저 - " + placeVO.getUser_num() + ", 장소 번호 - "
+                + placeVO.getPlace_num());
         try {
             int result = placeService.saveFavoritePlace(placeVO);
-            if(result == 1){
-                PlaceVO favoriteInfo = placeService.selectResentFavoritePlaceByUserNum(placeVO.getUser_num());
+            if (result == 1) {
+                PlaceVO favoriteInfo = placeService.selectResentFavoritePlaceByUserNum(
+                        placeVO.getUser_num());
                 //System.out.println(favoriteInfo.getFavoritePlace_num()+"/"+favoriteInfo.getPlace_num()+"/"+favoriteInfo.getUser_num());
                 return new ResponseEntity(favoriteInfo, HttpStatus.OK);
-            }else {
+            } else {
                 return new ResponseEntity("기존에 추가되어있는 즐겨찾기 입니다", HttpStatus.NOT_ACCEPTABLE);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("즐겨찾기 추가 실패", HttpStatus.NOT_ACCEPTABLE);
         }
     }
+
     @PostMapping("/deleteFavoritePlace")
-    public ResponseEntity deleteFavoritePlace (@RequestBody String response) {
+    public ResponseEntity deleteFavoritePlace(@RequestBody String response) {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         PlaceVO placeVO = new PlaceVO();
-        placeVO.setPlace_num( jobj.get("place_num")
+        placeVO.setPlace_num(jobj.get("place_num")
                 .getAsInt());
-        placeVO.setUser_num( jobj.get("user_num")
+        placeVO.setUser_num(jobj.get("user_num")
                 .getAsInt());
-        System.out.println("즐겨찾기 삭제하러 옴 : " + placeVO.getPlace_num() + " / " + placeVO.getUser_num() );
+        System.out.println(
+                "즐겨찾기 삭제하러 옴 : " + placeVO.getPlace_num() + " / " + placeVO.getUser_num());
         try {
             int result = placeService.deleteFavoritePlace(placeVO);
-            if( result != 0 ) {
+            if (result != 0) {
                 return new ResponseEntity("즐겨찾기 삭제 성공", HttpStatus.OK);
             } else {
                 return new ResponseEntity("즐겨찾기 DB 삭제 실패", HttpStatus.EXPECTATION_FAILED);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("즐겨찾기 삭제 중 에러 발생", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @PostMapping("/mypageImg")
-    public ResponseEntity mypageImg (@RequestBody String response) {
+    public ResponseEntity mypageImg(@RequestBody String response) {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         int user_num = jobj.get("user_num")
@@ -363,7 +387,7 @@ public class PlaceController {
     }
 
     @PostMapping("/mypageReview")
-    public ResponseEntity mypageReview (@RequestBody String response) {
+    public ResponseEntity mypageReview(@RequestBody String response) {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         int user_num = jobj.get("user_num")
@@ -377,7 +401,7 @@ public class PlaceController {
     }
 
     @PostMapping("/mypageFavoritePlace")
-    public ResponseEntity mypageFavoritePlace (@RequestBody String response) {
+    public ResponseEntity mypageFavoritePlace(@RequestBody String response) {
         JsonParser parser = new JsonParser();
         JsonObject jobj = (JsonObject) parser.parse(response);
         int user_num = jobj.get("user_num")
@@ -386,7 +410,8 @@ public class PlaceController {
         // TODO(BE, pagind) : 페이징 작업 추가 필요
         // assignees : Yana94Ko, hwanyb
 
-        List<PlaceVO> myFavoritePlaceList = placeService.selectAllFavoritePlaceWithUserNum(user_num);
+        List<PlaceVO> myFavoritePlaceList = placeService.selectAllFavoritePlaceWithUserNum(
+                user_num);
         return new ResponseEntity(myFavoritePlaceList, HttpStatus.OK);
     }
 }
