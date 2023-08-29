@@ -1,5 +1,6 @@
 package com.bside.cuokkamap.controller;
 
+import com.bside.cuokkamap.S3Upload;
 import com.bside.cuokkamap.service.PlaceService;
 import com.bside.cuokkamap.vo.PlaceVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,8 +32,8 @@ public class PlaceController {
     @Autowired
     PlaceService placeService;
 
-//    @Value("${spring.servlet.multipart.location}")
-//    private String uploadPath;
+    @Autowired
+    S3Upload s3Upload;
 
     @PostMapping("placeInsert")
     public ResponseEntity saveCafeInfo(@RequestBody String response) {
@@ -139,42 +140,11 @@ public class PlaceController {
             // assignees Yana94Ko
             // 1) 파일 받아오기
             MultipartFile file = ((MultipartRequest) request).getFile("place_img");
-            // 2) 파일명 수정용 String 생성(현재 DateTime + 100~999까지 랜덤 수)
-            String newFileName =
-                    System.currentTimeMillis()
-                            + ""
-                            + (new Random().ints(100, 999).findAny().getAsInt());
-            // 3) 파일의 확장자 받아오기
-            String ext = file
-                    .getOriginalFilename()
-                    .substring(
-                            file
-                                    .getOriginalFilename()
-                                    .lastIndexOf(".") + 1);
-//            //배포/ 비배포에 따른 path 분리
-//            String path;
-//            if(System.getenv("isNotDevVer") == "Y"){
-//                path = uploadPath;
-//            } else {
-//                path = request.getServletContext().getRealPath("/public/upload");
-//            }
-            File f = new File(
-                    request.getServletContext().getRealPath("public/upload") + "/" + newFileName
-                            + "." + ext);
-
-            try {
-                file.transferTo(f);
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-                return new ResponseEntity("이미지 업로드 실패 IllegalStateException",
-                        HttpStatus.EXPECTATION_FAILED);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return new ResponseEntity("이미지 업로드 실패 IOException", HttpStatus.EXPECTATION_FAILED);
-            }
+            // 2) S3업로드
+            String savedImg = s3Upload.uploadImage(file, "cuokkaMap/placeReviewImg");
 
             //이미지 업로드 성공 후, DB 저장
-            placeVO.setPlaceImg_src(newFileName + "." + ext);
+            placeVO.setPlaceImg_src(savedImg);
             System.out.println(
                     "저장할 데이터 : " + placeVO.getPlace_num() + "   " + placeVO.getUser_num() + "   "
                             + placeVO.getPlaceImg_src());

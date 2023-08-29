@@ -241,8 +241,8 @@ const CafeInfoPhotoReview = ({openPhotoModal, setOpenPhotoModal, modalImgSrc, se
                         <PhotoUl>
                             {cafeInfoContainer.imageList.map((image: any, idx: number) => (
                                 <PhotoLi key={idx}>
-                                    <PhotoImg src={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
-                                              id={process.env.PUBLIC_URL + "/upload/" + image.placeImg_src}
+                                    <PhotoImg src={image.placeImg_src}
+                                              id={image.placeImg_src}
                                               alt={image.placeImg_src}
                                               onClick={openPhotoModalHandler}
                                     />
