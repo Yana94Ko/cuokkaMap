@@ -131,7 +131,7 @@ const PhotoReview = ({setOpenPhotoModal, setModalImgSrc}: Props) => {
 
     const openPhotoModalHandler = (e: React.MouseEvent<HTMLImageElement>, reviewImg: string) => {
         if (e.target instanceof Element) {
-            setModalImgSrc(process.env.PUBLIC_URL + "/upload/" + reviewImg);
+            setModalImgSrc(reviewImg);
         }
         setOpenPhotoModal(true);
     }
@@ -147,7 +147,7 @@ const PhotoReview = ({setOpenPhotoModal, setModalImgSrc}: Props) => {
                                 <Card height={250}>
                                     <ReviewImg
                                         onClick={(e: React.MouseEvent<HTMLImageElement>) => openPhotoModalHandler(e, reviewImg.placeImg_src)}
-                                        src={process.env.PUBLIC_URL + "/upload/" + reviewImg.placeImg_src}/>
+                                        src={reviewImg.placeImg_src}/>
                                 </Card>
                                 <ReviewFooter>
                                     <Left>

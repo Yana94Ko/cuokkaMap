@@ -3,25 +3,28 @@ package com.bside.cuokkamap.controller;
 import com.bside.cuokkamap.service.KakaoAPI;
 import com.bside.cuokkamap.service.PlaceService;
 import com.bside.cuokkamap.service.UserService;
-import com.bside.cuokkamap.vo.PlaceVO;
 import com.bside.cuokkamap.vo.UserVO;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/api/user")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:80"}, allowedHeaders = "*")
 public class UserController {
+
     @Autowired
     KakaoAPI kakao;
     @Autowired
@@ -29,7 +32,8 @@ public class UserController {
     @Autowired
     PlaceService placeService;
 
-    @GetMapping("/kakaoLogin")//, HttpSession session, HttpServletResponse res, RedirectAttributes redirect, HttpServletRequest request
+    @GetMapping("/kakaoLogin")
+//, HttpSession session, HttpServletResponse res, RedirectAttributes redirect, HttpServletRequest request
     public ResponseEntity kakaoLogin(HttpServletResponse response, String code) throws IOException {
         System.out.println("로그인하러 백서버에 리다이렉트됨");
         JSONObject tokenJson = kakao.getToken(code);
@@ -41,11 +45,12 @@ public class UserController {
         UserVO kakaoUserVO = kakao.getUserInfo(accessToken);
         // 해당하는 정보의 유저가 있는지 확인
         UserVO userInfo = userService.selectUserByLogin_id((String) kakaoUserVO.getLogin_id());
-        if(userInfo != null) { // 해당하는 유저에 대한 정보가 있다면
-            if(userInfo.getRole() == 9) { //블럭회원 관련
+        if (userInfo != null) { // 해당하는 유저에 대한 정보가 있다면
+            if (userInfo.getRole() == 9) { //블럭회원 관련
                 response.setContentType("text/html; charset=UTF-8");
                 PrintWriter out = response.getWriter();
-                out.println("<script>alert('정지된 회원입니다. 정지사유는 관리자에게 문의하세요.');location.href='/member/login';</script>");
+                out.println(
+                        "<script>alert('정지된 회원입니다. 정지사유는 관리자에게 문의하세요.');location.href='/member/login';</script>");
                 out.flush();
             }
         } else { // 회원정보가 앖다면 회원가입 진행
@@ -63,7 +68,7 @@ public class UserController {
     @PostMapping("/kakaoWithdrawal")
     public ResponseEntity kakaoWithdrawal(@RequestBody String response) {
         JsonParser parser = new JsonParser();
-        JsonObject jobj = (JsonObject)parser.parse(response);
+        JsonObject jobj = (JsonObject) parser.parse(response);
         int user_num = jobj.get("user_num").getAsInt();
         System.out.println("회원탈퇴하러 옴" + user_num);
 
@@ -71,14 +76,14 @@ public class UserController {
         String login_id = userService.getLogin_idByUserNum(user_num);
         String result = kakao.unlinkUser(login_id);
         System.out.println(login_id + " / " + result);
-        if(login_id.equals(result)) {
+        if (login_id.equals(result)) {
             try {
                 //place 정보 0번 유저로 변경
                 userService.updatePlaceUserNum(0, user_num);
                 //DB 회원정보 삭제
                 userService.deleteUser(user_num);
                 return new ResponseEntity("회원 탈퇴 성공", HttpStatus.OK);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity("DB 회원정보 삭제중 에러 발생", HttpStatus.BAD_REQUEST);
             }
